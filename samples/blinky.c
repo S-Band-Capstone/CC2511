@@ -1,64 +1,67 @@
 #include <CC2510.H>
-#define b00000001 0x01  // Bit 0
-#define b00000010 0x02  // Bit 1
-#define b00000100 0x04  // Bit 2
-#define b00001000 0x08  // Bit 3
-#define b00010000 0x10  // Bit 4
-#define b00100000 0x20  // Bit 5
-#define b01000000 0x40  // Bit 6
-#define b10000000 0x80  // Bit 7
 
-void delay(unsigned int ms);  // Declare delay function prototype
+#define CYCLES_PER_MS 32000
+
 void delay_ms(unsigned int ms);
+void timer1_init(void);
 
 void main() {
-		CLKCON = 0x00;  // Set to 32 MHz system clock with no division
+    // CLK CONTROL REG
+    // 7,6 --> OSC32K,OSC   --> set (32.768 kHz) crystal oscillator
+    // 5:3 --> TICKSPD[2:0] --> set f_ref = 26 MHz for timers
+    // 2:0 --> CLKSPD[2:0]  --> set f_ref = 26 MHz for clock
+	CLKCON = 0x00;
+
+    timer1_init()
 	
-    P1DIR |= b00000010;  // Set P1.0 as output (or the appropriate GPIO for the LED)
+    // set P1.1 as output for LED
+    P1DIR |= (1 << 1);
 
     while (1) {
-        P1 ^= b00000010;  // Toggle P1.0 (LED on/off)
-        //delay(1000); // Use the existing delay function if available
-			  delay_ms(1000);
+        P1 ^= (1 << 1);  // Toggle P1.1 (LED on/off)
+	    delay_ms(1000);
     }
 }
 
-// rough... better to use timers of course
-void delay(unsigned int ms) {
-    unsigned int i, j;
-    for (i = 0; i < ms; i++)
-        for (j = 0; j < 700; j++);  // Adjust the 120 value as needed
-}
-
-
 void timer1_init() {
-    T1CTL = 0x0E;     // Set Timer 1 in modulo mode with a prescaler
-    T1CNTL = 0x00;    // Clear Timer 1 low byte
-    T1CNTH = 0x00;    // Clear Timer 1 high byte
-    T1CC0L = 0x80;    // Set lower byte of compare value (32,000 cycles)
-    T1CC0H = 0x7D;    // Set upper byte of compare value
+    // TIMER1 CONTROL & STATUS REG
+    // 7,6,5 --> CH2IF, CH1IF, CH0IF --> clear timer1 all channel interrupt flags
+    // 4     --> OVFIF               --> clear timer1 ctr overflow interrupt flag
+    // 3:2   --> DIV[1:0]            --> set tick frequency / 128
+    // 1:0   --> MODE[1:0]           --> set modulo, repeatedly count from 0x0000 to T1CC0
+    T1CTL  = 0x0E;  // 0000 1110
+                    
+    // writing anything to these resets them to 0x00
+    // TIMER1 COUNTER HIGH BYTE REG
+    T1CNTH = 0x00;
+    // TIMER1 COUNTER LOW BYTE REG
+    T1CNTL = 0x00;
+    
+    // TIMER1 CHANNEL0 CAPTURE/COMPARE VALUE HIGH
+    T1CC0H = 0x7D;  // 0111 1101
+    // TIMER1 CHANNEL0 CAPTURE/COMPARE VALUE LOW
+    T1CC0L = 0x80;  // 1000 0000
+                    // --> 32,000 ticks
 }
 
 
 void delay_ms(unsigned int ms) {
-    // Calculate the required timer count based on the clock frequency and `ms` value
-    unsigned int timer_count = ms * 32000;  // 32 MHz clock means 32,000 cycles per ms
+    unsigned int timer_count = ms * CYCLES_PER_MS;
 
-    // Set Timer 1 in modulo mode with no prescaling
-    T1CTL = 0x0E;  // Timer 1 in modulo mode
+    // set timer 1 in modulo mode with no prescaling
+    T1CTL = 0x0E;  // timer 1 in modulo mode
 
-    // Load the calculated value into the Timer 1 counter registers
-    T1CNTL = (timer_count & 0xFF);           // Lower byte
-    T1CNTH = ((timer_count >> 8) & 0xFF);    // Higher byte
+    // load the calculated value into the Timer 1 counter registers
+    T1CNTL = (timer_count & 0xFF);           // lower byte
+    T1CNTH = ((timer_count >> 8) & 0xFF);    // higher byte
 
-    // Start the timer
-    T1CTL |= 0x02;
+    // start the timer
+    T1CTL |= (1 << 1);
 
-    // Wait until timer overflow occurs (or alternative flag if available)
+    // wait until timer overflow occurs (or alternative flag if available)
     while (!(T1CNTL & 0x80));
 
-    // Stop the timer
-    T1CTL &= ~0x02;
+    // stop the timer
+    T1CTL &= ~(1 << 1);
 }
-
 
