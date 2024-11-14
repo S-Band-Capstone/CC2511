@@ -1,16 +1,10 @@
-#include <CC2511.H>
+#include <CC2510.H>
+#include <register_export.h>
 
-// example byte to send
-#define TX_BYTE 0xAB
+#define TX_BYTE 0xAB // example byte to send
 
-void transmitByte(void);
-void receiveByte(void);
-
-int main() {
-		transmitByte();
-        //receiveByte();
-		return 0;
-}
+//void transmitByte(void);
+//void receiveByte(void);
 
 void transmitByte() {
     // set CC2511 to TX mode
@@ -26,7 +20,7 @@ void transmitByte() {
     RFST = 0x35;  // RFTX strobe command
 
     // wait for transmission to complete
-    while (RFIF & 0x02); // wait until the TX flag clears, indicating TX is done
+    while (RFIF & 0x02); // Wait until the TX flag clears, indicating TX is done
 
     // set CC2511 back to IDLE mode
     RFST = 0x36;  // SIDLE strobe command to enter IDLE mode
@@ -35,19 +29,23 @@ void transmitByte() {
 unsigned char receiveByte() {
     unsigned char receivedByte;
 
-    // Set CC2511 to RX mode
+    // set CC2511 to RX mode
     RFST = 0x34;  // SRX strobe command to enter RX mode
 
-    // Wait for RX to complete or timeout
-    while (!(RFIF & 0x01)); // Wait for RX ready, checking RX interrupt flag
+    // wait for RX to complete or timeout
+    while (!(RFIF & 0x01)); // wait for RX ready, checking RX interrupt flag
 
-    // Retrieve the received byte from RX FIFO
+    // retrieve the received byte from RX FIFO
     receivedByte = RFD;
 
-    // Set CC2511 back to IDLE mode
+    // set CC2511 back to IDLE mode
     RFST = 0x36;  // SIDLE strobe command
 
     return receivedByte;
 }
 
 
+int main() {
+		transmitByte();
+		return 0;
+}
