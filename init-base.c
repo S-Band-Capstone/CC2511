@@ -39,7 +39,7 @@ to make sure that it is in the right mode initially.
 									 // using HS XOSC (Refer to datasheet) 
 	
 	// Wait for HS XOSC to be stable
-	while(CLKCON & 0x40){
+	while(SLEEP & 0x40){
 		wait(); 
 	}
 	
