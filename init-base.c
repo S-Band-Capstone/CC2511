@@ -1,4 +1,5 @@
 #include <cc2510.h> // Include CC2511 header file 
+#include <UART-CC2511_V1.c> 
 
  
  void wait(void ){
@@ -44,6 +45,7 @@ to make sure that it is in the right mode initially.
 	}
 	
 	// Turn off HS RCOSC
+	// Calibration Done
 	SLEEP |= 0x04; 
 	
 	// Blink
@@ -63,10 +65,34 @@ the main function for things to run correctly.
 
 */
 	int main(void){
+		unsigned char message1 = 'H';
+		unsigned char message2 = 'i';
+		unsigned int i;
+	
 		
 		init(); 
+		uartInit(); 
+		
+		for(i = 0; i < UART_TX_BUFFER_SIZE; i++){
+				uartTxBuffer[i] = 0;
+			}
+		uartTxBuffer[0] = message1;
+		uart0Send(uartTxBuffer, UART_TX_BUFFER_SIZE); 
+		wait();
+		for(i = 0; i < UART_TX_BUFFER_SIZE; i++){
+			uartTxBuffer[i] = 0;
+		}
+		uartTxBuffer[0] = message2;
+		uart0Send(uartTxBuffer, UART_TX_BUFFER_SIZE); 
 		while(1){
-			wait();
+//			int i; 
+//			unsigned char message[] = "Hello"; 
+//			for ( i = 0; i < sizeof(message)-1; i++){ 
+//				uartTxBuffer[i] = message[i]; // store into TX buffer
+//			
+//			}
+//			uart0Send(uartTxBuffer, UART_TX_BUFFER_SIZE); // send over UART
 		}
 		return 0; 
 	}
+		
