@@ -15,7 +15,7 @@ More for visual and debugging purposes.
 Value of 'i' should ideally be equal to or smaller than 30k
 */
 	int i = 0;                     /* Delay var */
-	P1DIR |= ( 1 << 1 ) ;
+	P1DIR |= ( 1 << 1 );
 
 	P1 ^= ( 1 << 1 ) ;                /* Toggle LED Pin */
 	for (i = 0; i < 25000; i++)  {    /* Delay for 50000 Counts */
@@ -24,6 +24,18 @@ Value of 'i' should ideally be equal to or smaller than 30k
 		wait();
 	}
 		
+}
+bit messageCheck(unsigned short* uartRxBuf, unsigned short bufferLen){
+
+	int i;
+	char testMsg[] = "test"; 
+	for(i = 0; i < bufferLen; i++){
+	
+		if(testMsg[i] !=  uartRxBuf[i]){
+			return 0; 
+		}
+	}
+	return 1; 
 }
 
 /*-- Base Initialization --*/
@@ -54,7 +66,12 @@ to make sure that it is in the right mode initially.
 		i++; 
 	}
 	
+	
 }
+
+
+// UART SECTION // 
+
 
 // MAIN SECTION //
 /*
@@ -64,35 +81,33 @@ without a loop. For proper fuctionality, incorporate loop in
 the main function for things to run correctly. 
 
 */
-	int main(void){
-		unsigned char message1 = 'H';
-		unsigned char message2 = 'i';
-		unsigned int i;
+int main(void){
+	unsigned char message1 = 'H'; // NEED TO DECLARE Variables outside of loops
+	unsigned char message2 = 'i'; // 
+	unsigned char message3[] = " Hello\n";
+	unsigned int i;
+
+	// initialize system and modules 
+	init(); 
+	uartInit(); 
+	
+	while(1){
+		bufferClear(uartTxBuffer, UART_TX_BUFFER_SIZE);
+		uartTxBuffer[0] = message1;
+		uartTxBuffer[1] = message2;
+		uart0Send(uartTxBuffer, UART_TX_BUFFER_SIZE);
+		bufferClear(uartTxBuffer, UART_TX_BUFFER_SIZE);
+			
+		for(i = 0; i < sizeof(message3)-1; i++){
+			
+			uartTxBuffer[i] = message3[i];
+		}
+		uart0Send(uartTxBuffer, UART_TX_BUFFER_SIZE);
 	
 		
-		init(); 
-		uartInit(); 
-		
-		for(i = 0; i < UART_TX_BUFFER_SIZE; i++){
-				uartTxBuffer[i] = 0;
-			}
-		uartTxBuffer[0] = message1;
-		uart0Send(uartTxBuffer, UART_TX_BUFFER_SIZE); 
-		wait();
-		for(i = 0; i < UART_TX_BUFFER_SIZE; i++){
-			uartTxBuffer[i] = 0;
-		}
-		uartTxBuffer[0] = message2;
-		uart0Send(uartTxBuffer, UART_TX_BUFFER_SIZE); 
-		while(1){
-//			int i; 
-//			unsigned char message[] = "Hello"; 
-//			for ( i = 0; i < sizeof(message)-1; i++){ 
-//				uartTxBuffer[i] = message[i]; // store into TX buffer
-//			
-//			}
-//			uart0Send(uartTxBuffer, UART_TX_BUFFER_SIZE); // send over UART
-		}
-		return 0; 
 	}
+	
+	return 0; 
+}
+	
 		

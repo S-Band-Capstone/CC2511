@@ -2,14 +2,15 @@
 
 
 /// Define the buffers that are going to be used 
-#define UART_RX_BUFFER_SIZE     50
+#define UART_RX_BUFFER_SIZE   50 
 #define UART_TX_BUFFER_SIZE 	50
 unsigned short xdata uartRxBuffer[UART_RX_BUFFER_SIZE]; 
 unsigned short xdata uartTxBuffer[UART_TX_BUFFER_SIZE]; 
-//extern unsigned short xdata uartRxIndex, uartTxIndex;
+unsigned short xdata uartRxIndex;
 
-
-void wait(void );
+void wait(void);
+void bufferClear(unsigned short* buffer, unsigned short bufferLen); 
+extern void blink(void);
 
 
 void uartInit(void){
@@ -32,7 +33,8 @@ void uartInit(void){
 	U0CSR |= 0x80; 
 	
 	// Setup UART protocol 
-	U0UCR = 0x00; 
+	U0UCR = 0x02;	// Using stop bit high works best for continuity
+								// Start bit is set to low and stop to high 
 	
 	// Set Baude Rate 
 	U0BAUD = 163; // Register dedicated to just Manitssa 
@@ -41,9 +43,9 @@ void uartInit(void){
 	
 	// Select pins and pin directions 
 	// Configure TX (P0.3) and RX (P0.2) pins
-  P0SEL |= 0x0C;  // Set P0.2 and P0.3 as peripheral I/O for USART0
-  P0DIR |= 0x08;  // Set P0.3 (TX) as output
-  P0DIR &= ~0x04; // Set P0.2 (RX) as input
+  	P0SEL |= 0x0C;  // Set P0.2 and P0.3 as peripheral I/O for USART0
+  	P0DIR |= 0x08;  // Set P0.3 (TX) as output
+  	P0DIR &= ~0x04; // Set P0.2 (RX) as input
 	
 	// Setup Interrupts
 	EA = 1; 
@@ -55,12 +57,11 @@ void uartInit(void){
 	
 }
 
+
 // UART TX 
-
-
 void uart0Send(unsigned short* uartTxBuf, unsigned short uartTxBufLength) { 
 	unsigned short uartTxIndex; 
-  UTX0IF = 0; 
+  	UTX0IF = 0; 
 	for (uartTxIndex = 0; uartTxIndex < uartTxBufLength; uartTxIndex++) { 
 		U0DBUF = uartTxBuf[uartTxIndex]; 
 		while( !UTX0IF ); 
@@ -68,6 +69,37 @@ void uart0Send(unsigned short* uartTxBuf, unsigned short uartTxBufLength) {
   } 
 } 
 
+// UART RX 
+void uart0Receive(unsigned short* uartRxBuf, unsigned short uartRxBufLength) { 
+	unsigned short uartRxIndex; 
+  	U0CSR |= 0x40; URX0IF = 0; 
+	for(uartRxIndex = 0; uartRxIndex < uartRxBufLength; uartRxIndex++) {
+		while( !URX0IF ); 
+		uartRxBuf[uartRxIndex] = U0DBUF; 
+		URX0IF = 0; 
+	} 
+	blink(); blink();
+	U0CSR &= ~0x40; 
+}
 
+
+
+//void uart_rx_isr(void) interrupt URX0_VECTOR { 
+//  URX0IF = 0; 
+// 
+//  uartRxBuffer[uartRxIndex++] = U0DBUF; 
+// 
+//	//URX0IF = 0; 
+//	blink();
+//} 
+
+// Buffer Clearing 
+void bufferClear(unsigned short* buffer, unsigned short bufferLen){
+	int i;
+	for (i = 0; i < bufferLen; i++){
+		
+		buffer[i] = '\0';
+	}
+}
 
 
