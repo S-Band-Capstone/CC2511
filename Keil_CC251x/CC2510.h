@@ -266,7 +266,7 @@ SBIT(  ENCIE     ,  0xAC  )  /*  AES Encryption/Decryption Interrupt Enable  */
 SBIT(  URX1IE    ,  0xAB  )  /*  USART1 RX Interrupt Enable                  */
 SBIT(  URX0IE    ,  0xAA  )  /*  USART0 RX Interrupt Enable                  */
 SBIT(  ADCIE     ,  0xA9  )  /*  ADC Interrupt Enable                        */
-SBIT(  RFTXRXIE  ,  0xA8  )  /*  RFRXTXIE ï¿½ RF TX/RX done interrupt enable   */
+SBIT(  RFTXRXIE  ,  0xA8  )  /*  RFRXTXIE – RF TX/RX done interrupt enable   */
 
 /* IEN1 */
 SBIT(  _IEN17    ,  0xBF  )  /*  not used                                    */
