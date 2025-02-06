@@ -3,10 +3,12 @@
 // refer to page 47 of the datasheet for RF
 // radio register descriptions.
 
-#include <Common_Shared/blink.h>
-
 #ifndef CC_RF_V1_H
 #define CC_RF_V1_H
+
+// Headers
+#include <Common_Shared/blink.h>
+#include <Handlers/cc_packet_handlers.h>
 
 /*	rf interrupts: (page 185-187)
 		1) RFTXRX: RX data ready or TX complete
@@ -58,10 +60,21 @@
 		REFER TO PAGE 201 FOR STATE TRANSMISSION AND TRANSITION TIMES 
 */
 
+// Interrupts 
+
+// Initalizer
 void rfInit(void); 
-void rfSend(unsigned short* rfTxBuf, unsigned short rfTxBufLength);
-void rfReceive(unsigned short* rfTxBuf, unsigned short rfTxBufLength); 
-void bufferClear(unsigned short* buffer, unsigned short bufferLen); 
+
+// Functions for RF controls
+void rfSend(uint16_t* rfTxBuffer, uint16_t rfTxBufLen);
+void rfReceive(uint16_t* rfRxBuffer, uint16_t rfRxBufLen); 
+
+// Functions for state control 
+
+// Function Getters
+
+// Function Setters 
+
 
 
 

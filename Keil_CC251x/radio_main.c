@@ -1,22 +1,13 @@
-#include <cc2510.h> // Include CC2511 header file 
+
+// Headers 
+#include <cc2510.h> 
 #include <Common_Shared/blink.h>
 #include <peripherals/UART/cc_uart_v1.h> 
+#include <Handlers/cc_packet_handlers.h>
 
 // File path 'includes' are relative to where project is found. 
 // Not relative to the file that is using the 'include'.
 
-bit messageCheck(unsigned short* uartRxBuf, unsigned short bufferLen){
-
-	int i;
-	char testMsg[] = "test"; 
-	for(i = 0; i < bufferLen; i++){
-	
-		if(testMsg[i] !=  uartRxBuf[i]){
-			return 0; 
-		}
-	}
-	return 1; 
-}
 
 /*-- Base Initialization --*/
 void init(void){ 
@@ -62,29 +53,25 @@ the main function for things to run correctly.
 
 */
 	int main(void){
-		unsigned char message1 = 'H'; // NEED TO DECLARE Variables outside of loops
-		unsigned char message2 = 'i'; // 
-		unsigned char message3[] = " Hello\n";
-		unsigned int i;
-	
+		
+		// temp variable
+		
+		
 		// initialize system and modules 
 		init(); 
 		uartInit(); 
+		uartRxIndex = 0;
+		
 		
 		while(1){
-//				bufferClear(uartTxBuffer, UART_TX_BUFFER_SIZE);
-//				uartTxBuffer[0] = message1;
-//				uartTxBuffer[1] = message2;
-//				uart0Send(uartTxBuffer, UART_TX_BUFFER_SIZE);
-//				bufferClear(uartTxBuffer, UART_TX_BUFFER_SIZE);
-//				
-//			for(i = 0; i < sizeof(message3)-1; i++){
-//				
-//				uartTxBuffer[i] = message3[i];
-//			}
-//			uart0Send(uartTxBuffer, UART_TX_BUFFER_SIZE);
-//		
 			
+		
+			if(rxPacketComplete){
+				uartPacketHandler(&uartRxBuffer);
+				//uart0Send(uartRxBuffer.rawPayload, 64);
+				rxPacketComplete = 0;
+			}
+
 		}
 		
 		return 0; 

@@ -1,32 +1,70 @@
-#include <cc2510.h> 
+/*
+*	File for UART serial communication. 
+*
+*
+*	NOTE: Must have variables defined in .c and externed in .h. Else, compiler no likie.
+*				- Thanks Alex 
+*	
+*	NOTE: Buffer sizes must be 16 bits, as memory addresses are 16 bits. Actually not true.
+*
+*/
+// Headers 
 #include <peripherals/UART/cc_uart_v1.h>
-#include <Common_Shared/blink.h>
+#include <Handlers/cc_packet_handlers.h>
 
+// Variables
+volatile uart_packet xdata uartRxBuffer;		// Buffer for receive data 
+volatile uart_packet xdata uartTxBuffer;		// Buffer for transmit data 
+uint8_t xdata uartRxIndex = 0;							// Indexer for receive 
+uint8_t xdata uartRxLength = 0; 						// Length of incoming packet
+bit rxPacketComplete = 0;										// Flag for full packet received 
+uint8_t xdata uartTxIndex = 0;							// Indexer for transmit
 
-/// Define the buffers that are going to be used 
-#define UART_RX_BUFFER_SIZE   50 
-#define UART_TX_BUFFER_SIZE 	50
-unsigned short xdata uartRxBuffer[UART_RX_BUFFER_SIZE]; 
-unsigned short xdata uartTxBuffer[UART_TX_BUFFER_SIZE]; 
-unsigned short xdata uartRxIndex;
 
 // Interrupt service routines
 void uart0_rx_isr(void) interrupt URX0_VECTOR { 
-  
-	URX0IF = 0; // Hardware will clear... just in case
-	//uartRxIndex++; 
-  uartRxBuffer[uartRxIndex++] = U0DBUF; 
+  /* Interrupt handler for UART RX. Primary RX source. */
 	
-	 if (uartRxIndex >= UART_RX_BUFFER_SIZE) { 
-    uartRxIndex = 0; IEN0 &= ~0x04; 
+	// Temp byte transfer variable
+	uint8_t temp_byte;
+	
+	// read byte
+	URX0IF = 0; // Hardware will clear... just in case
+	temp_byte = U0DBUF; 
+	
+	if(uartRxIndex == 0 && temp_byte != SOF){
+		// Ignore if not valid start byte
+		return; 
+	}
+  
+	// Store byte into to packet
+	uartRxBuffer.rawPayload[uartRxIndex++] = temp_byte; 
+	
+	if(uartRxIndex == 3){
+		// Store length byte which equals 3 byte
+		uartRxLength = temp_byte;
+	}
+	if (uartRxIndex >= (uartRxLength + 6)){ // check packet length bytes (SOF(1) + CMD(1) + LEN(1) + DATA(LEN) + CRC(2) + EOF(1))
+		// need to double check number to make sure that condition is correct. 
+		 if(uartRxBuffer.rawPayload[uartRxIndex] == EOF){
+			rxPacketComplete = 1; 
+			//blink();
+		}
+		uartRxIndex = 0;  // reset index 
+		rxPacketComplete = 1; // for testing
+		//blink();
   } 
-	blink();
-	blink();
+	//blink();
+	//blink();
 } 
 
 // UART Initializatin function
 void uartInit(void){
-		
+	/* Initialization function for UART0 */
+	
+	// variables 
+	uartRxIndex = 0;
+	
 	// Enable UART
 	U0CSR |= 0x80; 
 	
@@ -58,11 +96,18 @@ void uartInit(void){
 
 
 // UART TX 
-void uart0Send(unsigned short* uartTxBuf, unsigned short uartTxBufLength) { 
-	unsigned short uartTxIndex; 
+void uart0Send(uint8_t *uartTxBuf, uint16_t uartTxBufLen) { 
+	/* 	Polling function for UART TX
+	*		rtype: void
+	*
+	*		NOTE: When sending char array, BufLen = length - 1. Array Indexing.
+	*					When sending standalone char, BufLen = length. Singular value. 
+	*/
+	
   U0CSR &= ~0x40; //turn off receiver for RX
 	UTX0IF = 0; 
-	for (uartTxIndex = 0; uartTxIndex < uartTxBufLength; uartTxIndex++) { 
+	
+	for (uartTxIndex = 0; uartTxIndex < uartTxBufLen; uartTxIndex++) { 
 		U0DBUF = uartTxBuf[uartTxIndex]; 
 		while( !UTX0IF ); 
     UTX0IF = 0; 
@@ -71,10 +116,14 @@ void uart0Send(unsigned short* uartTxBuf, unsigned short uartTxBufLength) {
 } 
 
 // UART RX 
-void uart0Receive(unsigned short* uartRxBuf, unsigned short uartRxBufLength) { 
+void uart0Receive(uint16_t* uartRxBuf, uint16_t uartRxBufLen) { 
+	/* 	Polling function for UART RX 
+	*		rtype: void
+	*/ 
+	
 	unsigned short uartRxIndex; 
   U0CSR |= 0x40; URX0IF = 0; 
-	for(uartRxIndex = 0; uartRxIndex < uartRxBufLength; uartRxIndex++) {
+	for(uartRxIndex = 0; uartRxIndex < uartRxBufLen; uartRxIndex++) {
 		while( !URX0IF ); 
 		uartRxBuf[uartRxIndex] = U0DBUF; 
 		URX0IF = 0; 
@@ -83,18 +132,49 @@ void uart0Receive(unsigned short* uartRxBuf, unsigned short uartRxBufLength) {
 	U0CSR &= ~0x40; 
 }
 
-
-// Buffer Clearing 
-void bufferClear(unsigned short* buffer, unsigned short bufferLen){
-	int i;
-
-	// NOTE: potential optimization - only clear where needed
-	for (i = 0; i < bufferLen; i++){
-		
-		buffer[i] = '\0';
-	}
+uart_packet *getUartPacket(void){
+	/* 	Getter to return pointer to the buffer
+	*		rtype: &uart_packet 		
+	*/ 
+	return &uartRxBuffer;
 }
 
+void setRxIndex(void){
 
+	uartRxIndex =0; 
+}
 
+/***************************************** EXAMPLE USES **************************************/
+
+/*		UART TX SEND		*/
+//	int main(void){
+//		
+//		unsigned char message1 = 'H'; // NEED TO DECLARE Variables outside of loops
+//		unsigned char message2 = 'i'; // 
+//		unsigned char message3[] = " Hello\n";
+//		unsigned int i;
+//		
+//		// initialize system and modules 
+//		init(); 
+//		uartInit(); 
+//		
+//		
+//		while(1){
+//			
+//			bufferClear(uartTxBuffer.rawPayload, UART_TX_BUFFER_SIZE);
+//			uartTxBuffer.rawPayload[0] = message1;
+//			uartTxBuffer.rawPayload[1] = message2;
+//			uart0Send(uartTxBuffer.rawPayload, UART_TX_BUFFER_SIZE);
+//			bufferClear(uartTxBuffer.rawPayload, UART_TX_BUFFER_SIZE);
+//			
+//			for(i = 0; i < sizeof(message3)-1; i++){
+//				
+//					uartTxBuffer.rawPayload[i] = message3[i];
+//			}
+//			uart0Send(uartTxBuffer.rawPayload, UART_TX_BUFFER_SIZE);
+//			
+//		}
+//		
+//		return 0; 
+//	}
 
