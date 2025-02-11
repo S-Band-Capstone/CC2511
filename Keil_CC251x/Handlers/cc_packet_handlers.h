@@ -38,7 +38,7 @@ typedef enum{
 typedef union{
 	/* Packet strucutre for uart_packet */
 	
-	uint8_t rawPayload[64];			// Must be 16 bits for pointer addresses. 
+	uint8_t rawPayload[64];			
 	struct{
 		uint8_t sof;
 		uint8_t command;
@@ -54,7 +54,7 @@ typedef union{
 typedef union {
 	/* Packet strucutre for uart_packet */
 	
-	uint16_t rawpayload[64];  		// Must be 16 bit for pointer addresses 
+	uint16_t rawpayload[64];  	
 	struct{
 		uint8_t sof;
 		uint8_t command;

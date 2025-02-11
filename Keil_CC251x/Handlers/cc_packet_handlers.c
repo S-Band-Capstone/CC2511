@@ -58,7 +58,7 @@ void uartPacketHandler(uart_packet *payload){
 		
 		case ACK: {
 			// Packet has been acknowledged that it is received
-				uint8_t msg[] = "Acknowledge\n"; 
+				uint8_t msg[] = "Acknowledge\n"; // Returned words could just be from ENUM (Smaller)
 				uart0Send(msg, sizeof(msg)-1);
 				blink();
 			}break;

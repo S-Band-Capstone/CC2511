@@ -12,7 +12,7 @@
 /*-- Base Initialization --*/
 void init(void){ 
 /*      
-This is a base fucntion to initialize the base system. 
+This is a base function to initialize the base system. 
 Think of it as a warm up before the system does anything,
 to make sure that it is in the right mode initially. 
 */
@@ -47,7 +47,7 @@ to make sure that it is in the right mode initially.
 // MAIN SECTION //
 /*
 
-Main fucntion by itself without a loop will loop indefinitely 
+Main function by itself without a loop will loop indefinitely 
 without a loop. For proper fuctionality, incorporate loop in 
 the main function for things to run correctly. 
 

@@ -5,7 +5,7 @@
 *	NOTE: Must have variables defined in .c and externed in .h. Else, compiler no likie.
 *				- Thanks Alex 
 *	
-*	NOTE: Buffer sizes must be 16 bits, as memory addresses are 16 bits. Actually not true.
+*
 *
 */
 // Headers 
@@ -139,7 +139,7 @@ uart_packet *getUartPacket(void){
 	return &uartRxBuffer;
 }
 
-void setRxIndex(void){
+void resetRxIndex(void){
 
 	uartRxIndex =0; 
 }

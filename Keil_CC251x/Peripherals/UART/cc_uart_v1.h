@@ -34,7 +34,7 @@ void uart0Receive(uint16_t *suartRxBuf, uint16_t uartRxBufLen);
 uart_packet *getUartPacket(void);
 
 // Function Setters 
-void setRxIndex(void); 
+void resetRxIndex(void); 
 
 
 
