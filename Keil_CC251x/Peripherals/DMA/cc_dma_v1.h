@@ -18,11 +18,8 @@ typedef struct{
 } DMA_CFG; 
 
 // DMA channel configurations  (pointer in fast DATA memory, and structure in XDATA) 
-extern DMA_CFG xdata *dma_ch0; 	// Channel 0 for DMA
-extern DMA_CFG xdata *dma_ch1;	// Channel 1 for DMA
-extern DMA_CFG xdata *dma_ch2;	// Channel 2 for DMA
-extern DMA_CFG xdata *dma_ch3;	// Channel 3 for DMA
-extern DMA_CFG xdata *dma_ch4;	// Channel 4 for DMA
+extern xdata DMA_CFG dma_channels[5];  
+extern const DMA_CFG dma_init_val;
 
 // Initializer
 void dmaInit(void); 

@@ -60,6 +60,14 @@
 		REFER TO PAGE 201 FOR STATE TRANSMISSION AND TRANSITION TIMES 
 */
 
+// Variables
+extern volatile rf_packet xdata rf_rx_buffer;		// Buffer for receive data 
+extern volatile rf_packet xdata rf_tx_buffer; 	// Buffer for transmit data
+extern uint8_t xdata rf_rx_index;									// Indexer for receive
+extern uint8_t xdata rf_tx_index;									// Indexer for transmit
+extern uint8_t xdata rf_rx_length; 								// Length of incoming packet
+extern bit rf_rx_packet_complete;											// Flag for full packet received
+
 // Interrupts 
 
 // Initalizer

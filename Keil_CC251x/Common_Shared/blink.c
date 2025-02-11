@@ -26,6 +26,26 @@ void blink(void){
 		
 }
 
+void delayMs(uint8_t ms){
+	
+	/*
+		Delay function in ms
+		
+		nano second (ns) = 10^-9 
+		milla second (ms) = 10^-3
+		clock frequency = 24Mhz => 1/24Mhz = 1 clock cycle	
+		1 clock cycle = 41.67 ns 
+		1 ms = 24000 clock cycles 
+	
+	*/
+	
+	uint32_t i = 6000 * ms; // assumuing a loop takes ~4 cycles 
+	while(i--){
+	
+		wait();
+	}
+}
+
 // Buffer Clearing 
 void bufferClear(uint16_t* buffer, uint16_t bufferLen){
 /*

@@ -60,16 +60,16 @@ the main function for things to run correctly.
 		// initialize system and modules 
 		init(); 
 		uartInit(); 
-		uartRxIndex = 0;
+		uart_rx_index = 0;
 		
 		
 		while(1){
 			
 		
-			if(rxPacketComplete){
-				uartPacketHandler(&uartRxBuffer);
-				//uart0Send(uartRxBuffer.rawPayload, 64);
-				rxPacketComplete = 0;
+			if(uart_rx_packet_complete){
+				uartPacketHandler(&uart_rx_buffer);
+				//uart0Send(uart_rx_buffer.rawPayload, 64);
+				uart_rx_packet_complete = 0;
 			}
 
 		}

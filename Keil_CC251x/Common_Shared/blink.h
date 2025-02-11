@@ -30,6 +30,7 @@ typedef unsigned long int uint32_t;
 // Generalized blink and wait functions. 
 void wait(void);
 void blink(void);
+void delayMs(uint8_t ms);
 
 // Buffer Clear 
 void bufferClear(uint16_t* buffer, uint16_t bufferLen); 
