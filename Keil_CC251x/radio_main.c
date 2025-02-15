@@ -4,6 +4,7 @@
 #include <Common_Shared/blink.h>
 #include <peripherals/UART/cc_uart_v1.h> 
 #include <Handlers/cc_packet_handlers.h>
+#include <RF/cc_rf_v1.h>
 
 // File path 'includes' are relative to where project is found. 
 // Not relative to the file that is using the 'include'.
@@ -60,17 +61,17 @@ the main function for things to run correctly.
 		// initialize system and modules 
 		init(); 
 		uartInit(); 
+		rfInit();
 		uart_rx_index = 0;
-		
+	
 		
 		while(1){
-			
-		
-			if(uart_rx_packet_complete){
-				uartPacketHandler(&uart_rx_buffer);
-				//uart0Send(uart_rx_buffer.rawPayload, 64);
-				uart_rx_packet_complete = 0;
-			}
+
+//			if(uart_rx_packet_complete){
+//				uartPacketHandler(&uart_rx_buffer);
+//				//uart0Send(uart_rx_buffer.rawPayload, 64);
+//				uart_rx_packet_complete = 0;
+//			}
 
 		}
 		

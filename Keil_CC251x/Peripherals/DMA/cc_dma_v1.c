@@ -23,4 +23,13 @@ void dmaInit(void){
 	DMA0CFGL = (uint8_t)((uint16_t)&dma_channels[1] & 0x00FF);  // Low byte of address for channel 2-5
   DMA0CFGH = (uint8_t)(((uint16_t)&dma_channels[1]) >> 8);  	// High byte of address for channel 2-5
 	
+	// Setup DMA for UART 
+	/* Have data transfers and stores happen over DMA to allow CPU to cycle seperately */
+	
+	// Setup DMA for SPI 
+	/* Passing and storing from SPI over DMA, shouldn't require CPU  to process data */
+	
+	// Setup DMA for RF
+	/* Have stored to set memory address so that if CPU interrupts DMA is passing seperately */ 
+	
 }

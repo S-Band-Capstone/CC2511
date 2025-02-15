@@ -14,21 +14,21 @@
 
 // Variables 
 extern volatile uart_packet xdata uart_rx_buffer;		// Buffer for receive data 
-extern volatile uart_packet xdata uart_tx_uffer; 	// Buffer for transmit data
+extern volatile uart_packet xdata uart_tx_buffer; 	// Buffer for transmit data
 extern uint8_t xdata uart_rx_index;									// Indexer for receive
 extern uint8_t xdata uart_tx_index;									// Indexer for transmit
 extern uint8_t xdata uart_rx_length; 								// Length of incoming packet
-extern bit uart_rx_packet_complete;											// Flag for full packet received
+extern bit uart_rx_packet_complete;									// Flag for full packet received
 
 // Interrupts 
-void uart0_rx_isr(void); 
+void uart0RxIsr(void); 
 
 // Initializer
 void uartInit(void);
 
 // Functions for peripheral control
 void uart0Send(uint8_t *uartTxBuf, uint16_t uartTxBufLen);
-void uart0Receive(uint16_t *suartRxBuf, uint16_t uartRxBufLen);
+void uart0Receive(uint8_t *suartRxBuf, uint16_t uartRxBufLen);
 
 // Function Getters 
 uart_packet *getUartPacket(void);
