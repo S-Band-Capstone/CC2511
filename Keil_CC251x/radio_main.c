@@ -3,6 +3,7 @@
 #include <cc2510.h> 
 #include <Common_Shared/blink.h>
 #include <peripherals/UART/cc_uart_v1.h> 
+#include <RF/cc_rf_v1.h>
 #include <Handlers/cc_packet_handlers.h>
 
 // File path 'includes' are relative to where project is found. 
@@ -16,6 +17,7 @@ This is a base fucntion to initialize the base system.
 Think of it as a warm up before the system does anything,
 to make sure that it is in the right mode initially. 
 */
+	
 		
 	// Clock set to 24 MHz with HS XOSC
 	int i = 0;
@@ -32,12 +34,10 @@ to make sure that it is in the right mode initially.
 	SLEEP |= 0x04; 
 	
 	// Blink
-	while(i < 10){
+	while(i < 9){
 		blink(); 
 		i++; 
 	}
-	
-	
 }
 
 
@@ -55,21 +55,37 @@ the main function for things to run correctly.
 	int main(void){
 		
 		// temp variable
-		
+		int x = 0;
 		
 		// initialize system and modules 
 		init(); 
-		uartInit(); 
+		uartInit();
+		rfInit();
 		uartRxIndex = 0;
 		
 		
 		while(1){
 			
-		
+			/*
+			x = 0;
+			// Blink 3 times
+			while(x < 6){
+				blink(); 
+				x++; 
+			}
+			*/
+			
+		  // uart
 			if(rxPacketComplete){
 				uartPacketHandler(&uartRxBuffer);
 				//uart0Send(uartRxBuffer.rawPayload, 64);
 				rxPacketComplete = 0;
+				x = 0;
+				// Blink 3 times
+				while(x < 6){
+					blink(); 
+					x++; 
+				}
 			}
 
 		}

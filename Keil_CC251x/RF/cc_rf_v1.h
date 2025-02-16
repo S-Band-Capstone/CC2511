@@ -66,7 +66,7 @@
 void rfInit(void); 
 
 // Functions for RF controls
-void rfSend(uint16_t* rfTxBuffer, uint16_t rfTxBufLen);
+void rfSend(uint8_t* rfTxBuffer, uint8_t rfTxBufLen);
 void rfReceive(uint16_t* rfRxBuffer, uint16_t rfRxBufLen); 
 
 // Functions for state control 

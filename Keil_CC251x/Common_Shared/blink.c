@@ -18,7 +18,7 @@ void blink(void){
 	P1DIR |= ( 1 << 1 );
 
 	P1 ^= ( 1 << 1 ) ;                //Toggle LED Pin 
-	for (i = 0; i < 25000; i++)  {    // Delay for 25000 Counts 
+	for (i = 0; i < 30000; i++)  {    // Delay for 25000 Counts 
 		wait();                         // call wait function 
 		wait();
 		wait();
