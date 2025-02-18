@@ -13,12 +13,14 @@
 #define UART_TX_BUFFER_SIZE 	64
 
 // Variables 
-extern volatile uart_packet xdata uart_rx_buffer;		// Buffer for receive data 
-extern volatile uart_packet xdata uart_tx_buffer; 	// Buffer for transmit data
+extern xdata volatile uart_packet uart_rx_buffer;		// Buffer for receive data 
+extern xdata volatile uart_packet uart_tx_buffer; 	// Buffer for transmit data
+extern xdata volatile uart_dma_packet uart_dma_rx_buffer; // Buffer for receive data with DMA (TESTING)
 extern uint8_t xdata uart_rx_index;									// Indexer for receive
 extern uint8_t xdata uart_tx_index;									// Indexer for transmit
 extern uint8_t xdata uart_rx_length; 								// Length of incoming packet
 extern bit uart_rx_packet_complete;									// Flag for full packet received
+
 
 // Interrupts 
 void uart0RxIsr(void); 

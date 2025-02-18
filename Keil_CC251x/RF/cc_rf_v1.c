@@ -3,6 +3,17 @@
 #include <RF/cc_rf_v1.h>
 #include <Common_Shared/blink.h>
 
+// Variables 
+xdata volatile rf_packet rf_rx_buffer;
+xdata volatile rf_packet rf_tx_buffer;
+uint8_t xdata rf_rx_index;
+uint8_t xdata rf_tx_index;
+uint8_t xdata rf_rx_length;
+bit rf_rx_packet_complete;
+uint8_t mode;
+uint8_t max_len = 64; // Can change. To change, make sure to update inside packet Handler. 
+
+
 
 
 void rfRxIsr(void) interrupt RFTXRX_VECTOR{
@@ -42,35 +53,116 @@ void rfRxIsr(void) interrupt RFTXRX_VECTOR{
 void rfInit(void){
 	
 	// Initialize variables 
-	
+	rf_rx_index = 0;
+	rf_tx_index = 0;
 	// Setup Registers
 	
 	/* States (Assuming intially startup at IDLE*/ 
-	// Configure and calibrate frequency synthesiser (RFST =SCAL) 
-	
 	// Set initial state... Probably RX unless interrupt can change state out of IDLE 
+	RFST = SIDLE; 
+	mode = SIDLE;
+	delayMs(1); // delay 1ms 
 	
+	// Manually calibabrate frequency synthesizer if FS_AUTOSCAL = `00`
+	//RFST = SCAL;
+	//mode = SCAL;
+	//delayMs(1);
 	
-	
-	
-	
-	
-	
-
 
 }
 
 void rfSend(uint8_t* rfTxBuffer, uint16_t rfTxBufLen){
 	
+	// Variables 
+	uint8_t i = 0;		// loop iterator
 	
+	// Turn on frequency synthesizer if not on already
+	RFST = SFSTXON; 
+	mode = SFSTXON; 
+	delayMs(0.5); 
+	
+	// Set strobe command for transmit
+	RFST = STX; 
+	mode = STX;
+	delayMs(1);
+	
+	// Wait for flag to be set
+	waitRfTxRxFlag();
+	
+	//write the first byte (packet length)
+	RFD = rfTxBuffer[0];
+	
+	// send the rest of the packet
+	for(i = 1; i < rfTxBufLen; i++){
+		
+		waitRfTxRxFlag(); // wait for flag to be set
+		RFD = rfTxBuffer[i];
+	}
+	
+	// Calibrate if FS_AUTOSCAL set to `00`
+	//RFST = SCAL;
+	//mode = SCAL;
+	//delayMs(1); // delay 1 MS to allow state transition 
+	
+	// Return to idle state 
+	RFST = SIDLE;
+	mode = SIDLE;
+	delayMs(1); 
 	
 }
 
 void rfReceive(uint8_t* rfRxBuffer, uint16_t rfRxBufLen){
 	
+	// Variables 
+	uint8_t i = 0;
+	uint8_t packet_length;
+	
+	// Set strobe command for receive 
+	RFST = SRX;
+	mode = SRX;
+	delayMs(1);
+	
+	// Wait for flag to be set
+	waitRfTxRxFlag();
+	
+	// Get first byte (packet length)
+	packet_length = RFD;
+	if(packet_length > rfRxBufLen){// check to make sure packet can fit in buffer.
+		
+		return; // maybe return error code
+	}else{
+		
+		rfRxBuffer[0] = packet_length;
+	}
+	
+	// get rest of the bytes 
+	for(i = 1; i < packet_length; i++){
+	
+		waitRfTxRxFlag(); 
+		rfRxBuffer[i] = RFD; 
+	}
+	
+	// Calibrate if FS_AUTOSCAL set to `00`
+	//RFST = SCAL;
+	//mode = SCAL;
+	//delayMs(1); // delay 1 MS to allow state transition 
+	
+	// Return to IDLE
+	RFST = SIDLE;
+	mode = SIDLE; 
+	delayMs(1);
 	
 }
 
+static void waitRfTxRxFlag(void){
+
+	while(!RFTXRXIF){
+		// Wait until flag is set
+		// could add timer
+	}
+	
+	RFTXRXIF = 0;
+}
 
 
 /**************************************************************************************************

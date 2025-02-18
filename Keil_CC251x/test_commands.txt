@@ -1,5 +1,5 @@
 
-
+##### UART PACKET #####
 ** Command: Acknowledge **
 
 - Hex command code: 0x01
@@ -43,4 +43,21 @@ A2 B3
 29 2A 2B 2C 2D 2E 2F 30 31 32
 33 34 35 36 37 38 39 3A
 A2 B3
+7F
+
+
+##### UART DMA PACKET #####
+
+** Command: Acknowledge **
+
+- Hex command code: 0x01
+-   Packet: 
+40 7E 3A 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 
+C1 F0 
 7F

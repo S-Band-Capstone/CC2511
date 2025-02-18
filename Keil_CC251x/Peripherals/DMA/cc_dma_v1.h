@@ -1,3 +1,10 @@
+/*
+
+		DMA works over XDATA so make sure the source and destination are in XDATA 
+
+
+*/
+
 
 #ifndef CC_DMA_V1_H
 #define CC_DMA_V1_H
@@ -8,18 +15,19 @@
 // DMA channel configuration structure
 typedef struct{
 	  
-		uint16_t srcAddr;   // Source Address (XDATA)
-    uint16_t destAddr;  // Destination Address (XDATA)
-    uint8_t vlen;       // Transfer Length Mode
-    uint8_t len;        // Number of bytes to transfer
-    uint8_t tmodeTrig;  // Transfer Mode + Trigger
-    uint8_t ctrl;       // Address Increment, IRQ Mask, Priority
-	
-} DMA_CFG; 
+		uint8_t srcAddrHi;   	// Source Address High Byte(XDATA)
+		uint8_t srcAddrLo;   	// Source Address Low Byte(XDATA)
+    uint8_t dstAddrHi;  	// Destination Address High Byte (XDATA)
+	  uint8_t dstAddrLo;  	// Destination Address Low Byte (XDATA)
+		uint8_t byte4;       	// VLen [7:5] (3 bits) +  Len upper5 [4:0] (5 bits)
+		uint8_t byte5;       	// Len low8 [7:0] (8bits)
+		uint8_t byte6;  		 	// Word [7] (1 bit) + TMODE [6:5] (2 bits) + Trig [4:0] (5 bits)
+	uint8_t byte7;       		// SrcInc [7:6] (2 bits) + DstInc [5:4] (2 bits) + IRQMask [3] (1 bit) + M8 [2] (1 bit) + Prio [1:0] (2 bits)
+} dma_cfg; 
 
-// DMA channel configurations  (pointer in fast DATA memory, and structure in XDATA) 
-extern xdata DMA_CFG dma_channels[5];  
-extern const DMA_CFG dma_init_val;
+// DMA channel configurations  
+extern xdata dma_cfg dma_channels[5];  
+extern const dma_cfg dma_init_val;
 
 // Initializer
 void dmaInit(void); 

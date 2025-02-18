@@ -46,17 +46,47 @@ void rfPacketHandler(rf_packet *payload){
 }
 
 void uartPacketHandler(uart_packet *payload){
-		
+//void uartPacketHandler(void *payload, bit type){	
 	
-	Commands uart_cmd = payload->fields.command; // get command from 
-	uint8_t length = payload->fields.length;
-	uint16_t crc = payload->fields.crc;
-	uint8_t eof = payload->fields.eof;
+	// Variables 
+	Commands uart_cmd;
+	uint8_t length;
+	uint16_t crc;
+	uint8_t sof;
+	uint8_t eof; 
+	//uint8_t recData[58];
+	//blink();
 	
-	if(payload->fields.sof != SOF || payload->fields.eof != EOF){// return if bad structure
+//	if(type){
+//		
+//		uart_cmd = ((uart_packet *)payload)->fields.command;
+//		length = ((uart_packet *)payload)->fields.length;
+//		sof = ((uart_packet *)payload)->fields.sof;
+//		eof = ((uart_packet *)payload)->fields.eof;
+//		//recData = ((uart_packet *)payload)->fields.payload;
+//		
+//	}else{
+//		
+//		uart_cmd = ((uart_dma_packet *)payload)->fields.command;
+//		length = ((uart_dma_packet *)payload)->fields.length;
+//		sof = ((uart_dma_packet *)payload)->fields.sof;
+//		eof = ((uart_dma_packet *)payload)->fields.eof;
+//		//recData = (union uart_dma_packet *)payload->fields.payload;
+//	}
+	
+	uart_cmd = payload->fields.command; // get command from 
+	length = payload->fields.length;
+	crc = payload->fields.crc;
+	sof = payload->fields.sof; 
+	eof = payload->fields.eof;
+	
+	if(sof != SOF || eof != EOF){// return if bad structure
 		
 		return; 
 	}
+//	if(sof != SOF || eof != EOF){
+//		return;
+//	}
 	
 	switch(uart_cmd){ 	// switch to process payload based on command
 		

@@ -21,7 +21,6 @@ void blink(void){
 	for (i = 0; i < 25000; i++)  {    // Delay for 25000 Counts 
 		wait();                         // call wait function 
 		wait();
-		wait();
 	}
 		
 }
@@ -39,10 +38,9 @@ void delayMs(uint8_t ms){
 	
 	*/
 	
-	uint32_t i = 6000 * ms; // assumuing a loop takes ~4 cycles 
+	uint32_t i = 4000 * ms; // assumuing a 1 machine cycle ~6 clock cycle
 	while(i--){
 	
-		wait();
 	}
 }
 

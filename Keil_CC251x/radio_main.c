@@ -3,6 +3,7 @@
 #include <cc2510.h> 
 #include <Common_Shared/blink.h>
 #include <peripherals/UART/cc_uart_v1.h> 
+#include <peripherals/DMA/cc_dma_v1.h> 
 #include <Handlers/cc_packet_handlers.h>
 #include <RF/cc_rf_v1.h>
 
@@ -56,7 +57,7 @@ the main function for things to run correctly.
 	int main(void){
 		
 		// temp variable
-		
+
 		
 		// initialize system and modules 
 		init(); 
@@ -66,7 +67,7 @@ the main function for things to run correctly.
 	
 		
 		while(1){
-
+		
 //			if(uart_rx_packet_complete){
 //				uartPacketHandler(&uart_rx_buffer);
 //				//uart0Send(uart_rx_buffer.rawPayload, 64);
