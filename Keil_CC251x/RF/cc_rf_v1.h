@@ -12,28 +12,6 @@
 
 
 // Defined variables 
-/* SmartRF Low-Data rate settings */
-#define SMARTRF_SETTING_PKTCTRL0    0x05
-#define SMARTRF_SETTING_CHANNR      0x03
-#define SMARTRF_SETTING_FSCTRL1     0x0A
-#define SMARTRF_SETTING_FREQ2       0x65
-#define SMARTRF_SETTING_FREQ1       0x0A
-#define SMARTRF_SETTING_FREQ0       0xAA
-#define SMARTRF_SETTING_MDMCFG4     0x76
-#define SMARTRF_SETTING_MDMCFG3     0xA3
-#define SMARTRF_SETTING_MDMCFG2     0x03
-#define SMARTRF_SETTING_MDMCFG1     0x23
-#define SMARTRF_SETTING_MDMCFG0     0x55
-#define SMARTRF_SETTING_DEVIATN     0x45
-#define SMARTRF_SETTING_MCSM0       0x14
-#define SMARTRF_SETTING_FOCCFG      0x16
-#define SMARTRF_SETTING_FSCAL1      0x00
-#define SMARTRF_SETTING_FSCAL0      0x11
-#define SMARTRF_SETTING_TEST1       0x31
-#define SMARTRF_SETTING_TEST0       0x09
-#define SMARTRF_SETTING_PA_TABLE0   0xFE
-#define SMARTRF_SETTING_IOCFG0      0x06
-#define SMARTRF_SETTING_LQI         0x7F
 
 /* Stobe Commands (REFER TO DATASHEET PAGE: 185) */
 #define SFSTXON			0x00 // Turn frequency synthesizer on

@@ -58,8 +58,58 @@ void rfInit(void){
 	// Initialize variables 
 	rf_rx_index = 0;
 	rf_tx_index = 0;
-	// Setup Registers
 	
+	// Setup Registers
+	/*  Values taken straight from Smart RF Studio (Data Rate = 9600)*/
+	IOCFG2 = 0x2E;; 
+	IOCFG1 = 0x00;
+	IOCFG0 = 0x00;
+	SYNC1 = 0xD3;
+	SYNC0 = 0x91;
+	PKTLEN = 0x3F;
+	PKTCTRL1 = 0xE5;
+	PKTCTRL0 = 0x04;
+	ADDR = 0x00;
+	CHANNR = 0x00;
+	FSCTRL1 = 0x0A;
+	FSCTRL0 = 0x00;
+	FREQ2 = 0x65;
+	FREQ1 = 0x60;
+	FREQ0 = 0x00;	
+	MDMCFG4 =	0x76;
+	MDMCFG3 =	0xA3;	
+	MDMCFG2 =	0x00;	
+	MDMCFG1 =	0x23;	
+	MDMCFG0 =	0x11;
+	DEVIATN =	0x45;	
+	MCSM2 = 0x07;
+ 	MCSM1 = 0x30;
+	MCSM0 =	 0x14;
+	FOCCFG = 0x16;
+	BSCFG = 0x6c;
+	AGCCTRL2 = 0x03; 
+	AGCCTRL1 = 0x40;
+	AGCCTRL0 = 0x91;
+	FREND1 = 0x56;
+	FREND0 = 0x10;
+	FSCAL3 = 0xA9;
+	FSCAL2 = 0x0A;
+	FSCAL1 = 0x00;	
+	FSCAL0 = 0x11;	
+	//PA_TABLE7 =
+	//PA_TABLE6 =
+	//PA_TABLE5 =
+	//PA_TABLE4 =
+	//PA_TABLE3 = 
+	//PA_TABLE2 = 
+	//PA_TABLE1 = 
+	PA_TABLE0 =	0xFE;	
+	//FREQEST = 
+	//LQI = 0x7F; 
+	//RSSI = 
+	
+	// Interrupt enables 
+	IEN2 |= 0x01;
 	/* States (Assuming intially startup at IDLE*/ 
 	// Set initial state... Probably RX unless interrupt can change state out of IDLE 
 	RFST = SIDLE; 
@@ -67,9 +117,9 @@ void rfInit(void){
 	delayMs(1); // delay 1ms 
 	
 	// Manually calibabrate frequency synthesizer if FS_AUTOSCAL = `00`
-	//RFST = SCAL;
-	//mode = SCAL;
-	//delayMs(1);
+	RFST = SCAL;
+	mode = SCAL;
+	delayMs(1);
 	
 
 }
@@ -82,7 +132,7 @@ void rfSend(uint8_t* rfTxBuffer, uint16_t rfTxBufLen){
 	// Turn on frequency synthesizer if not on already
 	RFST = SFSTXON; 
 	mode = SFSTXON; 
-	delayMs(0.5); 
+	delayMs(1); 
 	
 	// Set strobe command for transmit
 	RFST = STX; 
@@ -91,7 +141,7 @@ void rfSend(uint8_t* rfTxBuffer, uint16_t rfTxBufLen){
 	
 	// Wait for flag to be set
 	waitRfTxRxFlag();
-	
+	blink();
 	//write the first byte (packet length)
 	RFD = rfTxBuffer[0];
 	
@@ -100,6 +150,7 @@ void rfSend(uint8_t* rfTxBuffer, uint16_t rfTxBufLen){
 		
 		waitRfTxRxFlag(); // wait for flag to be set
 		RFD = rfTxBuffer[i];
+	
 	}
 	
 	// Calibrate if FS_AUTOSCAL set to `00`
@@ -111,6 +162,7 @@ void rfSend(uint8_t* rfTxBuffer, uint16_t rfTxBufLen){
 	RFST = SIDLE;
 	mode = SIDLE;
 	delayMs(1); 
+	
 	
 }
 
@@ -162,6 +214,7 @@ static void waitRfTxRxFlag(void){
 	while(!RFTXRXIF){
 		// Wait until flag is set
 		// could add timer
+		//blink();
 	}
 	
 	RFTXRXIF = 0;

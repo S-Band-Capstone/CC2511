@@ -64,10 +64,18 @@ the main function for things to run correctly.
 		uartInit(); 
 		rfInit();
 		uart_rx_index = 0;
-	
+
+		rf_tx_buffer.rawPayload[0] = 0x3F;
+		rf_tx_buffer.rawPayload[1] = SOF;
+		rf_tx_buffer.rawPayload[2] = 0x01;
+		rf_tx_buffer.rawPayload[63] = EOF;
 		
 		while(1){
-		
+			
+			rfSend(rf_tx_buffer.rawPayload, 64);
+			RFST = STX; 
+			mode = STX;
+			delayMs(1);
 //			if(uart_rx_packet_complete){
 //				uartPacketHandler(&uart_rx_buffer);
 //				//uart0Send(uart_rx_buffer.rawPayload, 64);
