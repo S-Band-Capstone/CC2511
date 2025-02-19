@@ -29,16 +29,19 @@ void rfRxIsr(void) interrupt RFTXRX_VECTOR{
 	}
 	
 	// Store byte
-	rf_rx_buffer.rawPayload[rf_rx_index++] = temp_byte;
+	rf_rx_buffer.rawPayload[rf_rx_index] = temp_byte;
 	
-	// Store length for check after
-	if(rf_rx_index == 1){
+	// Store length for check after, since first byte should hold payload length (in bytes)
+	if(rf_rx_index == 0){
 		
 		rf_rx_length = temp_byte;
 	}
 	
+	// necessary increment for next check block
+	rf_rx_index++;
+	
 	// Packet complete
-	if (rf_rx_index >= rf_rx_length + 3){
+	if (rf_rx_index >= rf_rx_length + 3){ // 3 = payload length + SOF + EOF
 		if(rf_rx_buffer.fields.eof == EOF){ // Make sure end of packet 
 			
 			rf_rx_packet_complete = 1; 
@@ -83,8 +86,8 @@ void rfSend(uint8_t* rfTxBuffer, uint16_t rfTxBufLen){
 	
 	// Set strobe command for transmit
 	RFST = STX; 
-	mode = STX;
-	delayMs(1);
+	mode = STX; // bookkeeping with global var
+	delayMs(1); // necessary evil
 	
 	// Wait for flag to be set
 	waitRfTxRxFlag();
