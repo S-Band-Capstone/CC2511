@@ -53,33 +53,21 @@ uint8_t max_len = 64; // Can change. To change, make sure to update inside packe
 //	
 //}
 
-void rfIsr(void) interrupt RFTXRX_VECTOR { // doesnt seem to vector to
+void rfIsr(void) interrupt RFTXRX_VECTOR { 
 		
 	// Variables
 	uint8_t i;
 	RFTXRXIF = 0;
-	
-		switch(mode){
-			
-			case SRX:{
+	rf_rx_buffer.rawPayload[0] = RFD; 
+	blink();
 		
-				rf_rx_buffer.rawPayload[0] = RFD; 
-				blink();
-				if((RFIF & 40)){ // Check if RX is in Overflow
-					RFST = SIDLE; mode = SIDLE;
-				}
-			} break;
-			case STX:{
-				
-				for( i = 0; i < 4; i++){
-					
-					blink();
-				}
-			
-			} break;
-			
+
+}
+
+void rfOverflow(void) interrupt RF_VECTOR {
 		
-		}
+	RFST = SIDLE;
+	mode = SIDLE;
 
 }
 
@@ -149,7 +137,9 @@ void rfInit(void){
 	//VCO_VC_DAC
 	
 	// Interrupt enables 
-	RFTXRXIE = 1;
+	RFTXRXIE = 1;		// RFD TX and RX
+	IEN02 |= 0x01; // General RF interrupts 
+	
 	/* States (Assuming intially startup at IDLE*/ 
 	// Set initial state... Probably RX unless interrupt can change state out of IDLE 
 	RFST = SIDLE; 

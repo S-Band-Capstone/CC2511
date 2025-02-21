@@ -35,6 +35,8 @@ extern uint8_t max_len; 													// Max length of buffers (best for interrup
 // Interrupts 
 //void rfRxIsr(void);
 void rfIsr(void);
+void rfRxOverflow(void);
+
 // Initalizer
 void rfInit(void); 
 
