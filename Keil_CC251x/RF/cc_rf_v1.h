@@ -19,7 +19,8 @@
 #define SRX 				0x02 // Enable RX and go into receive mode. Calibrate if coming from IDEL
 #define STX					0x03 // Enable TX and go into transmit mode. Calibrate if coming from IDLE
 #define SIDLE 			0x04 // Enter IDEL state. Frequency Synthesizer turned off. 
-#define SNOP 				0x55 //Can be anything other than previous defined strobe cmds 
+#define SNOP 				0x55 // Can be anything other than previous defined strobe cmds 
+#define MAX_LEN			0x40 // Can be changed for some thing greater. MAX_LEN = 64
 
 // Variables
 extern xdata volatile rf_packet rf_rx_buffer;			// Buffer for receive data 
@@ -32,8 +33,8 @@ extern uint8_t mode; 															// Current state of the system
 extern uint8_t max_len; 													// Max length of buffers (best for interrupts)
 
 // Interrupts 
-void rfRxIsr(void);
-
+//void rfRxIsr(void);
+void rfIsr(void);
 // Initalizer
 void rfInit(void); 
 

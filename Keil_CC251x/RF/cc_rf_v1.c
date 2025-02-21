@@ -15,44 +15,78 @@ uint8_t max_len = 64; // Can change. To change, make sure to update inside packe
 
 
 
+// Interrupts 
+//void rfRxIsr(void) interrupt RFTXRX_VECTOR{
+//	
+//	uint8_t temp_byte; // Temp byte
+//	
+//	// read byte from RF data register 
+//	temp_byte  = RFD;
+//	
+//	// return if not valid
+//	if (rf_rx_index == 1 && temp_byte != SOF){
+//		return; // return error value? 
+//	}
+//	
+//	// Store byte
+//	rf_rx_buffer.rawPayload[rf_rx_index] = temp_byte;
+//	
+//	// Store length for check after, since first byte should hold payload length (in bytes)
+//	if(rf_rx_index == 0){
+//		
+//		rf_rx_length = temp_byte;
+//	}
+//	
+//	// necessary increment for next check block
+//	rf_rx_index++;
+//	
+//	// Packet complete
+//	if (rf_rx_index >= rf_rx_length + 3){ // 3 = payload length + SOF + EOF
+//		if(rf_rx_buffer.fields.eof == EOF){ // Make sure end of packet 
+//			
+//			rf_rx_packet_complete = 1; 
+//		}
+//		
+//		rf_rx_index = 0;
+//	}
+//	/* KEEP state in RX mode, let packet Handler deal with state changes */ 
+//	
+//}
 
-void rfRxIsr(void) interrupt RFTXRX_VECTOR{
-	
-	uint8_t temp_byte; // Temp byte
-	
-	// read byte from RF data register 
-	temp_byte  = RFD;
-	
-	// return if not valid
-	if (rf_rx_index == 1 && temp_byte != SOF){
-		return; // return error value? 
-	}
-	
-	// Store byte
-	rf_rx_buffer.rawPayload[rf_rx_index] = temp_byte;
-	
-	// Store length for check after, since first byte should hold payload length (in bytes)
-	if(rf_rx_index == 0){
+void rfIsr(void) interrupt RFTXRX_VECTOR { // doesnt seem to vector to
 		
-		rf_rx_length = temp_byte;
-	}
+	// Variables
+	uint8_t i;
+	RFTXRXIF = 0;
 	
-	// necessary increment for next check block
-	rf_rx_index++;
-	
-	// Packet complete
-	if (rf_rx_index >= rf_rx_length + 3){ // 3 = payload length + SOF + EOF
-		if(rf_rx_buffer.fields.eof == EOF){ // Make sure end of packet 
+		switch(mode){
 			
-			rf_rx_packet_complete = 1; 
-		}
+			case SRX:{
 		
-		rf_rx_index = 0;
-	}
-	/* KEEP state in RX mode, let packet Handler deal with state changes */ 
-	
+				rf_rx_buffer.rawPayload[0] = RFD; 
+				blink();
+				if((RFIF & 40)){ // Check if RX is in Overflow
+					RFST = SIDLE; mode = SIDLE;
+				}
+			} break;
+			case STX:{
+				
+				for( i = 0; i < 4; i++){
+					
+					blink();
+				}
+			
+			} break;
+			
+		
+		}
+
 }
 
+
+
+
+// Initialization 
 void rfInit(void){
 	
 	// Initialize variables 
@@ -68,7 +102,7 @@ void rfInit(void){
  	SYNC1 = 0xD3;
 	SYNC0 = 0x91;
 	PKTLEN = 0xFF; // 0xFF
-	PKTCTRL1 = 0x04; //0xE5;
+	PKTCTRL1 = 0x00; //0xE5; 0x04 = Append_Status
 	PKTCTRL0 = 0x05; //0x04;
 	ADDR = 0x00;
 	CHANNR = 0x00;
@@ -84,7 +118,7 @@ void rfInit(void){
 	MDMCFG0 =	0x11;
 	DEVIATN =	0x45;	
 	MCSM2 = 0x07;
- 	MCSM1 = 0x32; // 0x30;
+ 	MCSM1 = 0x3E; // 0x30; RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX);
 	MCSM0 =	 0x14;
 	FOCCFG = 0x16;
 	BSCFG = 0x6c;
@@ -115,7 +149,7 @@ void rfInit(void){
 	//VCO_VC_DAC
 	
 	// Interrupt enables 
-	//IEN0 |= 0x01;
+	RFTXRXIE = 1;
 	/* States (Assuming intially startup at IDLE*/ 
 	// Set initial state... Probably RX unless interrupt can change state out of IDLE 
 	RFST = SIDLE; 
@@ -130,6 +164,7 @@ void rfInit(void){
 
 }
 
+// Functions 
 void rfSend(uint8_t* rfTxBuffer, uint16_t rfTxBufLen){
 	
 	// Variables 
@@ -159,7 +194,7 @@ void rfSend(uint8_t* rfTxBuffer, uint16_t rfTxBufLen){
 		delayMs(1);
 		//waitRfTxRxFlag(); // wait for flag to be set
 		RFD = rfTxBuffer[i];
-		blink();
+		//blink();
 	
 	}
 	
@@ -183,28 +218,33 @@ void rfReceive(uint8_t* rfRxBuffer, uint16_t rfRxBufLen){
 	uint8_t packet_length;
 	
 	// Set strobe command for receive 
-	RFST = SRX;
-	mode = SRX;
-	delayMs(1);
+	//RFST = SRX;
+	if(mode != SRX){
+		mode = SRX;
+	}
+		delayMs(1);
 	
 	// Wait for flag to be set
-	waitRfTxRxFlag();
+	//waitRfTxRxFlag();
 	
 	// Get first byte (packet length)
 	packet_length = RFD;
-	if(packet_length > rfRxBufLen){// check to make sure packet can fit in buffer.
+	if(packet_length >= rfRxBufLen){// check to make sure packet can fit in buffer.
 		
 		return; // maybe return error code
 	}else{
 		
 		rfRxBuffer[0] = packet_length;
-	}
-	
-	// get rest of the bytes 
-	for(i = 1; i < packet_length; i++){
 		
-		waitRfTxRxFlag(); 
-		rfRxBuffer[i] = RFD; 
+		// get rest of the bytes 
+		for(i = 1; i < packet_length; i++){
+		
+			//RFST = SRX;
+			//delayMs(1);
+			//waitRfTxRxFlag(); 
+			rfRxBuffer[i] = RFD; 
+			//blink();
+		}
 	}
 	
 	// Calibrate if FS_AUTOSCAL set to `00`
@@ -226,7 +266,7 @@ static void waitRfTxRxFlag(void){
 		// could add timer
 		//blink();
 	}
-	blink();
+	//blink();
 	RFTXRXIF = 0;
 }
 

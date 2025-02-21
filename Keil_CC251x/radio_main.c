@@ -33,6 +33,10 @@ to make sure that it is in the right mode initially.
 	// Calibration Done
 	SLEEP |= 0x04; 
 	
+	// Enable all interrupts 
+	EA = 1;
+	
+	
 	// Blink
 //	while(i < 11){
 //		blink(); 
@@ -61,7 +65,7 @@ the main function for things to run correctly.
 		
 		// initialize system and modules 
 		init(); 
-		uartInit(); 
+		//uartInit(); 
 		rfInit();
 		uart_rx_index = 0;
 
@@ -73,21 +77,31 @@ the main function for things to run correctly.
 			rf_tx_buffer.rawPayload[i] = 0xD3;
 		}
 		rf_tx_buffer.rawPayload[63] = EOF;
-		
+		RFST = SRX;
+		mode = SRX;
+		delayMs(1);
 		while(1){
-			
-			//rfSend(rf_tx_buffer.rawPayload, 64);
+		
+			RFST = SRX;
+			//delayMs(1);
+			mode = SRX;
+			//mode = STX;
+			//rfSend(rf_tx_buffer.rawPayload, 4);
 			//delayMs(10);
+			
+			//mode = SRX;
+			//rfReceive(rf_rx_buffer.rawPayload, 64);
+			
 //			RFST = STX; 
 //			mode = STX;
 //			delayMs(1);
 			
 			// For Demo of UART
-			if(uart_rx_packet_complete){
-				uartPacketHandler(&uart_rx_buffer);
-				//uart0Send(uart_rx_buffer.rawPayload, 64);
-				uart_rx_packet_complete = 0;
-			}
+//			if(uart_rx_packet_complete){
+//				uartPacketHandler(&uart_rx_buffer);
+//				//uart0Send(uart_rx_buffer.rawPayload, 64);
+//				uart_rx_packet_complete = 0;
+//			}
 
 		}
 		
