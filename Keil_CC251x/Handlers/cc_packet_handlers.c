@@ -7,6 +7,7 @@
 
 #include <Handlers/cc_packet_handlers.h>
 #include <peripherals/UART/cc_uart_v1.h>
+#include <RF/cc_rf_v1.h>
 
 
 void rfPacketHandler(rf_packet *payload){
@@ -120,8 +121,10 @@ void uartPacketHandler(uart_packet *payload){
 				for(i = 0; i < 6; i++){
 					
 					blink();
+				}	
+				for(i = 0; i < 10; i++){
+					rfSend(rf_tx_buffer.rawPayload, 4); // For demo purposes
 				}
-
 			}break;
 		
 		// TODO: complete all other cases

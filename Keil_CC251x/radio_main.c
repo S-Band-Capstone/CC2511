@@ -61,7 +61,7 @@ the main function for things to run correctly.
 		
 		// initialize system and modules 
 		init(); 
-		//uartInit(); 
+		uartInit(); 
 		rfInit();
 		uart_rx_index = 0;
 
@@ -76,18 +76,18 @@ the main function for things to run correctly.
 		
 		while(1){
 			
-			rfSend(rf_tx_buffer.rawPayload, 64);
-			delayMs(10);
+			//rfSend(rf_tx_buffer.rawPayload, 64);
+			//delayMs(10);
 //			RFST = STX; 
 //			mode = STX;
 //			delayMs(1);
 			
 			// For Demo of UART
-//			if(uart_rx_packet_complete){
-//				uartPacketHandler(&uart_rx_buffer);
-//				//uart0Send(uart_rx_buffer.rawPayload, 64);
-//				uart_rx_packet_complete = 0;
-//			}
+			if(uart_rx_packet_complete){
+				uartPacketHandler(&uart_rx_buffer);
+				//uart0Send(uart_rx_buffer.rawPayload, 64);
+				uart_rx_packet_complete = 0;
+			}
 
 		}
 		

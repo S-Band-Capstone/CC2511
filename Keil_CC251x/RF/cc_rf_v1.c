@@ -61,14 +61,15 @@ void rfInit(void){
 	
 	// Setup Registers
 	/*  Values taken straight from Smart RF Studio (Data Rate = 9600)*/
+	
 	IOCFG2 = 0x2E; 
 	IOCFG1 = 0x00;
 	IOCFG0 = 0x00;  // 0x06; for debugging when low byte set.
  	SYNC1 = 0xD3;
 	SYNC0 = 0x91;
 	PKTLEN = 0xFF; // 0xFF
-	PKTCTRL1 = 0x04; //0x04;
-	PKTCTRL0 = 0x05;
+	PKTCTRL1 = 0x04; //0xE5;
+	PKTCTRL0 = 0x05; //0x04;
 	ADDR = 0x00;
 	CHANNR = 0x00;
 	FSCTRL1 = 0x0A;
@@ -78,12 +79,12 @@ void rfInit(void){
 	FREQ0 = 0x00;	
 	MDMCFG4 =	0x76;
 	MDMCFG3 =	0xA3;	
-	MDMCFG2 =	0x03;	
+	MDMCFG2 =	0x03;	//0x00; 00 = no preabmle and sync 0x03 = 30/32 CRC
 	MDMCFG1 =	0x23;	
 	MDMCFG0 =	0x11;
 	DEVIATN =	0x45;	
 	MCSM2 = 0x07;
- 	MCSM1 = 0x32; // 0x30
+ 	MCSM1 = 0x32; // 0x30;
 	MCSM0 =	 0x14;
 	FOCCFG = 0x16;
 	BSCFG = 0x6c;
