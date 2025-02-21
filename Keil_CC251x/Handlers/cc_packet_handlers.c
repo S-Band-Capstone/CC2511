@@ -54,6 +54,7 @@ void uartPacketHandler(uart_packet *payload){
 	uint16_t crc;
 	uint8_t sof;
 	uint8_t eof; 
+	uint8_t i;
 	//uint8_t recData[58];
 	//blink();
 	
@@ -84,9 +85,6 @@ void uartPacketHandler(uart_packet *payload){
 		
 		return; 
 	}
-//	if(sof != SOF || eof != EOF){
-//		return;
-//	}
 	
 	switch(uart_cmd){ 	// switch to process payload based on command
 		
@@ -96,7 +94,11 @@ void uartPacketHandler(uart_packet *payload){
 				//uint8_t msg[] = "Acknowledge\n"; // Returned words could just be from ENUM (Smaller)
 				//uart0Send(msg, sizeof(msg)-1); // for sending string
 				uart0Send(&msg,1);
-				blink();
+				for(i = 0; i < 2; i++){
+					
+					blink();
+				}
+
 			}break;
 		case DATA_STORE: {
 			// Store data to be received into memory via DMA and SPI 
@@ -104,8 +106,10 @@ void uartPacketHandler(uart_packet *payload){
 				//uint8_t msg[] = "Data Stored\n";
 				//uart0Send(msg, sizeof(msg)-1); // for sending string
 				uart0Send(&msg,1);	
-				blink();
-				blink(); 
+				for( i = 0; i < 4; i++){
+					
+					blink();
+				}
 			}break;
 		case DATA_SEND: {
 			// Send data through uart (OBC communications) 
@@ -113,9 +117,10 @@ void uartPacketHandler(uart_packet *payload){
 				//uint8_t msg[] = "Data Sent\n";
 				//uart0Send(msg, sizeof(msg)-1); // for sending string
 				uart0Send(&msg,1);
-				blink();
-				blink();
-				blink();
+				for(i = 0; i < 6; i++){
+					
+					blink();
+				}
 
 			}break;
 		

@@ -52,11 +52,11 @@ void uart0RxIsr(void) interrupt URX0_VECTOR {
 		// need to double check number to make sure that condition is correct. 
 		 if(uart_rx_buffer.fields.eof == EOF){
 			uart_rx_packet_complete = 1; 
-			blink();
+			//blink();
 		}
 		uart_rx_index = 0;  // reset index 
 		//uart_rx_packet_complete = 1; // for testing
-		blink();
+		//blink();
   } 
 } 
 
@@ -129,7 +129,7 @@ void uart0Receive(uint8_t* uartRxBuf, uint16_t uartRxBufLen) {
 		uartRxBuf[uart_rx_index] = U0DBUF; 
 		URX0IF = 0; 
 	} 
-	blink(); blink();
+	//blink(); blink();
 	U0CSR &= ~0x40; 
 }
 

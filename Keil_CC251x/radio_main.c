@@ -34,10 +34,10 @@ to make sure that it is in the right mode initially.
 	SLEEP |= 0x04; 
 	
 	// Blink
-	while(i < 10){
-		blink(); 
-		i++; 
-	}
+//	while(i < 11){
+//		blink(); 
+//		i++; 
+//	}
 	
 	
 }
@@ -57,25 +57,32 @@ the main function for things to run correctly.
 	int main(void){
 		
 		// temp variable
-
+		uint8_t i; 
 		
 		// initialize system and modules 
 		init(); 
-		uartInit(); 
+		//uartInit(); 
 		rfInit();
 		uart_rx_index = 0;
 
 		rf_tx_buffer.rawPayload[0] = 0x3F;
 		rf_tx_buffer.rawPayload[1] = SOF;
 		rf_tx_buffer.rawPayload[2] = 0x01;
+		for(i = 3; i < 63; i++){
+			
+			rf_tx_buffer.rawPayload[i] = 0xD3;
+		}
 		rf_tx_buffer.rawPayload[63] = EOF;
 		
 		while(1){
 			
 			rfSend(rf_tx_buffer.rawPayload, 64);
-			RFST = STX; 
-			mode = STX;
-			delayMs(1);
+			delayMs(10);
+//			RFST = STX; 
+//			mode = STX;
+//			delayMs(1);
+			
+			// For Demo of UART
 //			if(uart_rx_packet_complete){
 //				uartPacketHandler(&uart_rx_buffer);
 //				//uart0Send(uart_rx_buffer.rawPayload, 64);

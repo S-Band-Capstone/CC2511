@@ -22,7 +22,7 @@ void blink(void){
 		wait();                         // call wait function 
 		wait();
 	}
-		
+
 }
 
 void delayMs(uint8_t ms){
