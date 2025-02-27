@@ -47,7 +47,6 @@ void rfPacketHandler(rf_packet *payload){
 }
 
 void uartPacketHandler(uart_packet *payload){
-//void uartPacketHandler(void *payload, bit type){	
 	
 	// Variables 
 	Commands uart_cmd;
@@ -56,25 +55,9 @@ void uartPacketHandler(uart_packet *payload){
 	uint8_t sof;
 	uint8_t eof; 
 	uint8_t i;
-	//uint8_t recData[58];
+
 	//blink();
-	
-//	if(type){
-//		
-//		uart_cmd = ((uart_packet *)payload)->fields.command;
-//		length = ((uart_packet *)payload)->fields.length;
-//		sof = ((uart_packet *)payload)->fields.sof;
-//		eof = ((uart_packet *)payload)->fields.eof;
-//		//recData = ((uart_packet *)payload)->fields.payload;
-//		
-//	}else{
-//		
-//		uart_cmd = ((uart_dma_packet *)payload)->fields.command;
-//		length = ((uart_dma_packet *)payload)->fields.length;
-//		sof = ((uart_dma_packet *)payload)->fields.sof;
-//		eof = ((uart_dma_packet *)payload)->fields.eof;
-//		//recData = (union uart_dma_packet *)payload->fields.payload;
-//	}
+	uart0Send(payload, 64);
 	
 	uart_cmd = payload->fields.command; // get command from 
 	length = payload->fields.length;

@@ -15,7 +15,6 @@
 // Variables
 xdata volatile uart_packet uart_rx_buffer;		// Buffer for receive data 
 xdata volatile uart_packet uart_tx_uffer;		// Buffer for transmit data 
-xdata volatile uart_dma_packet uart_dma_rx_buffer; // Buffer for receive data with DMA (TESTING)
 uint8_t xdata uart_rx_index = 0;							// Indexer for receive 
 uint8_t xdata uart_tx_index = 0;							// Indexer for transmit
 uint8_t xdata uart_rx_length = 0; 						// Length of incoming packet
@@ -24,41 +23,41 @@ bit uart_rx_packet_complete = 0;										// Flag for full packet received
 
 
 // Interrupt service routines
-void uart0RxIsr(void) interrupt URX0_VECTOR { 
-  /* Interrupt handler for UART RX. Primary RX source. */
-	
-	// Temp byte transfer variable
-	uint8_t temp_byte;
-	
-	// read byte
-	URX0IF = 0; // Hardware will clear... just in case
-	temp_byte = U0DBUF; 
-	
-	if(uart_rx_index == 0 && temp_byte != SOF){ // for type  uart_packet
-		// Ignore if not valid start byte
-		return; 
-	}
-	
-	// Store byte into to packet
-	uart_rx_buffer.rawPayload[uart_rx_index++] = temp_byte; 
-	
-	// Store length byte which equals 2nd byte (3 because of previous increment)
-	if(uart_rx_index == 3){
-		
-		uart_rx_length = temp_byte;
-	}
-	
-	if (uart_rx_index >= (uart_rx_length + 6)){ // check packet length bytes (SOF(1) + CMD(1) + LEN(1) + DATA(LEN) + CRC(2) + EOF(1))
-		// need to double check number to make sure that condition is correct. 
-		 if(uart_rx_buffer.fields.eof == EOF){
-			uart_rx_packet_complete = 1; 
-			//blink();
-		}
-		uart_rx_index = 0;  // reset index 
-		//uart_rx_packet_complete = 1; // for testing
-		//blink();
-  } 
-} 
+//void uart0RxIsr(void) interrupt URX0_VECTOR { 
+//  /* Interrupt handler for UART RX. Primary RX source. */
+//	
+//	// Temp byte transfer variable
+//	uint8_t temp_byte;
+//	
+//	// read byte
+//	URX0IF = 0; // Hardware will clear... just in case
+//	temp_byte = U0DBUF; 
+//	
+//	if(uart_rx_index == 0 && temp_byte != SOF){ // for type  uart_packet
+//		// Ignore if not valid start byte
+//		return; 
+//	}
+//	
+//	// Store byte into to packet
+//	uart_rx_buffer.rawPayload[uart_rx_index++] = temp_byte; 
+//	
+//	// Store length byte which equals 2nd byte (3 because of previous increment)
+//	if(uart_rx_index == 3){
+//		
+//		uart_rx_length = temp_byte;
+//	}
+//	
+//	if (uart_rx_index >= (uart_rx_length + 6)){ // check packet length bytes (SOF(1) + CMD(1) + LEN(1) + DATA(LEN) + CRC(2) + EOF(1))
+//		// need to double check number to make sure that condition is correct. 
+//		 if(uart_rx_buffer.fields.eof == EOF){
+//			uart_rx_packet_complete = 1; 
+//			//blink();
+//		}
+//		uart_rx_index = 0;  // reset index 
+//		//uart_rx_packet_complete = 1; // for testing
+//		//blink();
+//  } 
+//} 
 
 // UART Initializatin function
 void uartInit(void){

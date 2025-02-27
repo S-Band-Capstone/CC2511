@@ -22,19 +22,26 @@ typedef struct{
 		uint8_t byte4;       	// VLen [7:5] (3 bits) +  Len upper5 [4:0] (5 bits)
 		uint8_t byte5;       	// Len low8 [7:0] (8bits)
 		uint8_t byte6;  		 	// Word [7] (1 bit) + TMODE [6:5] (2 bits) + Trig [4:0] (5 bits)
-	uint8_t byte7;       		// SrcInc [7:6] (2 bits) + DstInc [5:4] (2 bits) + IRQMask [3] (1 bit) + M8 [2] (1 bit) + Prio [1:0] (2 bits)
+		uint8_t byte7;       		// SrcInc [7:6] (2 bits) + DstInc [5:4] (2 bits) + IRQMask [3] (1 bit) + M8 [2] (1 bit) + Prio [1:0] (2 bits)
 } dma_cfg; 
 
 // DMA channel configurations  
 extern xdata dma_cfg dma_channels[5];  
 extern const dma_cfg dma_init_val;
 
+// Interrupts 
+//void dmaIsr(void);
+
 // Initializer
 void dmaInit(void); 
 
+// Functions
+void dmaAbort(void); 
+	
 // Getters 
 
 // Setters 
 void setDmaChannel(void);
+
 
 #endif

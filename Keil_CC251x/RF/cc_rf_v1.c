@@ -54,7 +54,7 @@ uint8_t max_len = 64; // Can change. To change, make sure to update inside packe
 //}
 
 void rfIsr(void) interrupt RFTXRX_VECTOR { 
-		
+	/* Disable when testing RF */
 	// Variables
 	uint8_t i;
 	RFTXRXIF = 0;
@@ -138,7 +138,7 @@ void rfInit(void){
 	
 	// Interrupt enables 
 	RFTXRXIE = 1;		// RFD TX and RX
-	IEN02 |= 0x01; // General RF interrupts 
+	IEN2 |= 0x01; // General RF interrupts 
 	
 	/* States (Assuming intially startup at IDLE*/ 
 	// Set initial state... Probably RX unless interrupt can change state out of IDLE 

@@ -20,11 +20,13 @@ void blink(void){
 	P1 ^= ( 1 << 1 ) ;                //Toggle LED Pin 
 	for (i = 0; i < 25000; i++)  {    // Delay for 25000 Counts 
 		wait();                         // call wait function 
+		wait();
+		wait();
 	}
 
 }
 
-void delayMs(uint8_t ms) {
+void delayMs(uint16_t ms) {
 	
 	/*
 		Delay function in ms

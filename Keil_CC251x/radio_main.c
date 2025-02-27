@@ -65,26 +65,42 @@ the main function for things to run correctly.
 		
 		// initialize system and modules 
 		init(); 
-		//uartInit(); 
+		uartInit(); 
 		rfInit();
+		dmaInit();
 		uart_rx_index = 0;
-
-		rf_tx_buffer.rawPayload[0] = 0x3F;
-		rf_tx_buffer.rawPayload[1] = SOF;
-		rf_tx_buffer.rawPayload[2] = 0x01;
-		for(i = 3; i < 63; i++){
-			
-			rf_tx_buffer.rawPayload[i] = 0xD3;
-		}
-		rf_tx_buffer.rawPayload[63] = EOF;
-		RFST = SRX;
-		mode = SRX;
-		delayMs(1);
-		while(1){
 		
+//		rf_tx_buffer.rawPayload[0] = 0x3F;
+//		rf_tx_buffer.rawPayload[1] = SOF;
+//		rf_tx_buffer.rawPayload[2] = 0x01;
+//		for(i = 3; i < 63; i++){
+//			
+//			rf_tx_buffer.rawPayload[i] = 0xD3;
+//		}
+//		rf_tx_buffer.rawPayload[63] = EOF;
+//		RFST = SRX;
+//		mode = SRX;
+//		delayMs(1);]
+		
+		blink();
+		blink();
+		blink();
+		
+		
+		
+		delayMs(1); 
+		RFST = SRX;
+
+		
+		//uart_rx_packet_complete = 0;
+		while(1){
+			
+			delayMs(10);
 			RFST = SRX;
+		
+			
 			//delayMs(1);
-			mode = SRX;
+			//mode = SRX;
 			//mode = STX;
 			//rfSend(rf_tx_buffer.rawPayload, 4);
 			//delayMs(10);
@@ -97,10 +113,14 @@ the main function for things to run correctly.
 //			delayMs(1);
 			
 			// For Demo of UART
-//			if(uart_rx_packet_complete){
+//			if((DMAIRQ & 0x01)){
+//				DMAIRQ &= ~0x01;
+//				uart_rx_packet_complete=0;
 //				uartPacketHandler(&uart_rx_buffer);
-//				//uart0Send(uart_rx_buffer.rawPayload, 64);
-//				uart_rx_packet_complete = 0;
+				//bufferClear(uart_rx_buffer.rawPayload, 64);
+				//blink();
+				//uart0Send(uart_rx_buffer.rawPayload, 64);
+				//uart_rx_packet_complete = 0;
 //			}
 
 		}
