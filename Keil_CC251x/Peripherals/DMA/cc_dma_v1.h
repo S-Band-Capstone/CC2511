@@ -12,6 +12,10 @@
 // Headers 
 #include <Common_Shared/blink.h>
 
+// Defines 
+#define DMAIF0		0x01
+#define DMAIF1 		0x02 
+
 // DMA channel configuration structure
 typedef struct{
 	  

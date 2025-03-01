@@ -53,16 +53,15 @@ uint8_t max_len = 64; // Can change. To change, make sure to update inside packe
 //	
 //}
 
-void rfIsr(void) interrupt RFTXRX_VECTOR { 
-	/* Disable when testing RF */
-	// Variables
-	uint8_t i;
-	RFTXRXIF = 0;
-	rf_rx_buffer.rawPayload[0] = RFD; 
-	blink();
-		
+//void rfIsr(void) interrupt RFTXRX_VECTOR { 
+//	/* Disable when testing RF */
+//	// Variables
+//	RFTXRXIF = 0;
+//	rf_rx_buffer.rawPayload[0] = RFD; 
+//	blink();
+//		
 
-}
+//}
 
 void rfOverflow(void) interrupt RF_VECTOR {
 		
@@ -70,8 +69,6 @@ void rfOverflow(void) interrupt RF_VECTOR {
 	mode = SIDLE;
 
 }
-
-
 
 
 // Initialization 

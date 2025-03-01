@@ -85,7 +85,6 @@ void uartInit(void){
   P0DIR &= ~0x04; // Set P0.2 (RX) as input
 	
 	// Setup Interrupts
-	EA = 1; 
 	URX0IE = 1;
 	UTX0IF = 0;
 	
@@ -121,8 +120,7 @@ void uart0Receive(uint8_t* uartRxBuf, uint16_t uartRxBufLen) {
 	*		rtype: void
 	*/ 
 	
-	unsigned short uart_rx_index; 
-  	U0CSR |= 0x40; URX0IF = 0; 
+  U0CSR |= 0x40; URX0IF = 0; 
 	for(uart_rx_index = 0; uart_rx_index < uartRxBufLen; uart_rx_index++) {
 		while( !URX0IF ); 
 		uartRxBuf[uart_rx_index] = U0DBUF; 
@@ -141,7 +139,7 @@ uart_packet *getUartPacket(void){
 
 void resetRxIndex(void){
 
-	uart_rx_index =0; 
+	uart_rx_index = 0; 
 }
 
 /***************************************** EXAMPLE USES **************************************/

@@ -10,13 +10,27 @@ xdata dma_cfg dma_channels[5];
 const dma_cfg dma_init_val = {0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00};
 
 // Interrupts 
-//void dmaIsr(void) interrupt DMA_VECTOR{
-//	
-
-//	//DMAIRQ &= ~0x01;
-//	uart_rx_packet_complete = 0;
-
-//}
+void dmaIsr(void) interrupt DMA_VECTOR{
+	
+	
+	// Handle for either RF (DMAIF1 = 0x02) or UART (DMAIF0 = 0x01)
+	if((DMAIRQ & DMAIF0)){
+		
+		// UART Packet Complete 
+		//uartPacketHandler(&uart_rx_buffer); 
+		DMAIRQ &= ~(0x01);
+		uart_rx_packet_complete = 1; 
+	}else if((DMAIRQ & DMAIF1)){
+		
+		// RF Packet Complete
+		//rfPacketHandler(&rf_rx_buffer);
+		DMAIRQ &= ~(0x02);
+		RFTXRXIF = 0;
+		rf_rx_packet_complete = 1;
+	}
+	
+	DMAIF = 0;
+}
 
 // Initializer 
 void dmaInit(void){
@@ -47,7 +61,7 @@ void dmaInit(void){
 	dma_channels[0].byte6 = 0x4E; // Word = 0 (8-bits), tmod = 10 (repeated single), trig = 01110 (RX complete trigger) (Byte 6)
 	dma_channels[0].byte7 = 0x1A; //SrcInc = 00 (no increment), DstInc = 01 (increment by 1 byte), IRQMASK = 1 (doesnt generate interrupt), M8 = 0 (8bits), prioirty = 10 (Priority access)
 	
-	//Setup DMA for RF receive Channel 1
+	// Setup DMA for RF receive Channel 1
 	dma_channels[1].srcAddrHi = (uint8_t)((uint16_t)&X_RFD >> 8); // High byte of source address, XDATA U0DBUF (Byte 0)
 	dma_channels[1].srcAddrLo = (uint8_t)((uint16_t)&X_RFD & 0x00FF); // Low byte of source address XDATA U0DBUF (Byte 1) 
 	dma_channels[1].dstAddrHi = (uint8_t)((uint16_t)&rf_rx_buffer.rawPayload[0] >> 8); // High byte of destination address, XDATA U0DBUF (Byte 2) 
@@ -76,8 +90,10 @@ void dmaInit(void){
 	DMAARM |= 0x03; // 0x03: ARM DMA channel 0 (UART), DMA channel 1 (RF) 
 	
 	// Enable interrupts 
-	//IEN1 |= 0x01; 
-	
-	
-	
+	IEN1 |= 0x01; 
+
 }
+
+
+// Functions
+void dmaAbort(void);

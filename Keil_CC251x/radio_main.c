@@ -84,9 +84,6 @@ the main function for things to run correctly.
 		
 		blink();
 		blink();
-		blink();
-		
-		
 		
 		delayMs(1); 
 		RFST = SRX;
@@ -94,10 +91,6 @@ the main function for things to run correctly.
 		
 		//uart_rx_packet_complete = 0;
 		while(1){
-			
-			delayMs(10);
-			RFST = SRX;
-		
 			
 			//delayMs(1);
 			//mode = SRX;
@@ -113,15 +106,19 @@ the main function for things to run correctly.
 //			delayMs(1);
 			
 			// For Demo of UART
-//			if((DMAIRQ & 0x01)){
-//				DMAIRQ &= ~0x01;
-//				uart_rx_packet_complete=0;
-//				uartPacketHandler(&uart_rx_buffer);
-				//bufferClear(uart_rx_buffer.rawPayload, 64);
-				//blink();
-				//uart0Send(uart_rx_buffer.rawPayload, 64);
-				//uart_rx_packet_complete = 0;
-//			}
+			
+			if(uart_rx_packet_complete){
+				
+				DMAIRQ &= ~DMAIF0;
+				uart_rx_packet_complete=0;
+				uartPacketHandler(&uart_rx_buffer);
+			}
+			if(rf_rx_packet_complete){
+				blink();
+				DMAIRQ &= ~DMAIF1;
+				rf_rx_packet_complete = 0;
+				rfPacketHandler(&rf_rx_buffer);
+			}
 
 		}
 		

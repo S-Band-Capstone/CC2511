@@ -34,7 +34,7 @@ typedef enum{
 }Commands;
 
 /* Packet structures uart and RF */
-
+// NOTE: Probably can just merge them all as one packet for typedef.
 typedef union{
 	/* Packet strucutre for uart_packet */
 	
@@ -43,8 +43,7 @@ typedef union{
 		uint8_t length; 
 		uint8_t sof;
 		uint8_t command;
-		uint8_t payload[58];
-		uint16_t crc;
+		uint8_t payload[60];
 		uint8_t eof; 
 	}fields;
 	
