@@ -57,3 +57,10 @@ dkms.conf
 *.uvgui.*
 Objects/
 Listings/
+STARTUP.A51
+
+# VS Code 
+Keil_CC251x/.vscode
+
+# desktop specific OneDrive saves
+*.lawre

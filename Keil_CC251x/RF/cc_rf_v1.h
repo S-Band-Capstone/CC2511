@@ -1,5 +1,5 @@
 
-
+// pages 183-225
 // refer to page 47 of the datasheet for RF
 // radio register descriptions.
 
@@ -9,6 +9,50 @@
 // Headers
 #include <Common_Shared/blink.h>
 #include <Handlers/cc_packet_handlers.h>
+
+
+// Defined variables 
+
+/* Stobe Commands (REFER TO DATASHEET PAGE: 185) */
+#define SFSTXON			0x00 // Turn frequency synthesizer on
+#define SCAL				0x01 // Manual calibration ON if FS_AUTOSCAL is set to `00`
+#define SRX 				0x02 // Enable RX and go into receive mode. Calibrate if coming from IDEL
+#define STX					0x03 // Enable TX and go into transmit mode. Calibrate if coming from IDLE
+#define SIDLE 			0x04 // Enter IDEL state. Frequency Synthesizer turned off. 
+#define SNOP 				0x55 // Can be anything other than previous defined strobe cmds 
+#define MAX_LEN			0x40 // Can be changed for some thing greater. MAX_LEN = 64
+
+// Variables
+extern xdata volatile rf_packet rf_rx_buffer;			// Buffer for receive data 
+extern xdata volatile rf_packet rf_tx_buffer; 		// Buffer for transmit data
+extern uint8_t xdata rf_rx_index;									// Indexer for receive
+extern uint8_t xdata rf_tx_index;									// Indexer for transmit
+extern uint8_t xdata rf_rx_length; 								// Length of incoming packet
+extern bit rf_rx_packet_complete;									// Flag for full packet received
+extern uint8_t mode; 															// Current state of the system
+extern uint8_t max_len; 													// Max length of buffers (best for interrupts)
+
+// Interrupts 
+//void rfRxIsr(void);
+void rfIsr(void);
+void rfRxOverflow(void);
+
+// Initalizer
+void rfInit(void); 
+
+// Functions for RF controls
+void rfSend(uint8_t* rfTxBuffer, uint16_t rfTxBufLen);
+void rfReceive(uint8_t* rfRxBuffer, uint16_t rfRxBufLen); 
+static void waitRfTxRxFlag(void); 
+
+
+
+// Functions for state control 
+
+// Function Getters
+
+// Function Setters 
+
 
 /*	rf interrupts: (page 185-187)
 		1) RFTXRX: RX data ready or TX complete
@@ -59,24 +103,6 @@
 		
 		REFER TO PAGE 201 FOR STATE TRANSMISSION AND TRANSITION TIMES 
 */
-
-// Interrupts 
-
-// Initalizer
-void rfInit(void); 
-
-// Functions for RF controls
-void rfSend(uint16_t* rfTxBuffer, uint16_t rfTxBufLen);
-void rfReceive(uint16_t* rfRxBuffer, uint16_t rfRxBufLen); 
-
-// Functions for state control 
-
-// Function Getters
-
-// Function Setters 
-
-
-
 
 
 

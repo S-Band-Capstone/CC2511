@@ -1,9 +1,9 @@
 
-
+##### UART PACKET #####
 ** Command: Acknowledge **
 
 - Hex command code: 0x01
--   Packet: 
+- Packet: 
 7E 01 3A 
 00 00 00 00 00 00 00 00 00 00 
 00 00 00 00 00 00 00 00 00 00 
@@ -15,8 +15,7 @@ C1 F0
 7F
 
 
-
-** Command: Data Stored ** 
+** Command: Data Store ** 
 
 - Hex command code: 0x10
 - Packet: 
@@ -31,11 +30,112 @@ A2 B3
 7F
 
 
-** Command: Data Sent ** 
+** Command: Data Send ** 
 
 - Hex command code: 0x11
 - Packet: 
 7E 11 3A
+01 02 03 04 05 06 07 08 09 0A
+0B 0C 0D 0E 0F 10 11 12 13 14
+15 16 17 18 19 1A 1B 1C 1D 1E
+1F 20 21 22 23 24 25 26 27 28
+29 2A 2B 2C 2D 2E 2F 30 31 32
+33 34 35 36 37 38 39 3A
+A2 B3
+7F
+
+- Need to get packet payload of 0 to work at startup.
+7E 11 00 A2 B3 7F
+
+
+
+##### UART DMA PACKET #####
+NOTE: When sending command with wrong packet len, DMA tends to crash. 
+    --> Will need to add abort command to override being stuck in DMA. 
+    --> Probably can use interrupt for DMA to handle the uartHandler/rfHandler
+    
+** Command: Acknowledge **
+
+- Hex command code: 0x01
+- Packet: 
+3F 7E 01 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 
+C1 F0 
+7F
+
+
+** Command: Data Store **
+
+- Hex command code: 0x10
+- Packet: 
+3F 7E 10 
+01 02 03 04 05 06 07 08 09 0A
+0B 0C 0D 0E 0F 10 11 12 13 14
+15 16 17 18 19 1A 1B 1C 1D 1E
+1F 20 21 22 23 24 25 26 27 28
+29 2A 2B 2C 2D 2E 2F 30 31 32
+33 34 35 36 37 38 39 3A
+A2 B3
+7F
+
+
+** Command: Data Send ** 
+
+- Hex command code: 0x11
+- Packet: 
+3F 7E 11 
+01 02 03 04 05 06 07 08 09 0A
+0B 0C 0D 0E 0F 10 11 12 13 14
+15 16 17 18 19 1A 1B 1C 1D 1E
+1F 20 21 22 23 24 25 26 27 28
+29 2A 2B 2C 2D 2E 2F 30 31 32
+33 34 35 36 37 38 39 3A
+A2 B3
+7F
+
+
+#### RF DMA PACKET ####
+
+** Command: Acknowledge **
+
+- Hex command code: 0x01
+- Packet: 
+3F 7E 01 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 
+C1 F0 
+7F
+
+
+** Command: Data Store **
+
+- Hex command code: 0x10
+- Packet: 
+3F 7E 10 
+01 02 03 04 05 06 07 08 09 0A
+0B 0C 0D 0E 0F 10 11 12 13 14
+15 16 17 18 19 1A 1B 1C 1D 1E
+1F 20 21 22 23 24 25 26 27 28
+29 2A 2B 2C 2D 2E 2F 30 31 32
+33 34 35 36 37 38 39 3A
+A2 B3
+7F
+
+
+** Command: Data Send ** 
+
+- Hex command code: 0x11
+- Packet: 
+3F 7E 11 
 01 02 03 04 05 06 07 08 09 0A
 0B 0C 0D 0E 0F 10 11 12 13 14
 15 16 17 18 19 1A 1B 1C 1D 1E

@@ -5,7 +5,7 @@
 *	NOTE: Must have variables defined in .c and externed in .h. Else, compiler no likie.
 *				- Thanks Alex 
 *	
-*	NOTE: Buffer sizes must be 16 bits, as memory addresses are 16 bits. Actually not true.
+*
 *
 */
 // Headers 
@@ -13,57 +13,58 @@
 #include <Handlers/cc_packet_handlers.h>
 
 // Variables
-volatile uart_packet xdata uartRxBuffer;		// Buffer for receive data 
-volatile uart_packet xdata uartTxBuffer;		// Buffer for transmit data 
-uint8_t xdata uartRxIndex = 0;							// Indexer for receive 
-uint8_t xdata uartRxLength = 0; 						// Length of incoming packet
-bit rxPacketComplete = 0;										// Flag for full packet received 
-uint8_t xdata uartTxIndex = 0;							// Indexer for transmit
+xdata volatile uart_packet uart_rx_buffer;		// Buffer for receive data 
+xdata volatile uart_packet uart_tx_uffer;		// Buffer for transmit data 
+uint8_t xdata uart_rx_index = 0;							// Indexer for receive 
+uint8_t xdata uart_tx_index = 0;							// Indexer for transmit
+uint8_t xdata uart_rx_length = 0; 						// Length of incoming packet
+bit uart_rx_packet_complete = 0;										// Flag for full packet received 
+
 
 
 // Interrupt service routines
-void uart0_rx_isr(void) interrupt URX0_VECTOR { 
-  /* Interrupt handler for UART RX. Primary RX source. */
-	
-	// Temp byte transfer variable
-	uint8_t temp_byte;
-	
-	// read byte
-	URX0IF = 0; // Hardware will clear... just in case
-	temp_byte = U0DBUF; 
-	
-	if(uartRxIndex == 0 && temp_byte != SOF){
-		// Ignore if not valid start byte
-		return; 
-	}
-  
-	// Store byte into to packet
-	uartRxBuffer.rawPayload[uartRxIndex++] = temp_byte; 
-	
-	if(uartRxIndex == 3){
-		// Store length byte which equals 3 byte
-		uartRxLength = temp_byte;
-	}
-	if (uartRxIndex >= (uartRxLength + 6)){ // check packet length bytes (SOF(1) + CMD(1) + LEN(1) + DATA(LEN) + CRC(2) + EOF(1))
-		// need to double check number to make sure that condition is correct. 
-		 if(uartRxBuffer.rawPayload[uartRxIndex] == EOF){
-			rxPacketComplete = 1; 
-			//blink();
-		}
-		uartRxIndex = 0;  // reset index 
-		rxPacketComplete = 1; // for testing
-		//blink();
-  } 
-	//blink();
-	//blink();
-} 
+//void uart0RxIsr(void) interrupt URX0_VECTOR { 
+//  /* Interrupt handler for UART RX. Primary RX source. */
+//	
+//	// Temp byte transfer variable
+//	uint8_t temp_byte;
+//	
+//	// read byte
+//	URX0IF = 0; // Hardware will clear... just in case
+//	temp_byte = U0DBUF; 
+//	
+//	if(uart_rx_index == 0 && temp_byte != SOF){ // for type  uart_packet
+//		// Ignore if not valid start byte
+//		return; 
+//	}
+//	
+//	// Store byte into to packet
+//	uart_rx_buffer.rawPayload[uart_rx_index++] = temp_byte; 
+//	
+//	// Store length byte which equals 2nd byte (3 because of previous increment)
+//	if(uart_rx_index == 3){
+//		
+//		uart_rx_length = temp_byte;
+//	}
+//	
+//	if (uart_rx_index >= (uart_rx_length + 6)){ // check packet length bytes (SOF(1) + CMD(1) + LEN(1) + DATA(LEN) + CRC(2) + EOF(1))
+//		// need to double check number to make sure that condition is correct. 
+//		 if(uart_rx_buffer.fields.eof == EOF){
+//			uart_rx_packet_complete = 1; 
+//			//blink();
+//		}
+//		uart_rx_index = 0;  // reset index 
+//		//uart_rx_packet_complete = 1; // for testing
+//		//blink();
+//  } 
+//} 
 
 // UART Initializatin function
 void uartInit(void){
 	/* Initialization function for UART0 */
 	
 	// variables 
-	uartRxIndex = 0;
+	uart_rx_index = 0;
 	
 	// Enable UART
 	U0CSR |= 0x80; 
@@ -79,14 +80,12 @@ void uartInit(void){
 	
 	// Select pins and pin directions 
 	// Configure TX (P0.3) and RX (P0.2) pins
-  P0SEL |= 0x0C;  // Set P0.2 and P0.3 as peripheral I/O for USART0
-  P0DIR |= 0x08;  // Set P0.3 (TX) as output
-  P0DIR &= ~0x04; // Set P0.2 (RX) as input
+	P0SEL |= 0x0C;  // Set P0.2 and P0.3 as peripheral I/O for USART0
+	P0DIR |= 0x08;  // Set P0.3 (TX) as output
+	P0DIR &= ~0x04; // Set P0.2 (RX) as input
 	
 	// Setup Interrupts
-	EA = 1; 
 	URX0IE = 1;
-	//IEN2 |= 0x04;
 	UTX0IF = 0;
 	
 	// Enable receiver to listen for Message
@@ -104,31 +103,30 @@ void uart0Send(uint8_t *uartTxBuf, uint16_t uartTxBufLen) {
 	*					When sending standalone char, BufLen = length. Singular value. 
 	*/
 	
-  U0CSR &= ~0x40; //turn off receiver for RX
+  	U0CSR &= ~0x40; //turn off receiver for RX
 	UTX0IF = 0; 
 	
-	for (uartTxIndex = 0; uartTxIndex < uartTxBufLen; uartTxIndex++) { 
-		U0DBUF = uartTxBuf[uartTxIndex]; 
+	for (uart_tx_index = 0; uart_tx_index < uartTxBufLen; uart_tx_index++) { 
+		U0DBUF = uartTxBuf[uart_tx_index]; 
 		while( !UTX0IF ); 
-    UTX0IF = 0; 
-  } 
+    	UTX0IF = 0; 
+  	} 
 	U0CSR |= 0x40; // turn on receiver for RX
 } 
 
 // UART RX 
-void uart0Receive(uint16_t* uartRxBuf, uint16_t uartRxBufLen) { 
+void uart0Receive(uint8_t* uartRxBuf, uint16_t uartRxBufLen) { 
 	/* 	Polling function for UART RX 
 	*		rtype: void
 	*/ 
 	
-	unsigned short uartRxIndex; 
   U0CSR |= 0x40; URX0IF = 0; 
-	for(uartRxIndex = 0; uartRxIndex < uartRxBufLen; uartRxIndex++) {
+	for(uart_rx_index = 0; uart_rx_index < uartRxBufLen; uart_rx_index++) {
 		while( !URX0IF ); 
-		uartRxBuf[uartRxIndex] = U0DBUF; 
+		uartRxBuf[uart_rx_index] = U0DBUF; 
 		URX0IF = 0; 
 	} 
-	blink(); blink();
+	//blink(); blink();
 	U0CSR &= ~0x40; 
 }
 
@@ -136,12 +134,12 @@ uart_packet *getUartPacket(void){
 	/* 	Getter to return pointer to the buffer
 	*		rtype: &uart_packet 		
 	*/ 
-	return &uartRxBuffer;
+	return &uart_rx_buffer;
 }
 
-void setRxIndex(void){
+void resetRxIndex(void){
 
-	uartRxIndex =0; 
+	uart_rx_index = 0; 
 }
 
 /***************************************** EXAMPLE USES **************************************/
@@ -161,17 +159,17 @@ void setRxIndex(void){
 //		
 //		while(1){
 //			
-//			bufferClear(uartTxBuffer.rawPayload, UART_TX_BUFFER_SIZE);
-//			uartTxBuffer.rawPayload[0] = message1;
-//			uartTxBuffer.rawPayload[1] = message2;
-//			uart0Send(uartTxBuffer.rawPayload, UART_TX_BUFFER_SIZE);
-//			bufferClear(uartTxBuffer.rawPayload, UART_TX_BUFFER_SIZE);
+//			bufferClear(uart_tx_uffer.rawPayload, UART_TX_BUFFER_SIZE);
+//			uart_tx_uffer.rawPayload[0] = message1;
+//			uart_tx_uffer.rawPayload[1] = message2;
+//			uart0Send(uart_tx_uffer.rawPayload, UART_TX_BUFFER_SIZE);
+//			bufferClear(uart_tx_uffer.rawPayload, UART_TX_BUFFER_SIZE);
 //			
 //			for(i = 0; i < sizeof(message3)-1; i++){
 //				
-//					uartTxBuffer.rawPayload[i] = message3[i];
+//					uart_tx_uffer.rawPayload[i] = message3[i];
 //			}
-//			uart0Send(uartTxBuffer.rawPayload, UART_TX_BUFFER_SIZE);
+//			uart0Send(uart_tx_uffer.rawPayload, UART_TX_BUFFER_SIZE);
 //			
 //		}
 //		
