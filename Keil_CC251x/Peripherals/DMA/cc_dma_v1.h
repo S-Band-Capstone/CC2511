@@ -19,14 +19,14 @@
 // DMA channel configuration structure
 typedef struct{
 	  
-		uint8_t srcAddrHi;   	// Source Address High Byte(XDATA)
-		uint8_t srcAddrLo;   	// Source Address Low Byte(XDATA)
-    uint8_t dstAddrHi;  	// Destination Address High Byte (XDATA)
-	  uint8_t dstAddrLo;  	// Destination Address Low Byte (XDATA)
-		uint8_t byte4;       	// VLen [7:5] (3 bits) +  Len upper5 [4:0] (5 bits)
-		uint8_t byte5;       	// Len low8 [7:0] (8bits)
-		uint8_t byte6;  		 	// Word [7] (1 bit) + TMODE [6:5] (2 bits) + Trig [4:0] (5 bits)
-		uint8_t byte7;       		// SrcInc [7:6] (2 bits) + DstInc [5:4] (2 bits) + IRQMask [3] (1 bit) + M8 [2] (1 bit) + Prio [1:0] (2 bits)
+	uint8_t srcAddrHi;   	// Source Address High Byte(XDATA)
+	uint8_t srcAddrLo;   	// Source Address Low Byte(XDATA)
+	uint8_t dstAddrHi;  	// Destination Address High Byte (XDATA)
+	uint8_t dstAddrLo;  	// Destination Address Low Byte (XDATA)
+	uint8_t byte4;       	// VLen [7:5] (3 bits) +  Len upper5 [4:0] (5 bits)
+	uint8_t byte5;       	// Len low8 [7:0] (8bits)
+	uint8_t byte6;  		 	// Word [7] (1 bit) + TMODE [6:5] (2 bits) + Trig [4:0] (5 bits)
+	uint8_t byte7;       		// SrcInc [7:6] (2 bits) + DstInc [5:4] (2 bits) + IRQMask [3] (1 bit) + M8 [2] (1 bit) + Prio [1:0] (2 bits)
 } dma_cfg; 
 
 // DMA channel configurations  
