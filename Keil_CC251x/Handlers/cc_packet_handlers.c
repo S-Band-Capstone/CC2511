@@ -16,23 +16,35 @@ void rfPacketHandler(rf_packet *payload){
 	Commands rf_cmd;
 	uint8_t length;
 	uint8_t sof;
-	uint8_t eof; 
-
+	uint8_t eof;
+	uint8_t i;	
+	uint8_t msg2[] = "handler\n";
+	
 	rf_cmd = payload->fields.command; // Get command
 	length = payload->fields.length; 	// Get length
 	sof = payload->fields.sof; 				// Get sof
 	eof = payload->fields.eof;				// Get eof
 	
+	
+	//uart0Send(msg2,8);
+	
 	if(sof != SOF || eof != EOF){
 		return; // return error val? 
 	}	
 	
+	//uart0Send(msg2,8);
+	//uart0Send(&rf_cmd, 1);
 	switch (rf_cmd){// switch to process payload based on command
 		
 		case ACK: {
 			// switch state to IDEL - packet received - or continue based on Length
 			uint8_t msg[] = "Packet Received!\n";
-			rfSend(msg, sizeof(msg)-1);
+			//rfSend(msg, sizeof(msg)-1);
+			uart0Send(msg, sizeof(msg));
+			for(i = 0; i < 10; i++){
+				
+				blink();
+			}
 			break;
 		}
 		case DATA_STORE:{

@@ -20,7 +20,7 @@ to make sure that it is in the right mode initially.
 */
 		
 	// Clock set to 24 MHz with HS XOSC
-	int i = 0;
+	uint8_t i = 0;
 	CLKCON &= 0x80;  // The OSC32K should be set to '1' if 
 									 // using HS XOSC (Refer to datasheet) 
 	
@@ -38,17 +38,13 @@ to make sure that it is in the right mode initially.
 	
 	
 	// Blink
-//	while(i < 11){
-//		blink(); 
-//		i++; 
-//	}
+	while(i < 11){
+		blink(); 
+		i++; 
+	}
 	
 	
 }
-
-
-// UART SECTION // 
-
 
 // MAIN SECTION //
 /*
@@ -61,7 +57,8 @@ the main function for things to run correctly.
 	int main(void){
 		
 		// temp variable
-		uint8_t i; 
+		//uint8_t i; 
+		uint8_t msg[] = "Start\n";
 		
 		// initialize system and modules 
 		init(); 
@@ -78,34 +75,25 @@ the main function for things to run correctly.
 //			rf_tx_buffer.rawPayload[i] = 0xD3;
 //		}
 //		rf_tx_buffer.rawPayload[63] = EOF;
-//		RFST = SRX;
-//		mode = SRX;
-//		delayMs(1);]
 		
-		blink();
-		blink();
-		
-		delayMs(1); 
 		RFST = SRX;
-
+		mode = SRX;
+		delayMs(1);
+		uart0Send(msg,6); // for testing
 		
 		//uart_rx_packet_complete = 0;
 		while(1){
 			
 			//delayMs(1);
-			//mode = SRX;
+			//RFST = STX;
 			//mode = STX;
-			//rfSend(rf_tx_buffer.rawPayload, 4);
-			//delayMs(10);
+			//delayMs(1);
+			//rfSend(rf_tx_buffer.rawPayload, 64);
+			//delayMs(1);
 			
 			//mode = SRX;
 			//rfReceive(rf_rx_buffer.rawPayload, 64);
-			
-//			RFST = STX; 
-//			mode = STX;
-//			delayMs(1);
-			
-			// For Demo of UART
+		
 			
 			if(uart_rx_packet_complete){
 				

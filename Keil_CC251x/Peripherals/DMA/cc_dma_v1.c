@@ -11,7 +11,9 @@ const dma_cfg dma_init_val = {0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00};
 
 // Interrupts 
 void dmaIsr(void) interrupt DMA_VECTOR{
-	
+	//uint8_t msg[] = "DMA ISR\n";
+	//uint8_t msg1[] = "DMA IF\n";
+	//uart0Send(msg, 8); // For testing 
 	
 	// Handle for either RF (DMAIF1 = 0x02) or UART (DMAIF0 = 0x01)
 	if((DMAIRQ & DMAIF0)){
@@ -19,6 +21,7 @@ void dmaIsr(void) interrupt DMA_VECTOR{
 		// UART Packet Complete 
 		//uartPacketHandler(&uart_rx_buffer); 
 		DMAIRQ &= ~(0x01);
+		URX0IF = 0;
 		uart_rx_packet_complete = 1; 
 	}else if((DMAIRQ & DMAIF1)){
 		
@@ -27,6 +30,9 @@ void dmaIsr(void) interrupt DMA_VECTOR{
 		DMAIRQ &= ~(0x02);
 		RFTXRXIF = 0;
 		rf_rx_packet_complete = 1;
+		//blink();
+		//blink();
+		//uart0Send(msg1, 7); // For testing
 	}
 	
 	DMAIF = 0;
@@ -59,7 +65,7 @@ void dmaInit(void){
 	dma_channels[0].byte4 = 0x3F; // VLen = 010 (transfer n Bytes), LEN[12:8] = 00000 (Byte 4)
 	dma_channels[0].byte5 = 0x40; // LEN[7:0] = 00111111 => 63 bytes(Byte 5); 
 	dma_channels[0].byte6 = 0x4E; // Word = 0 (8-bits), tmod = 10 (repeated single), trig = 01110 (RX complete trigger) (Byte 6)
-	dma_channels[0].byte7 = 0x1A; //SrcInc = 00 (no increment), DstInc = 01 (increment by 1 byte), IRQMASK = 1 (doesnt generate interrupt), M8 = 0 (8bits), prioirty = 10 (Priority access)
+	dma_channels[0].byte7 = 0x1A; //SrcInc = 00 (no increment), DstInc = 01 (increment by 1 byte), IRQMASK = 1 (generates interrupt), M8 = 0 (8bits), prioirty = 10 (Priority access)
 	
 	// Setup DMA for SPI 
 	/* Passing and storing from SPI over DMA, shouldn't require CPU  to process data */
@@ -78,6 +84,7 @@ void dmaInit(void){
 	// ARM DMA Channel
 	/* Takes 9 system clocks for DMA config to be set */
 	DMAARM |= 0x03; // 0x03: ARM DMA channel 0 (UART), DMA channel 1 (RF) 
+	delayMs(1);// allow channels to ARM.
 	
 	// Enable interrupts 
 	IEN1 |= 0x01; 

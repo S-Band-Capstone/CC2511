@@ -2,6 +2,7 @@
 // Headers
 #include <RF/cc_rf_v1.h>
 #include <Common_Shared/blink.h>
+#include <peripherals/UART/cc_uart_v1.h>
 
 // Variables 
 xdata volatile rf_packet rf_rx_buffer;
@@ -64,10 +65,11 @@ uint8_t max_len = 64; // Can change. To change, make sure to update inside packe
 //}
 
 void rfOverflow(void) interrupt RF_VECTOR {
-		
+	uint8_t msg[] = "Overflow\n";
+
 	RFST = SIDLE;
 	mode = SIDLE;
-
+	uart0Send(msg, 9);
 }
 
 
@@ -87,8 +89,8 @@ void rfInit(void){
  	SYNC1 = 0xD3;
 	SYNC0 = 0x91;
 	PKTLEN = 0xFF; // 0xFF
-	PKTCTRL1 = 0x00; //0xE5; 0x04 = Append_Status
-	PKTCTRL0 = 0x05; //0x04;
+	PKTCTRL1 = 0x00; // 0x04 = Append_Status; if we include, it messes with RX
+	PKTCTRL0 = 0x05; // 0x05 = CRC enabled with variable length , 0x01 = variable length
 	ADDR = 0x00;
 	CHANNR = 0x00;
 	FSCTRL1 = 0x0A;
@@ -98,7 +100,7 @@ void rfInit(void){
 	FREQ0 = 0x00;	
 	MDMCFG4 =	0x76;
 	MDMCFG3 =	0xA3;	
-	MDMCFG2 =	0x03;	//0x00; 00 = no preabmle and sync 0x03 = 30/32 CRC
+	MDMCFG2 =	0x03;	//00 = no preabmle and sync, 0x03 = 30/32 preambe and sync, 0x02 = 16/16 preamble and sync
 	MDMCFG1 =	0x23;	
 	MDMCFG0 =	0x11;
 	DEVIATN =	0x45;	
@@ -152,7 +154,7 @@ void rfInit(void){
 }
 
 // Functions 
-void rfSend(uint8_t* rfTxBuffer, uint16_t rfTxBufLen){
+void rfSend(uint8_t *rfTxBuffer, uint16_t rfTxBufLen){
 	
 	// Variables 
 	uint8_t i = 0;		// loop iterator

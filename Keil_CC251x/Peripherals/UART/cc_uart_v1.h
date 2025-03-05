@@ -22,7 +22,7 @@ extern bit uart_rx_packet_complete;									// Flag for full packet received
 
 
 // Interrupts 
-void uart0RxIsr(void); 
+//void uart0RxIsr(void); 
 
 // Initializer
 void uartInit(void);

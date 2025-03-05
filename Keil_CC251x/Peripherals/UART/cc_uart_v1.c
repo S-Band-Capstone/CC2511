@@ -111,6 +111,7 @@ void uart0Send(uint8_t *uartTxBuf, uint16_t uartTxBufLen) {
 		while( !UTX0IF ); 
     	UTX0IF = 0; 
   	} 
+	uart_tx_index = 0;
 	U0CSR |= 0x40; // turn on receiver for RX
 } 
 

@@ -34,7 +34,7 @@ extern xdata dma_cfg dma_channels[5];
 extern const dma_cfg dma_init_val;
 
 // Interrupts 
-//void dmaIsr(void);
+void dmaIsr(void);
 
 // Initializer
 void dmaInit(void); 
