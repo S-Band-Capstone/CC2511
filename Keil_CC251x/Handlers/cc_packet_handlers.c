@@ -43,7 +43,7 @@ void rfPacketHandler(rf_packet *payload){
 	length = payload->fields.length; 	// Get length
 	sof = payload->fields.sof; 				// Get sof
 	eof = payload->fields.eof;				// Get eof
-	
+	uart0Send(payload, 64);
 	
 	//uart0Send(msg2,8);
 	

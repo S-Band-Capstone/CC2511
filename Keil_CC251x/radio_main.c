@@ -70,28 +70,34 @@ the main function for things to run correctly.
 		
 		delayMs(1);
 		
-		rf_tx_buffer.rawPayload[0] = 0x03; //0x3F;
+		rf_tx_buffer.rawPayload[0] = 0x04; //0x3F;
 		rf_tx_buffer.rawPayload[1] = SOF;
 		rf_tx_buffer.rawPayload[2] = 0x01;
-		for(i = 3; i < 63; i++){
+		rf_tx_buffer.rawPayload[3] = 0x00;
+		//for(i = 3; i < 4; i++){
 			
-			rf_tx_buffer.rawPayload[i] = 0x00;
-		}
-		rf_tx_buffer.rawPayload[63] = EOF;
+			//rf_tx_buffer.rawPayload[i] = 0x00;
+		//}
+		rf_tx_buffer.rawPayload[4] = EOF;
 		//rf_tx_buffer.rawPayload[11] = EOF;
 		
-		RFST = SRX;
-		mode = SRX;
-		delayMs(1);
 		uart0Send(msg,6); // for testing
 		
-//		RFST = SIDLE; 
-//		mode = SIDLE; 
-//		delayMs(1);
-//		
-//		RFST = SFSTXON;
-//		mode = SFSTXON;
-//		delayMs(1);
+		// -------- TEST: RX --------
+		
+		//RFST = SRX;
+		//mode = SRX;
+		//delayMs(1);
+
+		// ------ TEST: TX -------
+
+		RFST = SIDLE; 
+		mode = SIDLE; 
+		delayMs(1);
+		
+		RFST = SFSTXON;
+		mode = SFSTXON;
+		delayMs(1);
 		
 		//uart_rx_packet_complete = 0;
 		while(1){
@@ -100,8 +106,8 @@ the main function for things to run correctly.
 			//RFST = STX;
 			//mode = STX;
 			//delayMs(1);
-//			rfSend(rf_tx_buffer.rawPayload, 64);
-//			delayMs(1000);
+			rfSend(rf_tx_buffer.rawPayload, 4);
+			delayMs(1000);
 			
 			
 			if(uart_rx_packet_complete){
