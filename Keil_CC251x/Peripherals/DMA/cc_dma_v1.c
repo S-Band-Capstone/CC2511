@@ -11,8 +11,8 @@ const dma_cfg dma_init_val = {0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00};
 
 // Interrupts 
 void dmaIsr(void) interrupt DMA_VECTOR{
-	//uint8_t msg[] = "DMA ISR\n";
-	//uint8_t msg1[] = "DMA IF\n";
+	uint8_t msg[] = "DMA ISR\n";
+	uint8_t msg1[] = "DMA IF\n";
 	//uart0Send(msg, 8); // For testing 
 	
 	// Handle for either RF (DMAIF1 = 0x02) or UART (DMAIF0 = 0x01)
@@ -24,7 +24,7 @@ void dmaIsr(void) interrupt DMA_VECTOR{
 		URX0IF = 0;
 		uart_rx_packet_complete = 1; 
 	}else if((DMAIRQ & DMAIF1)){
-		
+	
 		// RF Packet Complete
 		//rfPacketHandler(&rf_rx_buffer);
 		DMAIRQ &= ~(0x02);

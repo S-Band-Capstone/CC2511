@@ -57,7 +57,7 @@ the main function for things to run correctly.
 	int main(void){
 		
 		// temp variable
-		//uint8_t i; 
+		uint8_t i; 
 		uint8_t msg[] = "Start\n";
 		
 		// initialize system and modules 
@@ -67,19 +67,31 @@ the main function for things to run correctly.
 		dmaInit();
 		uart_rx_index = 0;
 		
-//		rf_tx_buffer.rawPayload[0] = 0x3F;
-//		rf_tx_buffer.rawPayload[1] = SOF;
-//		rf_tx_buffer.rawPayload[2] = 0x01;
-//		for(i = 3; i < 63; i++){
-//			
-//			rf_tx_buffer.rawPayload[i] = 0xD3;
-//		}
-//		rf_tx_buffer.rawPayload[63] = EOF;
+		
+		delayMs(1);
+		
+		rf_tx_buffer.rawPayload[0] = 0x03; //0x3F;
+		rf_tx_buffer.rawPayload[1] = SOF;
+		rf_tx_buffer.rawPayload[2] = 0x01;
+		for(i = 3; i < 63; i++){
+			
+			rf_tx_buffer.rawPayload[i] = 0x00;
+		}
+		rf_tx_buffer.rawPayload[63] = EOF;
+		//rf_tx_buffer.rawPayload[11] = EOF;
 		
 		RFST = SRX;
 		mode = SRX;
 		delayMs(1);
 		uart0Send(msg,6); // for testing
+		
+//		RFST = SIDLE; 
+//		mode = SIDLE; 
+//		delayMs(1);
+//		
+//		RFST = SFSTXON;
+//		mode = SFSTXON;
+//		delayMs(1);
 		
 		//uart_rx_packet_complete = 0;
 		while(1){
@@ -88,17 +100,14 @@ the main function for things to run correctly.
 			//RFST = STX;
 			//mode = STX;
 			//delayMs(1);
-			//rfSend(rf_tx_buffer.rawPayload, 64);
-			//delayMs(1);
+//			rfSend(rf_tx_buffer.rawPayload, 64);
+//			delayMs(1000);
 			
-			//mode = SRX;
-			//rfReceive(rf_rx_buffer.rawPayload, 64);
-		
 			
 			if(uart_rx_packet_complete){
 				
 				DMAIRQ &= ~DMAIF0;
-				uart_rx_packet_complete=0;
+				uart_rx_packet_complete = 0;
 				uartPacketHandler(&uart_rx_buffer);
 			}
 			if(rf_rx_packet_complete){

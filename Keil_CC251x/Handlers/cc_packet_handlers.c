@@ -5,9 +5,28 @@
 *
 */
 
+// 1) Get RFTX Working
+// 2) RFTX DMA 
+// 3) Validate RF registers 
+// --> May need to switch register values between states
+// 4) Packet Handler 
+// 5) SPI -- Refer to SWRA223 
+// --> Include memory module
+// 6) Validate what needs interrupts and what doesn't 
+
+
 #include <Handlers/cc_packet_handlers.h>
 #include <peripherals/UART/cc_uart_v1.h>
 #include <RF/cc_rf_v1.h>
+
+//static Commands uart_cmd; 			
+//static uint8_t uart_length;
+//static uint8_t uart_sof;
+//static uint8_t uart_eof; 
+//static Commands rf_cmd; 				
+//static uint8_t rf_length;
+//static uint8_t rf_sof;
+//static uint8_t rf_eof; 
 
 
 void rfPacketHandler(rf_packet *payload){
@@ -38,21 +57,31 @@ void rfPacketHandler(rf_packet *payload){
 		
 		case ACK: {
 			// switch state to IDEL - packet received - or continue based on Length
-			uint8_t msg[] = "Packet Received!\n";
+			//uint8_t msg[] = "Packet Received!\n";
 			//rfSend(msg, sizeof(msg)-1);
-			uart0Send(msg, sizeof(msg));
-			for(i = 0; i < 10; i++){
-				
-				blink();
-			}
+			uint8_t msg = ACK; 
+			uart0Send(&msg, 1);
+			uart0Send(payload, sizeof(*payload));
+//			for(i = 0; i < 10; i++){
+//				
+//				blink();
+//			}
 			break;
 		}
 		case DATA_STORE:{
 			// Send data to xdata to be stored. For later use
+			//uint8_t msg[] = "Data Store!\n";
+			uint8_t msg = DATA_STORE;
+			uart0Send(&msg, 1);
+			
 			break;
 		}
 		case DATA_SEND: {
 			// Retrieve data from memory over SPI and DMA and send via RF. 
+			//uint8_t msg[] = "Data Send!\n";
+			uint8_t msg = DATA_SEND;
+			uart0Send(&msg, 1);
+			
 			break;
 		}
 		

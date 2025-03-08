@@ -105,7 +105,7 @@ void rfInit(void){
 	MDMCFG0 =	0x11;
 	DEVIATN =	0x45;	
 	MCSM2 = 0x07;
- 	MCSM1 = 0x3E; // 0x30; RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX);
+ 	MCSM1 = 0x3E; // 0x30; RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX); C
 	MCSM0 =	 0x14;
 	FOCCFG = 0x16;
 	BSCFG = 0x6c;
@@ -129,7 +129,7 @@ void rfInit(void){
 	//PARTNUM
 	//VERSION
 	//FREQEST = 
-	//LQI = 0x7F; 
+	LQI = 0x80; 
 	//RSSI = 
 	//MARCSTATE
 	//PKTSTATUS
@@ -137,7 +137,7 @@ void rfInit(void){
 	
 	// Interrupt enables 
 	RFTXRXIE = 1;		// RFD TX and RX
-	IEN2 |= 0x01; // General RF interrupts 
+	IEN2 |= 0x1; // General RF interrupts 
 	
 	/* States (Assuming intially startup at IDLE*/ 
 	// Set initial state... Probably RX unless interrupt can change state out of IDLE 
@@ -159,6 +159,7 @@ void rfSend(uint8_t *rfTxBuffer, uint16_t rfTxBufLen){
 	// Variables 
 	uint8_t i = 0;		// loop iterator
 	
+	
 	// Turn on frequency synthesizer if not on already
 	RFST = SFSTXON; 
 	mode = SFSTXON; 
@@ -179,7 +180,7 @@ void rfSend(uint8_t *rfTxBuffer, uint16_t rfTxBufLen){
 	// send the rest of the packet
 	for(i = 1; i < rfTxBufLen; i++){
 		
-		RFST = STX;	
+		//RFST = STX;	
 		delayMs(1);
 		//waitRfTxRxFlag(); // wait for flag to be set
 		RFD = rfTxBuffer[i];
