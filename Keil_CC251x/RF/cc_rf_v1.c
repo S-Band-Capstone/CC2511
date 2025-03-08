@@ -6,8 +6,8 @@
 #include <peripherals/DMA/cc_dma_v1.h>
 
 // Variables 
-xdata volatile rf_packet rf_rx_buffer;
-xdata volatile rf_packet rf_tx_buffer;
+xdata volatile packet rf_rx_buffer;
+xdata volatile packet rf_tx_buffer;
 uint8_t xdata rf_rx_index;
 uint8_t xdata rf_tx_index;
 uint8_t xdata rf_rx_length;

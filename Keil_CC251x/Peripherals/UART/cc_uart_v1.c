@@ -13,8 +13,8 @@
 #include <Handlers/cc_packet_handlers.h>
 
 // Variables
-xdata volatile uart_packet uart_rx_buffer;		// Buffer for receive data 
-xdata volatile uart_packet uart_tx_uffer;		// Buffer for transmit data 
+xdata volatile packet uart_rx_buffer;		// Buffer for receive data 
+xdata volatile packet uart_tx_uffer;		// Buffer for transmit data 
 uint8_t xdata uart_rx_index = 0;							// Indexer for receive 
 uint8_t xdata uart_tx_index = 0;							// Indexer for transmit
 uint8_t xdata uart_rx_length = 0; 						// Length of incoming packet
@@ -131,7 +131,7 @@ void uart0Receive(uint8_t* uartRxBuf, uint16_t uartRxBufLen) {
 	U0CSR &= ~0x40; 
 }
 
-uart_packet *getUartPacket(void){
+packet *getUartPacket(void){
 	/* 	Getter to return pointer to the buffer
 	*		rtype: &uart_packet 		
 	*/ 

@@ -29,7 +29,7 @@
 //static uint8_t rf_eof; 
 
 
-void rfPacketHandler(rf_packet *payload){
+void rfPacketHandler(packet *payload){
 	
 	// Variables 
 	Commands rf_cmd;
@@ -90,7 +90,7 @@ void rfPacketHandler(rf_packet *payload){
 	
 }
 
-void uartPacketHandler(uart_packet *payload){
+void uartPacketHandler(packet *payload){
 	
 	// Variables 
 	Commands uart_cmd;

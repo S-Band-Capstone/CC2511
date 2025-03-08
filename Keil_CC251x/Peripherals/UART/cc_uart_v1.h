@@ -13,8 +13,8 @@
 #define UART_TX_BUFFER_SIZE 	64
 
 // Variables 
-extern xdata volatile uart_packet uart_rx_buffer;		// Buffer for receive data 
-extern xdata volatile uart_packet uart_tx_buffer; 	// Buffer for transmit data
+extern xdata volatile packet uart_rx_buffer;		// Buffer for receive data 
+extern xdata volatile packet uart_tx_buffer; 	// Buffer for transmit data
 extern uint8_t xdata uart_rx_index;									// Indexer for receive
 extern uint8_t xdata uart_tx_index;									// Indexer for transmit
 extern uint8_t xdata uart_rx_length; 								// Length of incoming packet
@@ -32,7 +32,7 @@ void uart0Send(uint8_t *uartTxBuf, uint16_t uartTxBufLen);
 void uart0Receive(uint8_t *suartRxBuf, uint16_t uartRxBufLen);
 
 // Function Getters 
-uart_packet *getUartPacket(void);
+packet *getUartPacket(void);
 
 // Function Setters 
 void resetRxIndex(void); 
