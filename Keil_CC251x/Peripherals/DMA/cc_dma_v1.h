@@ -15,6 +15,7 @@
 // Defines 
 #define DMAIF0		0x01
 #define DMAIF1 		0x02 
+#define DMAIF2		0x04
 
 // DMA channel configuration structure
 typedef struct{
@@ -40,12 +41,14 @@ void dmaIsr(void);
 void dmaInit(void); 
 
 // Functions
-void dmaAbort(void); 
+void dmaAbort(uint8_t channel);
+
 	
 // Getters 
 
 // Setters 
-void setDmaChannel(void);
+void setDmaArm(uint8_t channel);
+void setDmaDisarmrm(uint8_t channel);
 
 
 #endif

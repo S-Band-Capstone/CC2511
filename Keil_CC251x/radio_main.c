@@ -85,9 +85,9 @@ the main function for things to run correctly.
 		
 		// -------- TEST: RX --------
 		
-		//RFST = SRX;
-		//mode = SRX;
-		//delayMs(1);
+//		RFST = SRX;
+//		mode = SRX;
+//		delayMs(1);
 
 		// ------ TEST: TX -------
 
@@ -95,18 +95,22 @@ the main function for things to run correctly.
 		mode = SIDLE; 
 		delayMs(1);
 		
-		RFST = SFSTXON;
-		mode = SFSTXON;
+		RFST = SCAL;
+		mode = SCAL;
 		delayMs(1);
+		
+		RFST = SIDLE; 
+		mode = SIDLE; 
+		delayMs(1);
+		
+//		RFST = SFSTXON;
+//		mode = SFSTXON;
+//		delayMs(1);
 		
 		//uart_rx_packet_complete = 0;
 		while(1){
-			
-			//delayMs(1);
-			//RFST = STX;
-			//mode = STX;
-			//delayMs(1);
-			rfSend(rf_tx_buffer.rawPayload, 4);
+		
+			rfSend(rf_tx_buffer.rawPayload, 5);
 			delayMs(1000);
 			
 			
