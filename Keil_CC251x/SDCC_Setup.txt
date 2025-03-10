@@ -43,15 +43,27 @@ This is an over generaliztion for the simple way of getting from code to flashin
 
 ---- Makefile General Notes ---- 
 
-1) Make sure that you can use the command `make`. 
+1) You can use Msys2 to get the relevant make.exe and other GCC commands.
+- Install Msys2, and in its terminal run: pacman -Syu 
+  You will need to restart terminal after. 
+- Run: pacman -Sy ==> this validates everything is upto date. 
+- Get make: pacman -S --needed make ==> get make file 
+ Now you should have everything to run the make file. 
+
+2) Make sure that you can use the command `make`. 
 - If you do not have make either install through Msys2, mingw32, or similar.
 - Make command is required for being able to compile from Makefile or else you will have
 to do everything line by line. 
+- To setpath when using Msys2, in terminal run: $env:PATH = "C:\msys64\usr\bin;" + $env:PATH
+  This should allow you to find the path that you need to run make. 
 
 2) In terminal: `make`
 - you should see a bunch of outputs for warnings (if present) or `sdcc` commands. 
 - This stage will also stop compilation and source to the specific errors of a file
 when they are present. 
+
+NOTE: DO NOT FORGET TO: mkdir -p obj 
+This is required so that the Makefile knows where to store all the object files (e.g. .lst, .asm, .sym ...)
 
 3) If you want to clean build, in terminal: `make clean` then `make` 
 - Just allows you to recompile and turn everything into hex again.
