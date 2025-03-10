@@ -1,5 +1,5 @@
 // Headers
-#include <Common_Shared/blink.h>
+#include <../include/blink.h>
 
  void wait(void ){
 /* Generic wait/nop function. */

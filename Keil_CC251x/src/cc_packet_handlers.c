@@ -15,9 +15,9 @@
 // 6) Validate what needs interrupts and what doesn't 
 
 
-#include <Handlers/cc_packet_handlers.h>
-#include <peripherals/UART/cc_uart_v1.h>
-#include <RF/cc_rf_v1.h>
+#include <../include/cc_packet_handlers.h>
+#include <../include/cc_uart_v1.h>
+#include <../include/cc_rf_v1.h>
 
 //static Commands uart_cmd; 			
 //static uint8_t uart_length;
@@ -113,7 +113,7 @@ void uartPacketHandler(packet *payload){
 		
 		case ACK: {
 			// Packet has been acknowledged that it is received
-			uint8_t msg[] = ACK; 
+			uint8_t msg = ACK; 
 			//uint8_t msg[] = "Acknowledge\n"; // Returned words could just be from ENUM (Smaller)
 			//uart0Send(msg, sizeof(msg)-1); // for sending string
 			uart0Send(&msg,1);
@@ -154,16 +154,16 @@ void uartPacketHandler(packet *payload){
 	
 }
 
-uint8_t *getrfCommand(){
+//uint8_t *getrfCommand(){
 	
-	uint8_t command; 
+//	uint8_t command; 
 	
-	return command;
-}
+//	return command;
+//}
 
-uint8_t *getUartCommand(){
+//uint8_t *getUartCommand(){
 	
-	uint8_t command; 
+//	uint8_t command; 
 	
-	return command;
-}	
+//	return command;
+//}	

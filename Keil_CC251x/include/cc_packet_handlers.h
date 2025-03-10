@@ -3,7 +3,7 @@
 #define PACKET_HANDLERS_H
 
 // Headers
-#include <Common_Shared/blink.h>
+#include <blink.h>
 
 // Defined variables
 #define SOF 0x7E	// Start of frame

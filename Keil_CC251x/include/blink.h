@@ -9,7 +9,7 @@
 #define BLINK_H
 
 // Headers 
-#include <cc2510.h>
+#include <cc2510fx.h>
 /* 
 	If I am correct, Keil compiles int as 2 bytes. 
 	This means that uint16 = int type, uint32 = long int,

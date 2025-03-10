@@ -1,6 +1,5 @@
 
-#include <Peripherals/SPI/cc_spi_v1.h> 
-
+#include <../include/cc_spi_v1.h> 
 
 
 

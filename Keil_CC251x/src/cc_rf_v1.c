@@ -1,24 +1,24 @@
 
 // Headers
-#include <RF/cc_rf_v1.h>
-#include <Common_Shared/blink.h>
-#include <peripherals/UART/cc_uart_v1.h>
-#include <peripherals/DMA/cc_dma_v1.h>
+#include <../include/cc_rf_v1.h>
+#include <../include/blink.h>
+#include <../include/cc_uart_v1.h>
+#include <../include/cc_dma_v1.h>
 
 // Variables 
-xdata volatile packet rf_rx_buffer;
-xdata volatile packet rf_tx_buffer;
-uint8_t xdata rf_rx_index;
-uint8_t xdata rf_tx_index;
-uint8_t xdata rf_rx_length;
-bit rf_rx_packet_complete;
+__xdata volatile packet rf_rx_buffer;
+__xdata volatile packet rf_tx_buffer;
+uint8_t __xdata rf_rx_index;
+uint8_t __xdata rf_tx_index;
+uint8_t __xdata rf_rx_length;
+__bit rf_rx_packet_complete;
 uint8_t mode;
 uint8_t max_len = 64; // Can change. To change, make sure to update inside packet Handler. 
 
 
 
 // Interrupts 
-//void rfRxIsr(void) interrupt RFTXRX_VECTOR{
+//void rfRxIsr(void) __interrupt(RFTXRX_VECTOR){
 //	
 //	uint8_t temp_byte; // Temp byte
 //	
@@ -55,7 +55,7 @@ uint8_t max_len = 64; // Can change. To change, make sure to update inside packe
 //	
 //}
 
-//void rfIsr(void) interrupt RFTXRX_VECTOR { 
+//void rfIsr(void) __interrupt(RFTXRX_VECTOR){ 
 //	/* Disable when testing RF */
 //	// Variables
 //	RFTXRXIF = 0;
@@ -65,7 +65,7 @@ uint8_t max_len = 64; // Can change. To change, make sure to update inside packe
 
 //}
 
-void rfOverflow(void) interrupt RF_VECTOR {
+void rfOverflow(void) __interrupt(RF_VECTOR){
 	uint8_t msg[] = "Overflow\n";
 	uint8_t msg1[] = "TX Underflow\n";
 	uint8_t msg2[] = "RX Underflow\n";

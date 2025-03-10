@@ -7,8 +7,8 @@
 #define CC_RF_V1_H
 
 // Headers
-#include <Common_Shared/blink.h>
-#include <Handlers/cc_packet_handlers.h>
+#include <blink.h>
+#include <cc_packet_handlers.h>
 
 
 // Defined variables 
@@ -23,18 +23,18 @@
 #define MAX_LEN			0x40 // Can be changed for some thing greater. MAX_LEN = 64
 
 // Variables
-extern xdata volatile packet rf_rx_buffer;			// Buffer for receive data 
-extern xdata volatile packet rf_tx_buffer; 		// Buffer for transmit data
-extern uint8_t xdata rf_rx_index;									// Indexer for receive
-extern uint8_t xdata rf_tx_index;									// Indexer for transmit
-extern uint8_t xdata rf_rx_length; 								// Length of incoming packet
-extern bit rf_rx_packet_complete;									// Flag for full packet received
+extern __xdata volatile packet rf_rx_buffer;			// Buffer for receive data 
+extern __xdata volatile packet rf_tx_buffer; 		// Buffer for transmit data
+extern uint8_t __xdata rf_rx_index;									// Indexer for receive
+extern uint8_t __xdata rf_tx_index;									// Indexer for transmit
+extern uint8_t __xdata rf_rx_length; 								// Length of incoming packet
+extern __bit rf_rx_packet_complete;									// Flag for full packet received
 extern uint8_t mode; 															// Current state of the system
 extern uint8_t max_len; 													// Max length of buffers (best for interrupts)
 
 // Interrupts 
-//void rfRxIsr(void);
-void rfIsr(void);
+//void rfRxIsr(void) __interrupt(RFTXRX_VECTOR);
+//void rfIsr(void) __interrupt(RFTXRX_VECTOR);
 void rfRxOverflow(void);
 
 // Initalizer

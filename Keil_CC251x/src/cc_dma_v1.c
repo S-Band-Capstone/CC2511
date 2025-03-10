@@ -1,20 +1,20 @@
 
 // Headers 
-#include <peripherals/DMA/cc_dma_v1.h>
-#include <peripherals/UART/cc_uart_v1.h>
-#include <RF/cc_rf_v1.h>
-#include <Handlers/cc_packet_handlers.h>
+#include <../include/cc_dma_v1.h>
+#include <../include/cc_uart_v1.h>
+#include <../include/cc_rf_v1.h>
+#include <../include/cc_packet_handlers.h>
 
 // DMA channel configurations variables 
-xdata dma_cfg dma_channels[5]; 
-const dma_cfg dma_init_val = {0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00};
+__xdata dma_cfg dma_channels[5]; 
+const dma_cfg dma_init_val = {{0x0000}, {0x0000}, {0x00}, {0x00}, {0x00}, {0x00}};
 
 // Interrupts 
-void dmaIsr(void) interrupt DMA_VECTOR{
+void dmaIsr(void) __interrupt(DMA_VECTOR){
 	uint8_t msg[] = "DMA ISR\n";
 	uint8_t msg1[] = "DMA IF\n";
 	//uart0Send(msg, 8); // For testing 
-	
+	blink();
 	// Handle for either RFTX (DMAIF2 = 0x04), RFTX (DMAIF1 = 0x02), UART (DMAIF0 = 0x01)
 	if((DMAIRQ & DMAIF0)){ // UART RX
 		
@@ -36,7 +36,7 @@ void dmaIsr(void) interrupt DMA_VECTOR{
 		//uart0Send(msg1, 7); // For testing
 		
 		
-	}else if ((DMAIRQ * DMAIF2)){
+	}else if ((DMAIRQ * DMAIF2)){ // RF TX
 		
 		DMAIRQ &= ~(0x04);
 		RFTXRXIF = 0;

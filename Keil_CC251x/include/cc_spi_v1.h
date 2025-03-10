@@ -3,7 +3,7 @@
 #ifndef CC_SPI_V1_H
 #define CC_SPI_V1_H
 
-#include <Common_Shared/blink.h>
+#include <blink.h>
 
 /*
 	32Mb SPI 

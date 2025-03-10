@@ -9,21 +9,21 @@
 *
 */
 // Headers 
-#include <peripherals/UART/cc_uart_v1.h>
-#include <Handlers/cc_packet_handlers.h>
+#include <../include/cc_uart_v1.h>
+#include <../include/cc_packet_handlers.h>
 
 // Variables
-xdata volatile packet uart_rx_buffer;		// Buffer for receive data 
-xdata volatile packet uart_tx_uffer;		// Buffer for transmit data 
-uint8_t xdata uart_rx_index = 0;							// Indexer for receive 
-uint8_t xdata uart_tx_index = 0;							// Indexer for transmit
-uint8_t xdata uart_rx_length = 0; 						// Length of incoming packet
-bit uart_rx_packet_complete = 0;										// Flag for full packet received 
+__xdata volatile packet uart_rx_buffer;		// Buffer for receive data 
+__xdata volatile packet uart_tx_uffer;		// Buffer for transmit data 
+uint8_t __xdata uart_rx_index = 0;							// Indexer for receive 
+uint8_t __xdata uart_tx_index = 0;							// Indexer for transmit
+uint8_t __xdata uart_rx_length = 0; 						// Length of incoming packet
+__bit uart_rx_packet_complete = 0;										// Flag for full packet received 
 
 
 
 // Interrupt service routines
-//void uart0RxIsr(void) interrupt URX0_VECTOR { 
+//void uart0RxIsr(void) __interrupt(URX0_VECTOR) { 
 //  /* Interrupt handler for UART RX. Primary RX source. */
 //	
 //	// Temp byte transfer variable
@@ -108,8 +108,10 @@ void uart0Send(uint8_t *uartTxBuf, uint16_t uartTxBufLen) {
 	
 	for (uart_tx_index = 0; uart_tx_index < uartTxBufLen; uart_tx_index++) { 
 		U0DBUF = uartTxBuf[uart_tx_index]; 
-		while( !UTX0IF ); 
-    	UTX0IF = 0; 
+		//while( !UTX0IF ); 
+		//UTX0IF = 0; 
+    	while(!(U0CSR & 0x02));;
+		U0CSR &= ~0x02; 
   	} 
 	uart_tx_index = 0;
 	U0CSR |= 0x40; // turn on receiver for RX
