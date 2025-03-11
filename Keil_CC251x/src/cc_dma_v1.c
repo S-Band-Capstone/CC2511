@@ -14,7 +14,7 @@ void dmaIsr(void) __interrupt(DMA_VECTOR){
 	uint8_t msg[] = "DMA ISR\n";
 	uint8_t msg1[] = "DMA IF\n";
 	//uart0Send(msg, 8); // For testing 
-	blink();
+	// blink();
 	// Handle for either RFTX (DMAIF2 = 0x04), RFTX (DMAIF1 = 0x02), UART (DMAIF0 = 0x01)
 	if((DMAIRQ & DMAIF0)){ // UART RX
 		
@@ -36,8 +36,9 @@ void dmaIsr(void) __interrupt(DMA_VECTOR){
 		//uart0Send(msg1, 7); // For testing
 		
 		
-	}else if ((DMAIRQ * DMAIF2)){ // RF TX
+	}else if ((DMAIRQ & DMAIF2)){ // RF TX
 		
+		uart0Send(msg1, 7);
 		DMAIRQ &= ~(0x04);
 		RFTXRXIF = 0;
 		RFST = SIDLE;
@@ -104,7 +105,7 @@ void dmaInit(void){
 		
 	// ARM DMA Channel
 	/* Takes 9 system clocks for DMA config to be set */
-	DMAARM |= 0x05; // 0x03: ARM DMA channel 0 (UART), DMA channel 1 (RFRX); 0x05 ARM DMA Channel 0 (UART), DMA Channel 1 (RFTX)
+	DMAARM |= 0x01; // 0x03: ARM DMA channel 0 (UART), DMA channel 1 (RFRX); 0x05 ARM DMA Channel 0 (UART), DMA Channel 1 (RFTX)
 	delayMs(1);// allow channels to ARM.
 	
 	// Enable interrupts 

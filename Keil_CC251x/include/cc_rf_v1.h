@@ -18,7 +18,7 @@
 #define SCAL				0x01 // Manual calibration ON if FS_AUTOSCAL is set to `00`
 #define SRX 				0x02 // Enable RX and go into receive mode. Calibrate if coming from IDEL
 #define STX					0x03 // Enable TX and go into transmit mode. Calibrate if coming from IDLE
-#define SIDLE 			0x04 // Enter IDEL state. Frequency Synthesizer turned off. 
+#define SIDLE 			0x04 // Enter IDLE state. Frequency Synthesizer turned off. 
 #define SNOP 				0x55 // Can be anything other than previous defined strobe cmds 
 #define MAX_LEN			0x40 // Can be changed for some thing greater. MAX_LEN = 64
 
@@ -44,6 +44,7 @@ void rfInit(void);
 void rfSend(uint8_t* rfTxBuffer, uint16_t rfTxBufLen);
 void rfReceive(uint8_t* rfRxBuffer, uint16_t rfRxBufLen); 
 static void waitRfTxRxFlag(void); 
+void rfStateMachine(uint8_t *rfTxBuffer, uint16_t rfTxBufLen);
 
 
 

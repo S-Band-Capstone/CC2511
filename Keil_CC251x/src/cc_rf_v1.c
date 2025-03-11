@@ -68,7 +68,7 @@ uint8_t max_len = 64; // Can change. To change, make sure to update inside packe
 void rfOverflow(void) __interrupt(RF_VECTOR){
 	uint8_t msg[] = "Overflow\n";
 	uint8_t msg1[] = "TX Underflow\n";
-	uint8_t msg2[] = "RX Underflow\n";
+	uint8_t msg2[] = "RX Overflow\n";
 	RFST = SIDLE;
 	mode = SIDLE;
 	uart0Send(msg, 9);
@@ -108,15 +108,15 @@ void rfInit(void){
 	FREQ2 = 0x65;
 	FREQ1 = 0x60;
 	FREQ0 = 0x00;	
-	MDMCFG4 =	0x76;
-	MDMCFG3 =	0xA3;	
-	MDMCFG2 =	0x03;	//00 = no preabmle and sync, 0x03 = 30/32 preambe and sync, 0x02 = 16/16 preamble and sync
-	MDMCFG1 =	0x23;	
-	MDMCFG0 =	0x11;
-	DEVIATN =	0x45;	
+	MDMCFG4 = 0x76;
+	MDMCFG3 = 0xA3;	
+	MDMCFG2 = 0x03;	//00 = no preabmle and sync, 0x03 = 30/32 preambe and sync, 0x02 = 16/16 preamble and sync
+	MDMCFG1 = 0x23;	
+	MDMCFG0 = 0x11;
+	DEVIATN = 0x45;	
 	MCSM2 = 0x07;
  	MCSM1 = 0x3E; // 0x30; RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX); C
-	MCSM0 =	 0x04;
+	MCSM0 = 0x14;
 	FOCCFG = 0x16;
 	BSCFG = 0x6c;
 	AGCCTRL2 = 0x03; 
@@ -174,45 +174,44 @@ void rfSend(uint8_t *rfTxBuffer, uint16_t rfTxBufLen){
 	
 	//RFST = SIDLE;
 	//mode = SIDLE;
-	delayMs(1);
+	// delayMs(1);
 	
 	// Turn on frequency synthesizer if not on already
-	RFST = SFSTXON; 
-	delayMs(1); 
+	// RFST = SFSTXON; 
+	// delayMs(1); 
 	
 	// Set strobe command for transmit
-	RFST = STX; 
-	mode = STX; // bookkeeping with global var
-	delayMs(1); // necessary evil
+	// delayMs(1); // necessary evil
 	
 	// Wait for flag to be set
-	//waitRfTxRxFlag();
+	// waitRfTxRxFlag();
 
 	//write the first byte (packet length)
 	RFD = rfTxBuffer[0];
-	blink();
-	blink();
+	// blink();
+	// blink();
 	
 	// send the rest of the packet
 	for(i = 1; i < rfTxBufLen; i++){
 		
 
-		delayMs(1);
-		//waitRfTxRxFlag(); // wait for flag to be set
+		// delayMs(1);
+		// waitRfTxRxFlag(); // wait for flag to be set
 		RFD = rfTxBuffer[i];
-		//blink();
+		// delayMs(1);
+		// blink();
 	
 	}
 	
 	// Calibrate if FS_AUTOSCAL set to `00`
-	RFST = SCAL;
-	mode = SCAL;
-	delayMs(1); // delay 1 MS to allow state transition 
+	// RFST = SCAL;
+	// mode = SCAL;
+	// delayMs(1); // delay 1 MS to allow state transition f
 	
 	// Return to idle state 
-	RFST = SIDLE;
-	mode = SIDLE;
-	delayMs(1); 
+	// RFST = SIDLE;
+	// mode = SIDLE;
+	// delayMs(1); 
 	
 	
 }
@@ -267,7 +266,7 @@ void rfReceive(uint8_t* rfRxBuffer, uint16_t rfRxBufLen){
 
 static void waitRfTxRxFlag(void){
 
-	while(!RFTXRXIF){
+	while (RFTXRXIF) {
 		// Wait until flag is set
 		// could add timer
 		//blink();
@@ -276,4 +275,58 @@ static void waitRfTxRxFlag(void){
 	RFTXRXIF = 0;
 }
 
+void rfStateMachine(uint8_t *rfTxBuffer, uint16_t rfTxBufLen) {
+	switch (mode) { // Transition States
+		case SFSTXON: {
 
+			break;
+		}
+		
+		case SRX: {
+
+			break;
+		}
+
+		case STX: {
+			
+			break;
+		}
+
+		case SIDLE: {
+
+			break;
+		}
+
+		case SCAL: {
+
+			break;
+		}
+	}
+
+	switch (mode) { // State Actions
+		case SFSTXON: {
+
+			break;
+		}
+		
+		case SRX: {
+
+			break;
+		}
+
+		case STX: {
+			rfSend(rf_tx_buffer.rawPayload, 5);
+			break;
+		}
+
+		case SIDLE: {
+
+			break;
+		}
+
+		case SCAL: {
+
+			break;
+		}
+	}
+}

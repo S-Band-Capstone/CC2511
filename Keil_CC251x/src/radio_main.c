@@ -70,16 +70,11 @@ int main(void){
 	
 //		delayMs(1);
 	
-//		rf_tx_buffer.rawPayload[0] = 0x04; //0x3F;
-//		rf_tx_buffer.rawPayload[1] = SOF;
-//		rf_tx_buffer.rawPayload[2] = 0x01;
-//		rf_tx_buffer.rawPayload[3] = 0x00;
-//		//for(i = 3; i < 4; i++){
-		
-//			//rf_tx_buffer.rawPayload[i] = 0x00;
-//		//}
-//		rf_tx_buffer.rawPayload[4] = EOF;
-//		//rf_tx_buffer.rawPayload[11] = EOF;
+		rf_tx_buffer.rawPayload[0] = 0x04; //0x3F;
+		rf_tx_buffer.rawPayload[1] = SOF;
+		rf_tx_buffer.rawPayload[2] = 0x01;
+		rf_tx_buffer.rawPayload[3] = 0x00;
+		rf_tx_buffer.rawPayload[4] = EOF;
 	
 	uart0Send(msg,6); // for testing
 	
@@ -91,40 +86,38 @@ int main(void){
 
 //		// ------ TEST: TX -------
 
-//		RFST = SIDLE; 
-//		mode = SIDLE; 
-//		delayMs(1);
+		RFST = SIDLE; 
+		mode = SIDLE; 
+		delayMs(1);
 	
-//		RFST = SCAL;
-//		mode = SCAL;
-//		delayMs(1);
-	
-//		RFST = SIDLE; 
-//		mode = SIDLE; 
-//		delayMs(1);
-	
-//		RFST = SFSTXON;
-//		mode = SFSTXON;
-//		delayMs(1);
+		RFST = SFSTXON;
+		mode = SFSTXON;
+		delayMs(1);
+
+		RFST = STX;
+		mode = STX;
+		delayMs(1);
 	
 	//uart_rx_packet_complete = 0;
 	while(1){
+
+		rfStateMachine(rf_tx_buffer.rawPayload, 5);
 	
-		//rfSend(rf_tx_buffer.rawPayload, 5);
-		//delayMs(1000);
+		// rfSend(rf_tx_buffer.rawPayload, 5);
+		delayMs(100);
 		
-		if(uart_rx_packet_complete){
+		// if(uart_rx_packet_complete){
 			
-			DMAIRQ &= ~DMAIF0;
-			uart_rx_packet_complete = 0;
-			uartPacketHandler(&uart_rx_buffer);
-		}
-		if(rf_rx_packet_complete){
-			blink();
-			DMAIRQ &= ~DMAIF1;
-			rf_rx_packet_complete = 0;
-			rfPacketHandler(&rf_rx_buffer);
-		}
+		// 	DMAIRQ &= ~DMAIF0;
+		// 	uart_rx_packet_complete = 0;
+		// 	uartPacketHandler(&uart_rx_buffer);
+		// }
+		// if(rf_rx_packet_complete){
+		// 	blink();
+		// 	DMAIRQ &= ~DMAIF1;
+		// 	rf_rx_packet_complete = 0;
+		// 	rfPacketHandler(&rf_rx_buffer);
+		// }
 
 	}
 	
