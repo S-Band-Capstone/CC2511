@@ -31,6 +31,7 @@ typedef unsigned long int uint32_t;
 void wait(void);
 void blink(void);
 void delayMs(uint16_t ms); // Make Reentrant for interrupt
+void timerDelayMs(uint16_t ms); // Timer Register Function
 
 // Buffer Clear 
 void bufferClear(uint16_t* buffer, uint16_t bufferLen); 
