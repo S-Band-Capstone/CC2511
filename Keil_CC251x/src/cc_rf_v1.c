@@ -55,22 +55,23 @@ uint8_t max_len = 64; // Can change. To change, make sure to update inside packe
 //	
 //}
 
-//void rfIsr(void) __interrupt(RFTXRX_VECTOR){ 
-//	/* Disable when testing RF */
-//	// Variables
-//	RFTXRXIF = 0;
-//	rf_rx_buffer.rawPayload[0] = RFD; 
-//	blink();
-//		
+// void rfIsr(void) __interrupt(RFTXRX_VECTOR){ 
+// 	/* Disable when testing RF */
+// 	uint8_t msg[] = "RF ISR\n";
+// 	// Variables
+// 	RFTXRXIF = 0;
+// 	//rf_rx_buffer.rawPayload[0] = RFD; 
+// 	//blink();
+// 	//uart0Send(msg, 7);	
 
-//}
+// }
 
 void rfOverflow(void) __interrupt(RF_VECTOR){
 	uint8_t msg[] = "Overflow\n";
 	uint8_t msg1[] = "TX Underflow\n";
 	uint8_t msg2[] = "RX Overflow\n";
 	RFST = SIDLE;
-	mode = SIDLE;
+	//mode = SIDLE;
 	uart0Send(msg, 9);
 	
 	if (RFIF & 0x80){
@@ -91,8 +92,7 @@ void rfInit(void){
 	rf_tx_index = 0;
 	
 	// Setup Registers
-	/*  Values taken straight from Smart RF Studio (Data Rate = 9600)*/
-	
+	/*  Values taken straight from Smart RF Studio (Data Rate = 2.4kbaude)*/
 	IOCFG2 = 0x2E; 
 	IOCFG1 = 0x00;
 	IOCFG0 = 0x00;  // 0x06; for debugging when low byte set.
@@ -115,7 +115,7 @@ void rfInit(void){
 	MDMCFG0 = 0x11;
 	DEVIATN = 0x45;	
 	MCSM2 = 0x07;
- 	MCSM1 = 0x3E; // 0x30; RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX); C
+ 	MCSM1 = 0x30; // 0x3E; RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX); C
 	MCSM0 = 0x14;
 	FOCCFG = 0x16;
 	BSCFG = 0x6c;
@@ -128,25 +128,50 @@ void rfInit(void){
 	FSCAL2 = 0x0A;
 	FSCAL1 = 0x00;	
 	FSCAL0 = 0x11;	
-	//PA_TABLE7 =
-	//PA_TABLE6 =
-	//PA_TABLE5 =
-	//PA_TABLE4 =
-	//PA_TABLE3 = 
-	//PA_TABLE2 = 
-	//PA_TABLE1 = 
-	PA_TABLE0 =	0xFE;	
-	//PARTNUM
-	//VERSION
-	//FREQEST = 
-	LQI = 0x80; 
-	//RSSI = 
-	//MARCSTATE
-	//PKTSTATUS
-	//VCO_VC_DAC
+	PA_TABLE0 =	0xFE;
+	//LQI = 0x80; 
+	
+	/*  Values taken straight from Smart RF Studio (Data Rate = 250kbaude)*/
+	// IOCFG2 = 0x2E; 
+	// IOCFG1 = 0x00;
+	// IOCFG0 = 0x00;  // 0x06; for debugging when low byte set.
+ 	// SYNC1 = 0xD3;
+	// SYNC0 = 0x91;
+	// PKTLEN = 0xFF; // 0xFF
+	// PKTCTRL1 = 0x04; // 0x04 = Append_Status; if we include, it messes with RX
+	// PKTCTRL0 = 0x01; // 0x05 = CRC enabled with variable length , 0x01 = variable length
+	// ADDR = 0x00;
+	// CHANNR = 0x00;
+	// FSCTRL1 = 0x0A;
+	// FSCTRL0 = 0x00;
+	// FREQ2 = 0x65;
+	// FREQ1 = 0x60;
+	// FREQ0 = 0x00;	
+	// MDMCFG4 = 0x1D;
+	// MDMCFG3 = 0x55;	
+	// MDMCFG2 = 0x73;	// 0x73 = 30/32 preambe and sync match, MSK modulation
+	// MDMCFG1 = 0x23;	
+	// MDMCFG0 = 0x11;
+	// DEVIATN = 0x45;	
+	// MCSM2 = 0x07;
+ 	// MCSM1 = 0x30; // 0x3E: RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX)
+	// MCSM0 = 0x14;
+	// FOCCFG = 0x1D; // Saturation point = 01 (+-)BWChan/8, 
+	// BSCFG = 0x1C; 
+	// AGCCTRL2 = 0xC7; 
+	// AGCCTRL1 = 0x00;
+	// AGCCTRL0 = 0xB2;
+	// FREND1 = 0xB6;
+	// FREND0 = 0x10;
+	// FSCAL3 = 0xEA;
+	// FSCAL2 = 0x0A;
+	// FSCAL1 = 0x00;	
+	// FSCAL0 = 0x11;	
+	// PA_TABLE0 =	0xFE;
+	// LQI = 0x80; 
 	
 	// Interrupt enables 
-	RFTXRXIE = 1;		// RFD TX and RX
+	//RFTXRXIE = 1;		// RFD TX and RX
 	RFIM = 0xC0;
 	IEN2 |= 0x1; // General RF interrupts 
 	
@@ -187,21 +212,22 @@ void rfSend(uint8_t *rfTxBuffer, uint16_t rfTxBufLen){
 	// waitRfTxRxFlag();
 
 	//write the first byte (packet length)
+	
 	RFD = rfTxBuffer[0];
-	// blink();
-	// blink();
+	while (!(RFTXRXIF & 0x01));
+	RFTXRXIF = 0;
 	
 	// send the rest of the packet
-	for(i = 1; i < rfTxBufLen; i++){
+	//for(i = 1; i < rfTxBufLen; i++){
 		
 
 		// delayMs(1);
 		// waitRfTxRxFlag(); // wait for flag to be set
-		RFD = rfTxBuffer[i];
-		// delayMs(1);
-		// blink();
+		//RFD = rfTxBuffer[i];
+		//while (!(RFTXRXIF & 0x01));
+		//RFTXRXIF = 0;
 	
-	}
+	//}
 	
 	// Calibrate if FS_AUTOSCAL set to `00`
 	// RFST = SCAL;
@@ -275,20 +301,41 @@ static void waitRfTxRxFlag(void){
 	RFTXRXIF = 0;
 }
 
-void rfStateMachine(uint8_t *rfTxBuffer, uint16_t rfTxBufLen) {
+void rfStateMachine(uint8_t mode) {
+	
+
 	switch (mode) { // Transition States
 		case SFSTXON: {
-
+			
+			// Set state 
+			RFST = SFSTXON;
 			break;
 		}
 		
-		case SRX: {
+		case SRX: { 
+			
+			// Disable DMA for RFTX and enable for RFRX
+			DMAARM &= ~(0x04); 	// Disables DMA channel 2 (RFTX)
+			DMAARM |= 0x03; 	// ARM DMA channel 0 (UART), DMA channel 1 (RFRX)
+
+			// Set state
+			RFST = SRX;
+			delayMs(1);
 
 			break;
 		}
 
 		case STX: {
 			
+			// Disable DMA for RFRX and enable for RFTX
+			DMAARM &= ~(0x02); 	// Disables DMA channel 1 (RFRX)
+			DMAARM |= 0x05; 	// ARM DMA Channel 0 (UART), DMA Channel 1 (RFTX)
+			// Set state
+			
+			RFST = STX;
+			//while (!(RFTXRXIF & 0x01));
+			//RFTXRXIF = 0;
+
 			break;
 		}
 

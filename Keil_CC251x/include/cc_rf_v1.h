@@ -29,7 +29,7 @@ extern uint8_t __xdata rf_rx_index;									// Indexer for receive
 extern uint8_t __xdata rf_tx_index;									// Indexer for transmit
 extern uint8_t __xdata rf_rx_length; 								// Length of incoming packet
 extern __bit rf_rx_packet_complete;									// Flag for full packet received
-extern uint8_t mode; 															// Current state of the system
+//extern uint8_t mode; 															// Current state of the system
 extern uint8_t max_len; 													// Max length of buffers (best for interrupts)
 
 // Interrupts 
@@ -44,7 +44,7 @@ void rfInit(void);
 void rfSend(uint8_t* rfTxBuffer, uint16_t rfTxBufLen);
 void rfReceive(uint8_t* rfRxBuffer, uint16_t rfRxBufLen); 
 static void waitRfTxRxFlag(void); 
-void rfStateMachine(uint8_t *rfTxBuffer, uint16_t rfTxBufLen);
+void rfStateMachine(uint8_t mode);
 
 
 
