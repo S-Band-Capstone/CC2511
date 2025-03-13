@@ -173,7 +173,7 @@ void rfInit(void){
 	// Interrupt enables 
 	//RFTXRXIE = 1;		// RFD TX and RX
 	RFIM = 0xC0;
-	IEN2 |= 0x1; // General RF interrupts 
+	IEN2 |= 0x01; // General RF interrupts 
 	
 	
 	
@@ -202,9 +202,10 @@ void rfSend(uint8_t *rfTxBuffer, uint16_t rfTxBufLen){
 	// delayMs(1);
 	
 	// Turn on frequency synthesizer if not on already
-	// RFST = SFSTXON; 
+	//RFST = SFSTXON; 
 	// delayMs(1); 
-	
+	RFTXRXIF =0;
+	RFST = SCAL;
 	// Set strobe command for transmit
 	// delayMs(1); // necessary evil
 	
@@ -212,10 +213,10 @@ void rfSend(uint8_t *rfTxBuffer, uint16_t rfTxBufLen){
 	// waitRfTxRxFlag();
 
 	//write the first byte (packet length)
-	
-	RFD = rfTxBuffer[0];
-	while (!(RFTXRXIF & 0x01));
-	RFTXRXIF = 0;
+	delayMs(100);
+	RFD = 0x05;//rfTxBuffer[0];
+	//while (!(RFTXRXIF & 0x01));
+	// RFTXRXIF = 0;
 	
 	// send the rest of the packet
 	//for(i = 1; i < rfTxBufLen; i++){
@@ -303,12 +304,12 @@ static void waitRfTxRxFlag(void){
 
 void rfStateMachine(uint8_t mode) {
 	
-
+	RFTXRXIF = 0;
 	switch (mode) { // Transition States
 		case SFSTXON: {
 			
 			// Set state 
-			RFST = SFSTXON;
+			RFST = STX;
 			break;
 		}
 		
@@ -320,7 +321,7 @@ void rfStateMachine(uint8_t mode) {
 
 			// Set state
 			RFST = SRX;
-			delayMs(1);
+			//delayMs(1);
 
 			break;
 		}
@@ -330,9 +331,11 @@ void rfStateMachine(uint8_t mode) {
 			// Disable DMA for RFRX and enable for RFTX
 			DMAARM &= ~(0x02); 	// Disables DMA channel 1 (RFRX)
 			DMAARM |= 0x05; 	// ARM DMA Channel 0 (UART), DMA Channel 1 (RFTX)
+			//delayMs(1);
 			// Set state
 			
 			RFST = STX;
+			//delayMs(1);
 			//while (!(RFTXRXIF & 0x01));
 			//RFTXRXIF = 0;
 

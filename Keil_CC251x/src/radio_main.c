@@ -70,15 +70,18 @@ int main(void){
 	
 //		delayMs(1);
 	
-	//rf_tx_buffer.rawPayload[0] = 0x04; //0x3F;
-	rf_tx_buffer.rawPayload[0] = 0x3F;
+	rf_tx_buffer.rawPayload[0] = 0x04;
 	rf_tx_buffer.rawPayload[1] = SOF;
 	rf_tx_buffer.rawPayload[2] = 0x01;
-	for(i =3 ; i < 63; i++){
-		rf_tx_buffer.rawPayload[i] = 0xD3;
-	}
-	rf_tx_buffer.rawPayload[3] = 0x00;
-	rf_tx_buffer.rawPayload[63] = EOF;
+	rf_tx_buffer.rawPayload[3] = 0xD9;
+	rf_tx_buffer.rawPayload[4] = EOF;
+	// rf_tx_buffer.rawPayload[0] = 0x3F;
+	// rf_tx_buffer.rawPayload[1] = SOF;
+	// rf_tx_buffer.rawPayload[2] = 0x01;
+	// for(i =3 ; i < 63; i++){
+	// 	rf_tx_buffer.rawPayload[i] = 0xD3;
+	// }
+	// rf_tx_buffer.rawPayload[63] = EOF;
 	
 	uart0Send(msg,6); // for testing
 	
@@ -90,18 +93,19 @@ int main(void){
 
 //		// ------ TEST: TX -------
 
-		RFST = SIDLE; 
-		//mode = SIDLE; 
-		delayMs(1);
-	
-		RFST = SFSTXON;
-		//mode = SFSTXON;
-		delayMs(1);
+	RFST = SIDLE; 
+	//mode = SIDLE; 
+	delayMs(1);
 
-		//RFST = STX;
-		//mode = STX;
-		delayMs(1);
-	
+	RFST = SFSTXON;
+	//mode = SFSTXON;
+	delayMs(1);
+
+	//RFST = STX;
+	//mode = STX;
+
+
+
 	//uart_rx_packet_complete = 0;
 	while(1){
 

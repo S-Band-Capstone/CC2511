@@ -36,10 +36,12 @@ void dmaIsr(void) __interrupt(DMA_VECTOR){
 		
 	}else if ((DMAIRQ & DMAIF2)){ // RF TX
 		
-		uart0Send(msg1, 7);
+		// uart0Send(msg1, 7);
 		DMAIRQ &= ~(0x04);
 		RFTXRXIF = 0;
-		RFST = SIDLE;
+		dmaAbort(2);
+		//delayMs(1);
+		//RFST = SIDLE;  //causes bad sends 
 		//mode = SIDLE;
 		
 	}
@@ -91,11 +93,11 @@ void dmaInit(void){
 	dma_channels[1].byte7 = 0x1A; //SrcInc = 00 (no increment), DstInc = 01 (increment by 1 byte), IRQMASK = 1 (generates interrupt), M8 = 0 (8bits), prioirty = 10 (Priority access)
 	
 	// Setup DMA for RF Transmit Channel 2
-	dma_channels[2].srcAddrHi = (uint8_t)((uint16_t)&rf_tx_buffer.rawPayload[1] >> 8); // High byte of source address, XDATA RFTX (Byte 0)
-	dma_channels[2].srcAddrLo = (uint8_t)((uint16_t)&rf_tx_buffer.rawPayload[1] & 0x00FF); // Low byte of source address XDATA RFTX (Byte 1) 
+	dma_channels[2].srcAddrHi = (uint8_t)((uint16_t)&rf_tx_buffer.rawPayload[0] >> 8); // High byte of source address, XDATA RFTX (Byte 0)
+	dma_channels[2].srcAddrLo = (uint8_t)((uint16_t)&rf_tx_buffer.rawPayload[0] & 0x00FF); // Low byte of source address XDATA RFTX (Byte 1) 
 	dma_channels[2].dstAddrHi = (uint8_t)((uint16_t)&X_RFD >> 8); // High byte of destination address, XDATA RFD (Byte 2) 
 	dma_channels[2].dstAddrLo = (uint8_t)((uint16_t)&X_RFD & 0x00FF); // Low byte of destination address XDATA RFD (Byte 3) 
-	dma_channels[2].byte4 = 0x3F; // VLen = 010 (transfer n Bytes), LEN[12:8] = 00000 (Byte 4)
+	dma_channels[2].byte4 = 0x20; // VLen = 010 (transfer n Bytes), LEN[12:8] = 00000 (Byte 4)
 	dma_channels[2].byte5 = 0x40; // LEN[7:0] = 00111111 => 63 bytes(Byte 5); 
 	dma_channels[2].byte6 = 0x53; // Word = 0 (8-bits), tmod = 10 (repeated single), trig = 10011 (RF TX/RX trigger) (Byte 6)
 	dma_channels[2].byte7 = 0x4A; //SrcInc = 01 (increment by 1 Byte), DstInc = 00 (no increment), IRQMASK = 1 (generates interrupt), M8 = 0 (8bits), prioirty = 10 (Priority access)
