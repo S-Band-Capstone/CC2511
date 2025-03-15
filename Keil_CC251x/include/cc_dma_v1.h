@@ -16,6 +16,8 @@
 #define DMAIF0		0x01
 #define DMAIF1 		0x02 
 #define DMAIF2		0x04
+#define DMAIF3		0x08
+#define DMAIF4		0x10
 
 // DMA channel configuration structure
 typedef struct{
@@ -42,7 +44,7 @@ void dmaInit(void);
 
 // Functions
 void dmaAbort(uint8_t channel);
-
+void dmaRequest(uint8_t channel);
 	
 // Getters 
 

@@ -1,6 +1,6 @@
 
 // Headers 
-#include "cc2510fx.h" 
+#include <cc2510fx.h> 
 #include <../include/blink.h>
 #include <../include/cc_uart_v1.h> 
 #include <../include/cc_dma_v1.h> 
@@ -65,67 +65,64 @@ int main(void){
 	uartInit(); 
 	rfInit();
 	dmaInit();
-	uart_rx_index = 0;
+	
 	
 	
 //		delayMs(1);
 	
-	rf_tx_buffer.rawPayload[0] = 0x04;
-	rf_tx_buffer.rawPayload[1] = SOF;
-	rf_tx_buffer.rawPayload[2] = 0x01;
-	rf_tx_buffer.rawPayload[3] = 0xD9;
-	rf_tx_buffer.rawPayload[4] = EOF;
-	// rf_tx_buffer.rawPayload[0] = 0x3F;
-	// rf_tx_buffer.rawPayload[1] = SOF;
-	// rf_tx_buffer.rawPayload[2] = 0x01;
-	// for(i =3 ; i < 63; i++){
-	// 	rf_tx_buffer.rawPayload[i] = 0xD3;
-	// }
-	// rf_tx_buffer.rawPayload[63] = EOF;
+	//rf_tx_buffer.rawPayload[0] = 0x04;
+	//rf_tx_buffer.rawPayload[1] = SOF;
+	//rf_tx_buffer.rawPayload[2] = 0x01;
+	//rf_tx_buffer.rawPayload[3] = 0xD9;
+	//rf_tx_buffer.rawPayload[4] = EOF;
+	 rf_tx_buffer.rawPayload[0] = 0x3F;
+	 rf_tx_buffer.rawPayload[1] = SOF;
+	 rf_tx_buffer.rawPayload[2] = 0x01;
+	 for(i =3 ; i < 63; i++){
+	 	rf_tx_buffer.rawPayload[i] = 0xD3;
+	 }
+	 rf_tx_buffer.rawPayload[63] = EOF;
 	
 	uart0Send(msg,6); // for testing
 	
 //		// -------- TEST: RX --------
 	
-////		RFST = SRX;
-////		mode = SRX;
-////		delayMs(1);
+	//RFST = SRX;
+	//delayMs(1);
 
 //		// ------ TEST: TX -------
 
-	RFST = SIDLE; 
-	//mode = SIDLE; 
-	delayMs(1);
+	//RFST = SIDLE; 
+	////mode = SIDLE; 
+	//delayMs(1);
 
-	RFST = SFSTXON;
-	//mode = SFSTXON;
-	delayMs(1);
+	//RFST = SFSTXON;
+	////mode = SFSTXON;
+	//delayMs(1);
 
 	//RFST = STX;
 	//mode = STX;
 
-
+	
 
 	//uart_rx_packet_complete = 0;
 	while(1){
-
-		rfStateMachine(STX);
-	
-		// rfSend(rf_tx_buffer.rawPayload, 5);
-		//delayMs(700);
 		
-		// if(uart_rx_packet_complete){
-			
-		// 	DMAIRQ &= ~DMAIF0;
-		// 	uart_rx_packet_complete = 0;
-		// 	uartPacketHandler(&uart_rx_buffer);
-		// }
-		// if(rf_rx_packet_complete){
-		// 	blink();
-		// 	DMAIRQ &= ~DMAIF1;
-		// 	rf_rx_packet_complete = 0;
-		// 	rfPacketHandler(&rf_rx_buffer);
-		// }
+		
+		rfStateMachine(STX);
+
+		if(uart_rx_packet_complete){
+		
+		DMAIRQ &= ~DMAIF0;
+		uart_rx_packet_complete = 0;
+		uartPacketHandler(&uart_rx_buffer);
+		}
+		if(rf_rx_packet_complete){
+		//blink();
+		DMAIRQ &= ~DMAIF1;
+		rf_rx_packet_complete = 0;
+		rfPacketHandler(&rf_rx_buffer);
+		}
 
 	}
 	

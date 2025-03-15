@@ -28,7 +28,7 @@ extern __xdata volatile packet rf_tx_buffer; 		// Buffer for transmit data
 extern uint8_t __xdata rf_rx_index;									// Indexer for receive
 extern uint8_t __xdata rf_tx_index;									// Indexer for transmit
 extern uint8_t __xdata rf_rx_length; 								// Length of incoming packet
-extern __bit rf_rx_packet_complete;									// Flag for full packet received
+extern __bit volatile rf_rx_packet_complete;									// Flag for full packet received
 //extern uint8_t mode; 															// Current state of the system
 extern uint8_t max_len; 													// Max length of buffers (best for interrupts)
 

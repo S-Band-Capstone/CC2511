@@ -43,7 +43,7 @@ void rfPacketHandler(packet *payload){
 	length = payload->fields.length; 	// Get length
 	sof = payload->fields.sof; 				// Get sof
 	eof = payload->fields.eof;				// Get eof
-	uart0Send(payload, 64);
+	
 	
 	//uart0Send(msg2,8);
 	
@@ -60,19 +60,15 @@ void rfPacketHandler(packet *payload){
 			//uint8_t msg[] = "Packet Received!\n";
 			//rfSend(msg, sizeof(msg)-1);
 			uint8_t msg = ACK; 
-			uart0Send(&msg, 1);
-			uart0Send(payload, sizeof(*payload));
-//			for(i = 0; i < 10; i++){
-//				
-//				blink();
-//			}
+			uart0SendCmd(&msg, 0x01);
+
 			break;
 		}
 		case DATA_STORE:{
 			// Send data to xdata to be stored. For later use
 			//uint8_t msg[] = "Data Store!\n";
 			uint8_t msg = DATA_STORE;
-			uart0Send(&msg, 1);
+			uart0Send(&msg, 0x01);
 			
 			break;
 		}
@@ -80,7 +76,7 @@ void rfPacketHandler(packet *payload){
 			// Retrieve data from memory over SPI and DMA and send via RF. 
 			//uint8_t msg[] = "Data Send!\n";
 			uint8_t msg = DATA_SEND;
-			uart0Send(&msg, 1);
+			uart0Send(&msg, 0x01);
 			
 			break;
 		}
@@ -116,11 +112,8 @@ void uartPacketHandler(packet *payload){
 			uint8_t msg = ACK; 
 			//uint8_t msg[] = "Acknowledge\n"; // Returned words could just be from ENUM (Smaller)
 			//uart0Send(msg, sizeof(msg)-1); // for sending string
-			uart0Send(&msg,1);
-			for(i = 0; i < 2; i++){
-				
-				blink();
-			}
+			uart0SendCmd(&msg,0x01);
+			uart_rx_packet_complete = 0;
 
 		}break;
 		case DATA_STORE: {
@@ -129,21 +122,15 @@ void uartPacketHandler(packet *payload){
 			//uint8_t msg[] = "Data Stored\n";
 			//uart0Send(msg, sizeof(msg)-1); // for sending string
 			uart0Send(&msg,1);	
-			for( i = 0; i < 4; i++){
-					
-				blink();
-			}
+	
 		}break;
 		case DATA_SEND: {
 			// Send data through uart (OBC communications) 
 			uint8_t msg = DATA_SEND; 
 			//uint8_t msg[] = "Data Sent\n";
 			//uart0Send(msg, sizeof(msg)-1); // for sending string
-			uart0Send(&msg,1);
-			for(i = 0; i < 6; i++){
-				
-				blink();
-			}	
+			uart0Send(&msg,0x01);
+		
 			for(i = 0; i < 10; i++){
 				rfSend(rf_tx_buffer.rawPayload, 4); // For demo purposes
 			}
@@ -151,7 +138,7 @@ void uartPacketHandler(packet *payload){
 		// TODO: complete all other cases
 	}
 	
-	
+	uart_rx_packet_complete = 0;
 }
 
 //uint8_t *getrfCommand(){

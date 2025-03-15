@@ -10,43 +10,44 @@
 */
 // Headers 
 #include <../include/cc_uart_v1.h>
+#include <../include/cc_dma_v1.h>
 #include <../include/cc_packet_handlers.h>
 
 // Variables
 __xdata volatile packet uart_rx_buffer;		// Buffer for receive data 
-__xdata volatile packet uart_tx_uffer;		// Buffer for transmit data 
+__xdata volatile packet uart_tx_buffer;		// Buffer for transmit data 
 uint8_t __xdata uart_rx_index = 0;							// Indexer for receive 
 uint8_t __xdata uart_tx_index = 0;							// Indexer for transmit
 uint8_t __xdata uart_rx_length = 0; 						// Length of incoming packet
-__bit uart_rx_packet_complete = 0;										// Flag for full packet received 
+__bit volatile uart_rx_packet_complete = 0;										// Flag for full packet received 
 
 
 
 // Interrupt service routines
 //void uart0RxIsr(void) __interrupt(URX0_VECTOR) { 
 //  /* Interrupt handler for UART RX. Primary RX source. */
-//	
+	
 //	// Temp byte transfer variable
 //	uint8_t temp_byte;
-//	
+//	blink();
 //	// read byte
 //	URX0IF = 0; // Hardware will clear... just in case
 //	temp_byte = U0DBUF; 
-//	
+	
 //	if(uart_rx_index == 0 && temp_byte != SOF){ // for type  uart_packet
 //		// Ignore if not valid start byte
 //		return; 
 //	}
-//	
+	
 //	// Store byte into to packet
 //	uart_rx_buffer.rawPayload[uart_rx_index++] = temp_byte; 
-//	
+	
 //	// Store length byte which equals 2nd byte (3 because of previous increment)
 //	if(uart_rx_index == 3){
-//		
+		
 //		uart_rx_length = temp_byte;
 //	}
-//	
+	
 //	if (uart_rx_index >= (uart_rx_length + 6)){ // check packet length bytes (SOF(1) + CMD(1) + LEN(1) + DATA(LEN) + CRC(2) + EOF(1))
 //		// need to double check number to make sure that condition is correct. 
 //		 if(uart_rx_buffer.fields.eof == EOF){
@@ -65,6 +66,7 @@ void uartInit(void){
 	
 	// variables 
 	uart_rx_index = 0;
+	uart_tx_index = 0;
 	
 	// Enable UART
 	U0CSR |= 0x80; 
@@ -86,7 +88,9 @@ void uartInit(void){
 	
 	// Setup Interrupts
 	URX0IE = 1;
+	IEN0 |= 0x04;
 	UTX0IF = 0;
+	URX0IF = 0;
 	
 	// Enable receiver to listen for Message
 	U0CSR |= 0x40; 
@@ -95,27 +99,37 @@ void uartInit(void){
 
 
 // UART TX 
-void uart0Send(uint8_t *uartTxBuf, uint16_t uartTxBufLen) { 
+void uart0Send(uint8_t *uartTxBuf, uint8_t uartTxBufLen) { 
 	/* 	Polling function for UART TX
 	*		rtype: void
 	*
 	*		NOTE: When sending char array, BufLen = length - 1. Array Indexing.
 	*					When sending standalone char, BufLen = length. Singular value. 
 	*/
-	
+	while(U0CSR & 0x01); // wait for TX to be ready
   	U0CSR &= ~0x40; //turn off receiver for RX
 	UTX0IF = 0; 
-	
+	setDmaArm(3);
+	uart_tx_buffer.rawPayload[0] = uartTxBufLen;
 	for (uart_tx_index = 0; uart_tx_index < uartTxBufLen; uart_tx_index++) { 
-		U0DBUF = uartTxBuf[uart_tx_index]; 
-		//while( !UTX0IF ); 
-		//UTX0IF = 0; 
-    	while(!(U0CSR & 0x02));;
-		U0CSR &= ~0x02; 
-  	} 
-	uart_tx_index = 0;
+		uart_tx_buffer.rawPayload[uart_tx_index+1] = uartTxBuf[uart_tx_index]; 
+  	}
+	U0DBUF = uart_tx_buffer.rawPayload[0]; 
 	U0CSR |= 0x40; // turn on receiver for RX
 } 
+void uart0SendCmd(uint8_t *uartTxBuf, uint8_t uartTxBufLen){
+
+	//while(U0CSR & 0x01); // wait for TX to be ready
+  	U0CSR &= ~0x40; //turn off receiver for RX
+	UTX0IF = 0; 
+	setDmaArm(3);
+	//dmaAbort(3);
+	uart_tx_buffer.rawPayload[0] = uartTxBufLen;
+	uart_tx_buffer.rawPayload[1] = *uartTxBuf;
+	U0DBUF = *uartTxBuf;//uart_tx_buffer.rawPayload[0]; 
+	//dmaRequest(3);
+	U0CSR |= 0x40; // turn on receiver for RX
+}
 
 // UART RX 
 void uart0Receive(uint8_t* uartRxBuf, uint16_t uartRxBufLen) { 

@@ -11,7 +11,7 @@ __xdata volatile packet rf_tx_buffer;
 uint8_t __xdata rf_rx_index;
 uint8_t __xdata rf_tx_index;
 uint8_t __xdata rf_rx_length;
-__bit rf_rx_packet_complete;
+__bit volatile rf_rx_packet_complete;
 uint8_t mode;
 uint8_t max_len = 64; // Can change. To change, make sure to update inside packet Handler. 
 
@@ -99,7 +99,7 @@ void rfInit(void){
  	SYNC1 = 0xD3;
 	SYNC0 = 0x91;
 	PKTLEN = 0xFF; // 0xFF
-	PKTCTRL1 = 0x04; // 0x04 = Append_Status; if we include, it messes with RX
+	PKTCTRL1 = 0x00; // 0x04 = Append_Status; if we include, it messes with RX
 	PKTCTRL0 = 0x01; // 0x05 = CRC enabled with variable length , 0x01 = variable length
 	ADDR = 0x00;
 	CHANNR = 0x00;
@@ -197,49 +197,8 @@ void rfSend(uint8_t *rfTxBuffer, uint16_t rfTxBufLen){
 	// Variables 
 	uint8_t i = 0;		// loop iterator
 	
-	//RFST = SIDLE;
-	//mode = SIDLE;
-	// delayMs(1);
-	
-	// Turn on frequency synthesizer if not on already
-	//RFST = SFSTXON; 
-	// delayMs(1); 
-	RFTXRXIF =0;
-	RFST = SCAL;
-	// Set strobe command for transmit
-	// delayMs(1); // necessary evil
-	
-	// Wait for flag to be set
-	// waitRfTxRxFlag();
-
-	//write the first byte (packet length)
 	delayMs(100);
-	RFD = 0x05;//rfTxBuffer[0];
-	//while (!(RFTXRXIF & 0x01));
-	// RFTXRXIF = 0;
-	
-	// send the rest of the packet
-	//for(i = 1; i < rfTxBufLen; i++){
-		
-
-		// delayMs(1);
-		// waitRfTxRxFlag(); // wait for flag to be set
-		//RFD = rfTxBuffer[i];
-		//while (!(RFTXRXIF & 0x01));
-		//RFTXRXIF = 0;
-	
-	//}
-	
-	// Calibrate if FS_AUTOSCAL set to `00`
-	// RFST = SCAL;
-	// mode = SCAL;
-	// delayMs(1); // delay 1 MS to allow state transition f
-	
-	// Return to idle state 
-	// RFST = SIDLE;
-	// mode = SIDLE;
-	// delayMs(1); 
-	
+	RFD = rfTxBuffer[0];
 	
 }
 
@@ -309,16 +268,21 @@ void rfStateMachine(uint8_t mode) {
 		case SFSTXON: {
 			
 			// Set state 
-			RFST = STX;
+			RFST = SFSTXON;
 			break;
 		}
 		
 		case SRX: { 
 			
+			// Make sure Append status is off
+			PKTCTRL1 = 0x00;
+			
 			// Disable DMA for RFTX and enable for RFRX
-			DMAARM &= ~(0x04); 	// Disables DMA channel 2 (RFTX)
-			DMAARM |= 0x03; 	// ARM DMA channel 0 (UART), DMA channel 1 (RFRX)
-
+			//DMAARM &= ~(0x04); 	// Disables DMA channel 2 (RFTX)
+			dmaAbort(2);
+			//DMAARM |= 0x03; 	// ARM DMA channel 0 (UART), DMA channel 1 (RFRX)
+			setDmaArm(1);
+			
 			// Set state
 			RFST = SRX;
 			//delayMs(1);
@@ -329,11 +293,13 @@ void rfStateMachine(uint8_t mode) {
 		case STX: {
 			
 			// Disable DMA for RFRX and enable for RFTX
-			DMAARM &= ~(0x02); 	// Disables DMA channel 1 (RFRX)
-			DMAARM |= 0x05; 	// ARM DMA Channel 0 (UART), DMA Channel 1 (RFTX)
+			//DMAARM &= ~(0x02); 	// Disables DMA channel 1 (RFRX)
+			dmaAbort(1);
+			//DMAARM |= 0x05; 	// ARM DMA Channel 0 (UART), DMA Channel 1 (RFTX)
+			setDmaArm(2);
 			//delayMs(1);
-			// Set state
 			
+			// Set state
 			RFST = STX;
 			//delayMs(1);
 			//while (!(RFTXRXIF & 0x01));
@@ -366,6 +332,8 @@ void rfStateMachine(uint8_t mode) {
 
 		case STX: {
 			rfSend(rf_tx_buffer.rawPayload, 5);
+			//dmaRequest(2);
+			
 			break;
 		}
 
