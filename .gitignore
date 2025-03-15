@@ -1,3 +1,13 @@
+# incase make fails...
+*.ihx
+*.lk
+*.mem
+*.asm
+*.lst
+*.rel
+*.sym
+
+
 # Prerequisites
 *.d
 

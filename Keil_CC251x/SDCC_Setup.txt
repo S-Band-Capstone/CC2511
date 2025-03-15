@@ -2,24 +2,28 @@
 This is an over generaliztion for the simple way of getting from code to flashing.
 
 
-1) Download and install SDCC.
+1) Download and install newest version of SDCC.
 	--> from Sourceforge: https://sourceforge.net/projects/sdcc/files/
 
 - This should automatically set the PATH environment. 
 
 2) Verify that it installed correctly.
+    (probably need to) close/reopen terminal
 	in CMD: sdcc --version 
 
 - If you need to find where it installed:
-	in CMD: where sdcc 
+	in CMD (windows): where sdcc 
+    in CMD (linux): which sdcc
 
 3) Compile code
 	terminal/cmd: sdcc -c file_name.c 
+    use simple hello.c as example
 	
 - Used to compile the code into assembly
 
 4) Link code 
 	terminal/cmd: sdcc file_name
+    **stuck here... errors up the wazoo**
 
 - Used to link files together and create hex files for flashing. Can skipp Step 3 to this one directly if you want.
 
@@ -38,7 +42,10 @@ This is an over generaliztion for the simple way of getting from code to flashin
 
 7) flash with the SmartRF Flash Programmer
 - "What you want to program?" ==> Program CCxxxx SoC or MSP430
+- https://software-dl.ti.com/dsps/forms/self_cert_export.html?prod_no=flash-programmer-1.12.8.zip
 --> allows you to program the chip. 
+- put .hex file from compilation (in /bin) as flash image
+- press "perform action"
 
 
 ---- Makefile General Notes ---- 
@@ -58,11 +65,12 @@ to do everything line by line.
   This should allow you to find the path that you need to run make. 
 
 2) In terminal: `make`
+- NOTE: DO NOT FORGET TO: mkdir -p obj 
+- from Keil_CC2511x folder
 - you should see a bunch of outputs for warnings (if present) or `sdcc` commands. 
 - This stage will also stop compilation and source to the specific errors of a file
 when they are present. 
 
-NOTE: DO NOT FORGET TO: mkdir -p obj 
 This is required so that the Makefile knows where to store all the object files (e.g. .lst, .asm, .sym ...)
 
 3) If you want to clean build, in terminal: `make clean` then `make` 
