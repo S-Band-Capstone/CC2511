@@ -16,6 +16,7 @@
 
 
 #include <../include/cc_packet_handlers.h>
+#include <../include/cc_dma_v1.h>
 #include <../include/cc_uart_v1.h>
 #include <../include/cc_rf_v1.h>
 
@@ -59,8 +60,10 @@ void rfPacketHandler(packet *payload){
 			// switch state to IDEL - packet received - or continue based on Length
 			//uint8_t msg[] = "Packet Received!\n";
 			//rfSend(msg, sizeof(msg)-1);
-			uint8_t msg = ACK; 
-			uart0SendCmd(&msg, 0x01);
+			uint8_t msg = ACK;
+			dmaAbort(3); 
+			//uart0SendCmd(&msg, 0x01);
+			U0DBUF = msg; 
 
 			break;
 		}
@@ -94,14 +97,16 @@ void uartPacketHandler(packet *payload){
 	uint8_t sof;
 	uint8_t eof; 
 	uint8_t i;
+	uint8_t msg_error[] = "Error\n";
 	
+
 	uart_cmd = payload->fields.command; // Get command
 	length = payload->fields.length;		// Get length
 	sof = payload->fields.sof; 					// Get sof	
 	eof = payload->fields.eof;					// Get eof
 	
 	if(sof != SOF || eof != EOF){// return if bad structure
-		
+		uart0Send(msg_error, 6);
 		return; 
 	}
 	
@@ -112,7 +117,9 @@ void uartPacketHandler(packet *payload){
 			uint8_t msg = ACK; 
 			//uint8_t msg[] = "Acknowledge\n"; // Returned words could just be from ENUM (Smaller)
 			//uart0Send(msg, sizeof(msg)-1); // for sending string
-			uart0SendCmd(&msg,0x01);
+			//uart0SendCmd(&msg,0x01);
+			dmaAbort(3);
+			U0DBUF = msg; // send to UART
 			uart_rx_packet_complete = 0;
 
 		}break;
@@ -138,7 +145,7 @@ void uartPacketHandler(packet *payload){
 		// TODO: complete all other cases
 	}
 	
-	uart_rx_packet_complete = 0;
+	//uart_rx_packet_complete = 0;
 }
 
 //uint8_t *getrfCommand(){

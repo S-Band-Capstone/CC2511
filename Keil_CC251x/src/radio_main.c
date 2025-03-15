@@ -109,19 +109,19 @@ int main(void){
 	while(1){
 		
 		
-		rfStateMachine(STX);
-
+		rfStateMachine(SRX);
+	
 		if(uart_rx_packet_complete){
 		
-		DMAIRQ &= ~DMAIF0;
-		uart_rx_packet_complete = 0;
-		uartPacketHandler(&uart_rx_buffer);
+			DMAIRQ &= ~DMAIF0;
+			uart_rx_packet_complete = 0;
+			uartPacketHandler(&uart_rx_buffer);
 		}
 		if(rf_rx_packet_complete){
 		//blink();
-		DMAIRQ &= ~DMAIF1;
-		rf_rx_packet_complete = 0;
-		rfPacketHandler(&rf_rx_buffer);
+			DMAIRQ &= ~DMAIF1;
+			rf_rx_packet_complete = 0;
+			rfPacketHandler(&rf_rx_buffer);
 		}
 
 	}

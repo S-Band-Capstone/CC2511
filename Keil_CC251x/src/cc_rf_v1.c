@@ -6,12 +6,12 @@
 #include <../include/cc_dma_v1.h>
 
 // Variables 
-__xdata volatile packet rf_rx_buffer;
-__xdata volatile packet rf_tx_buffer;
+volatile __xdata packet rf_rx_buffer;
+volatile __xdata packet rf_tx_buffer;
 uint8_t __xdata rf_rx_index;
 uint8_t __xdata rf_tx_index;
 uint8_t __xdata rf_rx_length;
-__bit volatile rf_rx_packet_complete;
+volatile __bit rf_rx_packet_complete;
 uint8_t mode;
 uint8_t max_len = 64; // Can change. To change, make sure to update inside packet Handler. 
 
@@ -138,7 +138,7 @@ void rfInit(void){
  	// SYNC1 = 0xD3;
 	// SYNC0 = 0x91;
 	// PKTLEN = 0xFF; // 0xFF
-	// PKTCTRL1 = 0x04; // 0x04 = Append_Status; if we include, it messes with RX
+	// PKTCTRL1 = 0x00; // 0x04 = Append_Status; if we include, it messes with RX
 	// PKTCTRL0 = 0x01; // 0x05 = CRC enabled with variable length , 0x01 = variable length
 	// ADDR = 0x00;
 	// CHANNR = 0x00;

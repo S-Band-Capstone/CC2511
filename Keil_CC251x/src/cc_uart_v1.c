@@ -14,12 +14,12 @@
 #include <../include/cc_packet_handlers.h>
 
 // Variables
-__xdata volatile packet uart_rx_buffer;		// Buffer for receive data 
-__xdata volatile packet uart_tx_buffer;		// Buffer for transmit data 
+volatile __xdata packet uart_rx_buffer;		// Buffer for receive data 
+volatile __xdata packet uart_tx_buffer;		// Buffer for transmit data 
 uint8_t __xdata uart_rx_index = 0;							// Indexer for receive 
 uint8_t __xdata uart_tx_index = 0;							// Indexer for transmit
 uint8_t __xdata uart_rx_length = 0; 						// Length of incoming packet
-__bit volatile uart_rx_packet_complete = 0;										// Flag for full packet received 
+volatile __bit uart_rx_packet_complete = 0;										// Flag for full packet received 
 
 
 
@@ -119,7 +119,7 @@ void uart0Send(uint8_t *uartTxBuf, uint8_t uartTxBufLen) {
 } 
 void uart0SendCmd(uint8_t *uartTxBuf, uint8_t uartTxBufLen){
 
-	//while(U0CSR & 0x01); // wait for TX to be ready
+	while(U0CSR & 0x01); // wait for TX to be ready
   	U0CSR &= ~0x40; //turn off receiver for RX
 	UTX0IF = 0; 
 	setDmaArm(3);
