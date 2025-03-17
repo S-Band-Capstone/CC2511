@@ -58,7 +58,7 @@ int main(void){
 		
 	// temp variable
 	uint8_t i; 
-	uint8_t msg[7] = "Start\n";
+	__xdata uint8_t msg[7] = "Start\n";
 	
 	// initialize system and modules 
 	init(); 
@@ -109,7 +109,7 @@ int main(void){
 	while(1){
 		
 		
-		rfStateMachine(SRX);
+		setRfState(STX);
 	
 		if(uart_rx_packet_complete){
 		

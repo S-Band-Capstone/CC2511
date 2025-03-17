@@ -87,8 +87,8 @@ void uartInit(void){
 	P0DIR &= ~0x04; // Set P0.2 (RX) as input
 	
 	// Setup Interrupts
-	URX0IE = 1;
-	IEN0 |= 0x04;
+	//URX0IE = 1;
+	//IEN0 |= 0x04;
 	UTX0IF = 0;
 	URX0IF = 0;
 	
@@ -114,21 +114,16 @@ void uart0Send(uint8_t *uartTxBuf, uint8_t uartTxBufLen) {
 	for (uart_tx_index = 0; uart_tx_index < uartTxBufLen; uart_tx_index++) { 
 		uart_tx_buffer.rawPayload[uart_tx_index+1] = uartTxBuf[uart_tx_index]; 
   	}
-	U0DBUF = uart_tx_buffer.rawPayload[0]; 
+	dmaRequest(3);
 	U0CSR |= 0x40; // turn on receiver for RX
+	uart_tx_index = 0;
 } 
-void uart0SendCmd(uint8_t *uartTxBuf, uint8_t uartTxBufLen){
 
-	while(U0CSR & 0x01); // wait for TX to be ready
-  	U0CSR &= ~0x40; //turn off receiver for RX
-	UTX0IF = 0; 
-	setDmaArm(3);
-	//dmaAbort(3);
+void setUartTxBuffer(uint8_t *uartTxBuf, uint8_t uartTxBufLen){
 	uart_tx_buffer.rawPayload[0] = uartTxBufLen;
-	uart_tx_buffer.rawPayload[1] = *uartTxBuf;
-	U0DBUF = *uartTxBuf;//uart_tx_buffer.rawPayload[0]; 
-	//dmaRequest(3);
-	U0CSR |= 0x40; // turn on receiver for RX
+	for (uart_tx_index = 0; uart_tx_index < uartTxBufLen; uart_tx_index++) { 
+		uart_tx_buffer.rawPayload[uart_tx_index+1] = uartTxBuf[uart_tx_index]; 
+  	}
 }
 
 // UART RX 
@@ -137,7 +132,7 @@ void uart0Receive(uint8_t* uartRxBuf, uint16_t uartRxBufLen) {
 	*		rtype: void
 	*/ 
 	
-  U0CSR |= 0x40; URX0IF = 0; 
+  	U0CSR |= 0x40; URX0IF = 0; 
 	for(uart_rx_index = 0; uart_rx_index < uartRxBufLen; uart_rx_index++) {
 		while( !URX0IF ); 
 		uartRxBuf[uart_rx_index] = U0DBUF; 

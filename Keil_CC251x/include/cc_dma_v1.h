@@ -32,25 +32,6 @@ typedef struct{
 	uint8_t byte7;       		// SrcInc [7:6] (2 bits) + DstInc [5:4] (2 bits) + IRQMask [3] (1 bit) + M8 [2] (1 bit) + Prio [1:0] (2 bits)
 } dma_cfg; 
 
-// typedef struct{
-	  
-// 	uint8_t srcAddrHi;   	// Source Address High Byte(XDATA)
-// 	uint8_t srcAddrLo;   	// Source Address Low Byte(XDATA)
-// 	uint8_t dstAddrHi;  	// Destination Address High Byte (XDATA)
-// 	uint8_t dstAddrLo;  	// Destination Address Low Byte (XDATA)
-// 	uint8_t vlen : 3;
-// 	uint8_t lenHi : 5;
-// 	uint8_t lenLo : 8;
-// 	uint8_t wordsize : 1; 
-// 	uint8_t tmode : 2;
-// 	uint8_t trig : 5;
-// 	uint8_t srcInc : 2;
-// 	uint8_t dstInc : 2;
-// 	uint8_t irqMask : 1;
-// 	uint8_t m8 : 1;
-// 	uint8_t prio : 2;
-// } dma_cfg; 
-
 // DMA channel configurations  
 extern __xdata dma_cfg dma_channels[5];  
 extern const dma_cfg dma_init_val;

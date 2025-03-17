@@ -51,16 +51,6 @@ typedef union {
 	
 }packet;
 
-// Variables (Static to keep them in scope of file 
-//static Commands uart_cmd; 			// UART command from packet
-//static uint8_t uart_length;
-//static uint8_t uart_sof;
-//static uint8_t uart_eof; 
-//static Commands rf_cmd; 				// RF command from packet 
-//static uint8_t rf_length;
-//static uint8_t rf_sof;
-//static uint8_t rf_eof; 
-
 
 /* Interrupts */
 

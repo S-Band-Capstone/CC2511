@@ -5,29 +5,10 @@
 *
 */
 
-// 1) Get RFTX Working
-// 2) RFTX DMA 
-// 3) Validate RF registers 
-// --> May need to switch register values between states
-// 4) Packet Handler 
-// 5) SPI -- Refer to SWRA223 
-// --> Include memory module
-// 6) Validate what needs interrupts and what doesn't 
-
-
 #include <../include/cc_packet_handlers.h>
 #include <../include/cc_dma_v1.h>
 #include <../include/cc_uart_v1.h>
 #include <../include/cc_rf_v1.h>
-
-//static Commands uart_cmd; 			
-//static uint8_t uart_length;
-//static uint8_t uart_sof;
-//static uint8_t uart_eof; 
-//static Commands rf_cmd; 				
-//static uint8_t rf_length;
-//static uint8_t rf_sof;
-//static uint8_t rf_eof; 
 
 
 void rfPacketHandler(packet *payload){
@@ -61,7 +42,7 @@ void rfPacketHandler(packet *payload){
 			//uint8_t msg[] = "Packet Received!\n";
 			//rfSend(msg, sizeof(msg)-1);
 			uint8_t msg = ACK;
-			dmaAbort(3); 
+			dmaAbort(3); // sending single packet
 			//uart0SendCmd(&msg, 0x01);
 			U0DBUF = msg; 
 
@@ -129,7 +110,8 @@ void uartPacketHandler(packet *payload){
 			//uint8_t msg[] = "Data Stored\n";
 			//uart0Send(msg, sizeof(msg)-1); // for sending string
 			uart0Send(&msg,1);	
-	
+			uart_rx_packet_complete = 0;
+
 		}break;
 		case DATA_SEND: {
 			// Send data through uart (OBC communications) 
@@ -137,27 +119,11 @@ void uartPacketHandler(packet *payload){
 			//uint8_t msg[] = "Data Sent\n";
 			//uart0Send(msg, sizeof(msg)-1); // for sending string
 			uart0Send(&msg,0x01);
-		
-			for(i = 0; i < 10; i++){
-				rfSend(rf_tx_buffer.rawPayload, 4); // For demo purposes
-			}
+			
+			uart_rx_packet_complete = 0;
 		}break;
 		// TODO: complete all other cases
 	}
 	
-	//uart_rx_packet_complete = 0;
+	uart_rx_packet_complete = 0;
 }
-
-//uint8_t *getrfCommand(){
-	
-//	uint8_t command; 
-	
-//	return command;
-//}
-
-//uint8_t *getUartCommand(){
-	
-//	uint8_t command; 
-	
-//	return command;
-//}	

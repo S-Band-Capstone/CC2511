@@ -29,13 +29,13 @@ void uartInit(void);
 
 // Functions for peripheral control
 void uart0Send(uint8_t *uartTxBuf, uint8_t uartTxBufLen);
-void uart0SendCmd(uint8_t *uartTxBuf, uint8_t uartTxBufLen);
 void uart0Receive(uint8_t *suartRxBuf, uint16_t uartRxBufLen);
 
 // Function Getters 
 packet *getUartPacket(void);
 
 // Function Setters 
+void setUartTxBuffer(uint8_t *uartTxBuf, uint8_t uartTxBufLen);
 void resetRxIndex(void); 
 
 
