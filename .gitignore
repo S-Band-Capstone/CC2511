@@ -7,8 +7,9 @@
 *.rel
 *.sym
 
-# do NOT track binary (hex) output of make
+# do NOT track binaries (hex) / obj files (rst) i.e. output of make
 *.hex
+*.rst
 
 
 # Prerequisites
