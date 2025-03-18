@@ -18,7 +18,7 @@ void rfPacketHandler(packet *payload){
 	uint8_t length;
 	uint8_t sof;
 	uint8_t eof;
-	uint8_t i;	
+	//uint8_t i;	
 	uint8_t msg2[] = "handler\n";
 	
 	rf_cmd = payload->fields.command; // Get command
@@ -42,9 +42,10 @@ void rfPacketHandler(packet *payload){
 			//uint8_t msg[] = "Packet Received!\n";
 			//rfSend(msg, sizeof(msg)-1);
 			uint8_t msg = ACK;
-			dmaAbort(3); // sending single packet
+			//dmaAbort(3); // sending single packet
 			//uart0SendCmd(&msg, 0x01);
-			U0DBUF = msg; 
+			rfSend()
+			//setDmaArm(3);
 
 			break;
 		}
@@ -52,15 +53,23 @@ void rfPacketHandler(packet *payload){
 			// Send data to xdata to be stored. For later use
 			//uint8_t msg[] = "Data Store!\n";
 			uint8_t msg = DATA_STORE;
-			uart0Send(&msg, 0x01);
-			
+			//uart0Send(&msg, 0x01);
+			dmaAbort(3);
+			RFD = msg;
+			setDmaArm(3);
+
+
 			break;
 		}
 		case DATA_SEND: {
 			// Retrieve data from memory over SPI and DMA and send via RF. 
 			//uint8_t msg[] = "Data Send!\n";
 			uint8_t msg = DATA_SEND;
-			uart0Send(&msg, 0x01);
+			//uart0Send(&msg, 0x01);
+			setRfState(STX);
+			dmaAbort(3);
+			RFD = msg;
+			setDmaArm(3);
 			
 			break;
 		}
@@ -77,7 +86,7 @@ void uartPacketHandler(packet *payload){
 	uint8_t length;
 	uint8_t sof;
 	uint8_t eof; 
-	uint8_t i;
+	//uint8_t i;
 	uint8_t msg_error[] = "Error\n";
 	
 
@@ -102,6 +111,7 @@ void uartPacketHandler(packet *payload){
 			dmaAbort(3);
 			U0DBUF = msg; // send to UART
 			uart_rx_packet_complete = 0;
+			setDmaArm(3);
 
 		}break;
 		case DATA_STORE: {
@@ -109,8 +119,11 @@ void uartPacketHandler(packet *payload){
 			uint8_t msg = DATA_STORE; 
 			//uint8_t msg[] = "Data Stored\n";
 			//uart0Send(msg, sizeof(msg)-1); // for sending string
-			uart0Send(&msg,1);	
+			//uart0Send(&msg,1);	
+			dmaAbort(3);
+			U0DBUF = msg;
 			uart_rx_packet_complete = 0;
+			setDmaArm(3);
 
 		}break;
 		case DATA_SEND: {
@@ -119,11 +132,13 @@ void uartPacketHandler(packet *payload){
 			//uint8_t msg[] = "Data Sent\n";
 			//uart0Send(msg, sizeof(msg)-1); // for sending string
 			uart0Send(&msg,0x01);
-			
+			dmaAbort(3);
+			U0DBUF = msg;
 			uart_rx_packet_complete = 0;
+			setDmaArm(3);
 		}break;
 		// TODO: complete all other cases
 	}
 	
-	uart_rx_packet_complete = 0;
+	//uart_rx_packet_complete = 0;
 }

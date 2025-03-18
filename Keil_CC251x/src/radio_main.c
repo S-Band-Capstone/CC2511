@@ -58,7 +58,7 @@ int main(void){
 		
 	// temp variable
 	uint8_t i; 
-	__xdata uint8_t msg[7] = "Start\n";
+	__xdata uint8_t start_msg[7] = "Start\n";
 	
 	// initialize system and modules 
 	init(); 
@@ -83,45 +83,24 @@ int main(void){
 	 }
 	 rf_tx_buffer.rawPayload[63] = EOF;
 	
-	uart0Send(msg,6); // for testing
+	uart0Send(start_msg,6); // for testing
 	
-//		// -------- TEST: RX --------
-	
-	//RFST = SRX;
-	//delayMs(1);
-
-//		// ------ TEST: TX -------
-
-	//RFST = SIDLE; 
-	////mode = SIDLE; 
-	//delayMs(1);
-
-	//RFST = SFSTXON;
-	////mode = SFSTXON;
-	//delayMs(1);
-
-	//RFST = STX;
-	//mode = STX;
-
-	
-
-	//uart_rx_packet_complete = 0;
 	while(1){
 		
 		
-		setRfState(STX);
-	
+		//setRfState(STX);
+		// Wait to receive data from OBC or from RF
 		if(uart_rx_packet_complete){
 		
 			DMAIRQ &= ~DMAIF0;
 			uart_rx_packet_complete = 0;
-			uartPacketHandler(&uart_rx_buffer);
+			uartPacketHandler(&uart_rx_buffer); // Handle packet UART
 		}
 		if(rf_rx_packet_complete){
-		//blink();
+	
 			DMAIRQ &= ~DMAIF1;
 			rf_rx_packet_complete = 0;
-			rfPacketHandler(&rf_rx_buffer);
+			rfPacketHandler(&rf_rx_buffer); // Handle Packet RX 
 		}
 
 	}

@@ -44,13 +44,13 @@ void dmaInit(void);
 
 // Functions
 volatile void dmaAbort(uint8_t channel);
-void dmaRequest(uint8_t channel);
-	
+volatile void dmaRequest(uint8_t channel);
+
 // Getters 
 
 // Setters 
 volatile void setDmaArm(uint8_t channel);
-void setDmaDisarmrm(uint8_t channel);
+void setDmaConfig(uint8_t channel, __xdata uint8_t *srcAddr, __xdata uint8_t *dstAddr, uint8_t srcInc, uint8_t dstInc, uint8_t trigger, uint8_t tMode);
 
 
 #endif

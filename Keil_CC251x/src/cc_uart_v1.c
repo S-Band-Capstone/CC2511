@@ -83,8 +83,8 @@ void uartInit(void){
 	// Select pins and pin directions 
 	// Configure TX (P0.3) and RX (P0.2) pins
 	P0SEL |= 0x0C;  // Set P0.2 and P0.3 as peripheral I/O for USART0
-	P0DIR |= 0x08;  // Set P0.3 (TX) as output
-	P0DIR &= ~0x04; // Set P0.2 (RX) as input
+	//P0DIR |= 0x08;  // Set P0.3 (TX) as output
+	//P0DIR &= ~0x04; // Set P0.2 (RX) as input
 	
 	// Setup Interrupts
 	//URX0IE = 1;

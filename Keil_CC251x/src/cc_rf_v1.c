@@ -250,10 +250,16 @@ void rfSend(void){
 
 void setRfTxBuffer(uint8_t *rfTxBuffer, uint16_t rfTxBufferLen){
 
+	packet temp_pkt; 
 
+	temp_pkt.fields.length = rfTxBufferLen-1;
+	temp_pkt.fields.sof = SOF;	
+	temp_pkt.fields.eof = EOF;
+
+	//
 	rf_tx_buffer.rawPayload[0] = rfTxBufferLen-1;
-	for (rf_tx_index = 0; rf_tx_index < rfTxBufferLen; uart_tx_index++) { 
-		rf_tx_buffer.rawPayload[rf_tx_index+1] = rfTxBuffer[uart_tx_index]; 
+	for (rf_tx_index = 0; rf_tx_index < rfTxBufferLen; rf_tx_index++) { 
+		rf_tx_buffer.rawPayload[rf_tx_index+1] = rfTxBuffer[rf_tx_index]; 
   	}
 
 }

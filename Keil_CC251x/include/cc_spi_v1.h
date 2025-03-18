@@ -4,6 +4,9 @@
 #define CC_SPI_V1_H
 
 #include <blink.h>
+#include <../include/cc_uart_v1.h>
+#include <../include/cc_dma_v1.h>
+#include <../include/cc_packet_handlers.h>
 
 /*
 	32Mb SPI 
@@ -18,14 +21,22 @@
 
 */
 
+// Variables
+extern volatile __xdata packet spi_rx_buffer;		// Buffer for receive data 
+extern volatile __xdata packet spi_tx_buffer; 	// Buffer for transmit data
+extern uint8_t __xdata spi_rx_index;									// Indexer for receive
+extern uint8_t __xdata spi_tx_index;									// Indexer for transmit
+extern uint8_t __xdata spi_rx_length; 								// Length of incoming packet
+extern volatile __bit spi_rx_packet_complete;							// Flag for full packet received
+
 /* Interupts */
 
 /* Initializer */
 void spiInit(void); 
 
 /* Functions for peripheral control */
-void spi1Send(uint16_t* spiOutBuffer, uint16_t spiOutBufLen); 	//MOSI buffer tx
-void spi1Receive(uint16_t* spiInBuffer, uint16_t spiInBufLen); 	// MISO buffer rx
+void spi1Send(uint8_t *spiOutBuffer, uint16_t spiOutBufLen); 	//MOSI buffer tx
+void spi1Receive(uint8_t *spiInBuffer, uint16_t spiInBufLen); 	// MISO buffer rx
 
 /* Function Getters */
 
