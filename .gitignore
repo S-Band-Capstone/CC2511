@@ -7,6 +7,9 @@
 *.rel
 *.sym
 
+# do NOT track binary (hex) output of make
+*.hex
+
 
 # Prerequisites
 *.d
