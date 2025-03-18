@@ -43,12 +43,13 @@ volatile void delayMs(uint16_t ms) {
     uint32_t j = 0;
 
 	while(i--){
-        for (j = 0; j < 12; j++) {
+        for (j = 0; j < 13; j++) {
             wait();wait();wait();wait();wait();wait();wait();wait();wait();wait(); // 10 waits
             wait();wait();wait();wait();wait();wait();wait();wait();wait();wait();
             wait();wait();wait();wait();wait();wait();wait();wait();wait();wait();
             wait();wait();wait();wait();wait();wait();wait();wait();wait();wait();
             wait();wait();wait();wait();wait();wait();wait();wait();wait();wait();
+            wait();wait();wait();wait(); // 4 waits
         }
 	}
 }

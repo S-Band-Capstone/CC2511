@@ -56,6 +56,9 @@ int main(void){
 	// temp variable
 	uint8_t i; 
 	__xdata uint8_t msg[7] = "Start\n";
+    __xdata uint8_t beep[5] = "beep\n";
+    __xdata uint8_t boop[5] = "boop\n";
+
 	
 	// initialize system and modules 
 	init(); 
@@ -67,9 +70,11 @@ int main(void){
 	
 	while(1){
 		
-        uart0Send(msg,6);
+        uart0Send(beep,5);
         delayMs(1000);
 
+        uart0Send(boop,5);
+        delayMs(1000);
 	}
 	
 	return 0; 
