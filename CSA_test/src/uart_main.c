@@ -65,14 +65,21 @@ int main(void){
 	uartInit();
     dmaInit();
     delayMs(1000);
+    // set debug GPIO pins to output mode
+    P2DIR |= ( 1 << 1 ) | (1 << 2);
 	
 	uart0Send(msg,6); // for testing
 	
 	while(1){
 		
+
+        P2 ^= ( 1 << 1 ) ;                // Toggle Debug Data
+        P2 ^= ( 1 << 2 ) ;                // Toggle Debug Clock
         uart0Send(beep,5);
         delayMs(1000);
 
+        P2 ^= ( 1 << 1 ) ;                // Toggle Debug Data
+        P2 ^= ( 1 << 2 ) ;                // Toggle Debug Clock
         uart0Send(boop,5);
         delayMs(1000);
 	}
