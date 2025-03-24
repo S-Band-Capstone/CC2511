@@ -51,13 +51,27 @@ typedef union {
 	
 }packet;
 
+typedef union {
+	/* Packet strucutre for uart_packet */
+	
+	uint8_t rawPayload[64];  	
+	struct{
+		uint8_t length; // before SOF since apart of TI packet format
+		uint8_t command;
+		uint8_t payload[62];
+	
+	}fields;
+	
+}demoPacket;
+
 
 /* Interrupts */
 
 /* Functions for packet handlers */
 void rfPacketHandler(packet *payload);			// RF packet handler
 void uartPacketHandler(packet *payload);	// UART packet handler
-
+void demoRfHandler(packet *payload);				// Demo RF handler
+void demoUartHandler(packet *payload);			// Demo UART handler
 /* Function Getters */
 uint8_t* getrfCommand(void);
 uint8_t* getUartCommand(void); 

@@ -27,6 +27,9 @@ typedef unsigned char uint8_t;
 typedef unsigned int uint16_t; 
 typedef unsigned long int uint32_t; 
 
+// Vairables 
+extern volatile __xdata uint8_t temp_buffer[64]; // Temp buffer for testing
+
 // Generalized blink and wait functions. 
 void wait(void);
 void blink(void);

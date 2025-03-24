@@ -33,8 +33,6 @@ void rfPacketHandler(packet *payload){
 		return; // return error val? 
 	}	
 	
-	//uart0Send(msg2,8);
-	//uart0Send(&rf_cmd, 1);
 	switch (rf_cmd){// switch to process payload based on command
 		
 		case ACK: {
@@ -44,7 +42,7 @@ void rfPacketHandler(packet *payload){
 			uint8_t msg = ACK;
 			//dmaAbort(3); // sending single packet
 			//uart0SendCmd(&msg, 0x01);
-			rfSend()
+			rfSend(payload->rawPayload, length);
 			//setDmaArm(3);
 
 			break;
@@ -141,4 +139,124 @@ void uartPacketHandler(packet *payload){
 	}
 	
 	//uart_rx_packet_complete = 0;
+}
+
+
+
+void demoRfHandler(packet *payload){
+
+
+	// Variables 
+	Commands rf_cmd;
+	uint8_t length;
+	uint8_t i;
+	uint8_t rfH[] = "RF HANDLER\n";
+
+	uart0Send(rfH, 11);
+
+	rf_cmd = payload->fields.command; // Get command
+	length = payload->fields.length; 	// Get length
+
+	uart0Send(payload->rawPayload, length);
+	setRfState(SRX);
+	rf_rx_packet_complete = 0;
+
+	// switch(rf_cmd){
+	// 	case ACK: {
+	// 		// Acknowledge packet received
+	// 		uint8_t msg[] = "Acknowledge\n"; 
+	// 		uart0Send(msg, 0x0C);
+
+	// 		setRfState(STX);
+	// 		//setRfTxBuffer(msg, sizeof(msg));
+	// 		rfSend(payload->rawPayload, length);
+	// 		setRfState(SIDLE);
+	// 		break;
+	// 	}
+	// 	case DATA_STORE: {
+	// 		// Store data received
+	// 		uint8_t msg[] = "Data Stored\n";
+			
+	// 		for (i = 0; i < length; i++){
+	// 			temp_buffer[i] = payload->rawPayload[i];
+	// 		}
+	// 		uart0Send(msg, 0x0C);
+	// 		uart0Send(payload->rawPayload, length);
+			
+	// 		setRfState(STX);
+	// 		//setRfTxBuffer(msg, sizeof(msg));
+	// 		rfSend(payload->rawPayload, length);
+
+
+
+	// 		break;
+	// 	}
+	// 	case DATA_SEND: {
+	// 		// Send data
+	// 		uint8_t msg[] = "Data Sent\n";
+
+	// 		setRfState(STX);
+	// 		//setRfTxBuffer(msg, sizeof(msg));
+	// 		rfSend(payload->rawPayload, length);	
+	// 		uart0Send(msg, 0x0A);
+
+	// 		break;
+	// 	}
+	// 	defualt: {
+	// 		// default case
+	// 		uart0send(payload->rawPayload, length);
+	// 		setRfState(SRX);
+	// 		break;
+	// 	} 
+	// }
+}
+
+
+void demoUartHandler(packet *payload){
+
+	// Variables 
+	Commands uart_cmd;
+	uint8_t length;
+	uint8_t i;
+	uint8_t uartH[] = "UART HANDLER\n";
+
+	//uart0Send(uartH, 13);
+	
+	uart_cmd = payload->fields.command; // Get command
+	length = payload->fields.length; 	// Get length
+
+	setRfState(STX); 
+	rfSend(payload->rawPayload, length);
+
+	uart_rx_packet_complete = 0;
+	setRfState(SRX);
+	// switch(uart_cmd){
+	// 	case ACK: {
+	// 		// Acknowledge packet received
+	// 		break;
+	// 	}
+	// 	case DATA_STORE: {
+	// 		// Store data received
+	// 		uint8_t msg[] = "Data Stored\n";
+			
+	// 		for (i = 0; i < length; i++){
+	// 			temp_buffer[i] = payload->rawPayload[i];
+	// 		}
+	// 		uart0Send(msg, 0x0C);
+
+	// 		break;
+	// 	}
+	// 	case DATA_SEND: {
+	// 		// Send data
+
+	// 		break;
+	// 	}
+	// 	defualt: {
+	// 		// default case
+	// 		setRfState(STX);
+	// 		rfSend(payload->rawPayload, length);
+
+	// 		break;
+	// 	} 
+	// }
 }

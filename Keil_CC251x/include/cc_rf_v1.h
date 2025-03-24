@@ -42,7 +42,7 @@ void rfInit(void);
 
 // Functions for RF controls
 //void rfSend(uint8_t *rfTxBuffer);
-void rfSend(void);
+void rfSend(uint8_t *rfTxBuffer, uint16_t rfTxBufferLen);
 void setRfTxBuffer(uint8_t *rfTxBuffer, uint16_t rfTxBufLen);
 void rfReceive(uint8_t *rfRxBuffer, uint16_t rfRxBufLen); 
 static void waitRfTxRxFlag(void); 

@@ -1,6 +1,12 @@
 // Headers
 #include <../include/blink.h>
 
+
+// Variables 
+// volatile __xdata uint8_t temp_buffer[64]; // Temp buffer for testing
+
+
+
  void wait(void ){
 /* Generic wait/nop function. */
     ;
@@ -26,7 +32,26 @@ void blink(void){
 
 }
 
-void delayMs(uint16_t ms) {
+// void delayMs(uint16_t ms) {
+	
+// 	/*
+// 		Delay function in ms
+		
+// 		nano second (ns) = 10^-9 
+// 		milla second (ms) = 10^-3
+// 		clock frequency = 24Mhz => 1/24Mhz = 1 clock cycle	
+// 		1 clock cycle = 41.67 ns 
+// 		1 ms = 24000 clock cycles 
+	
+// 	*/
+	
+// 	uint32_t i = 4000 * ms; // assumuing a 1 machine cycle ~6 clock cycle
+// 	while(i--){
+// 		__asm__("nop");
+// 	}
+// }
+
+volatile void delayMs(uint16_t ms) {
 	
 	/*
 		Delay function in ms
@@ -40,10 +65,20 @@ void delayMs(uint16_t ms) {
 	*/
 	
 	uint32_t i = 4000 * ms; // assumuing a 1 machine cycle ~6 clock cycle
+    uint32_t j = 0;
+
 	while(i--){
-		__asm__("nop");
+        for (j = 0; j < 8; j++) {
+            wait();wait();//wait();wait();//wait();wait();//wait();wait();//wait();wait(); // 10 waits
+            //wait();wait();//wait();wait();//wait();wait();//wait();wait(); //wait();wait();
+            // wait();wait();wait();wait();wait();wait();wait();wait();wait();wait();
+            // wait();wait();wait();wait();wait();wait();wait();wait();wait();wait();
+            // wait();wait();wait();wait();wait();wait();wait();wait();wait();wait();
+            // wait();wait();wait();wait(); // 4 waits
+        }
 	}
 }
+
 
 // Timer Register Function
 void timerDelayMs(uint16_t ms){
