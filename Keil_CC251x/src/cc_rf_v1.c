@@ -155,7 +155,7 @@ void rfInit(void){
 	MDMCFG0 = 0xD0;
 	DEVIATN = 0x02;		
 	MCSM2 = 0x07;
- 	MCSM1 = 0x32; // 0x3E: RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX)
+ 	MCSM1 = 0x3E; // 0x3E: RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX)
 	MCSM0 = 0x14;
 	FOCCFG = 0x1D; // Saturation point = 01 (+-)BWChan/8, 
 	BSCFG = 0x1C; 

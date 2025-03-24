@@ -88,37 +88,41 @@ int main(void){
 
 	RFST = SCAL;
 	delayMs(1);
-	RFST = STX;
-	i = 100;
-	while(i--){
+	// RFST = STX;
+	// i = 100;
+	// while(i--){
 		
 		
-		//setRfState(STX);
-		//delayMs(1);
-		rfSend(rf_tx_buffer.rawPayload, 63);
+	// 	//setRfState(STX);
+	// 	//delayMs(1);
+	// 	rfSend(rf_tx_buffer.rawPayload, 63);
 
-	}
-	uart0Send(end_msg,4); // for testing
+	// }
+	// uart0Send(end_msg,4); // for testing
+	RFST = SRX;
+	i = 0;
+
+	//dmaAbort(0);
 	while(1){
 		
 		
-		//setRfState(STX);
-		//delayMs(500);
-		//dmaRequest(2);
-		//rfSend(rf_tx_buffer.rawPayload, 63);
-		// Wait to receive data from OBC or from RF
+		
 		if(uart_rx_packet_complete){
 		
 			DMAIRQ &= ~DMAIF0;
 			uart_rx_packet_complete = 0;
-			uartPacketHandler(&uart_rx_buffer); // Handle packet UART
+			//uartPacketHandler(&uart_rx_buffer); // Handle packet UART
 			//demoUartHandler(&uart_rx_buffer);
 		}
 		if(rf_rx_packet_complete){
-	
+			i++;
 			DMAIRQ &= ~DMAIF1;
 			rf_rx_packet_complete = 0;
-			rfPacketHandler(&rf_rx_buffer); // Handle Packet RX
+			uart0Send(&i, 1);
+			//U0DBUF = i;
+			//delayMs(1);
+			
+			//rfPacketHandler(&rf_rx_buffer); // Handle Packet RX
 			//demoRfHandler(&rf_rx_buffer);
 			
 		}

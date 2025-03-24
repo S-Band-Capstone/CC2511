@@ -32,7 +32,7 @@ void dmaIsr(void) __interrupt(DMA_VECTOR){
 		DMAIRQ &= ~(0x02);
 		RFTXRXIF = 0;
 		rf_rx_packet_complete = 1;
-		dmaAbort(1);
+		//dmaAbort(1);
 		
 	}else if ((DMAIRQ & DMAIF2)){ // RF TX
 		
