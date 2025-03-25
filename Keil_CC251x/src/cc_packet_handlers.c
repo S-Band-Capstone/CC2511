@@ -19,19 +19,20 @@ void rfPacketHandler(packet *payload){
 	uint8_t sof;
 	uint8_t eof;
 	//uint8_t i;	
-	uint8_t msg2[] = "handler\n";
+	uint8_t msg_error[] = "Error: RF HANDLER\n";
 	
 	rf_cmd = payload->fields.command; // Get command
 	length = payload->fields.length; 	// Get length
 	sof = payload->fields.sof; 				// Get sof
-	eof = payload->fields.eof;				// Get eof
+	eof = payload->rawPayload[length];				// Get eof
 	
 	
 	//uart0SendUnstructured(msg2,8);
 	
-	if(sof != SOF || eof != EOF){
-		return; // return error val? 
-	}	
+	// if(sof != SOF || payload->rawPayload[length] != EOF){// return if bad structure
+	// 	uart0SendUnstructured(msg_error, sizeof(msg_error));
+	// 	return; 
+	// }
 	
 	switch (rf_cmd){// switch to process payload based on command
 		
@@ -72,6 +73,7 @@ void rfPacketHandler(packet *payload){
 			// Send message to OBC via RF
 			//uint8_t msg[] = "Message Sent!\n";
 			uart0Send(payload->rawPayload, length);// take out SOF, EOF, and CMD
+			rf_rx_packet_complete = 0;
 			
 		}break;
 		
@@ -88,18 +90,18 @@ void uartPacketHandler(packet *payload){
 	uint8_t sof;
 	uint8_t eof; 
 	//uint8_t i;
-	uint8_t msg_error[] = "Error\n";
+	uint8_t msg_error[] = "Error: UART HANDLER\n";
 	
 
 	uart_cmd = payload->fields.command; // Get command
 	length = payload->fields.length;		// Get length
 	sof = payload->fields.sof; 					// Get sof	
-	eof = payload->fields.eof;					// Get eof
+	eof = payload->rawPayload[length];					// Get eof
 	
-	if(sof != SOF || payload->rawPayload[length] != EOF){// return if bad structure
-		uart0SendUnstructured(msg_error, 6);
-		return; 
-	}
+	// if(sof != SOF || eof != EOF){// return if bad structure
+	// 	uart0SendUnstructured(msg_error, sizeof(msg_error));
+	// 	return; 
+	// }
 	
 	switch(uart_cmd){ 	// switch to process payload based on command
 		
@@ -132,7 +134,7 @@ void uartPacketHandler(packet *payload){
 			uint8_t msg = DATA_SEND; 
 			//uint8_t msg[] = "Data Sent\n";
 			//uart0Send(msg, sizeof(msg)-1); // for sending string
-			uart0Send(&msg,0x01);
+			//uart0Send(&msg,0x01);
 			dmaAbort(3);
 			U0DBUF = msg;
 			uart_rx_packet_complete = 0;
@@ -140,12 +142,13 @@ void uartPacketHandler(packet *payload){
 		}break;
 		case MSG: {
 
-			//setRfState(STX);
-			RFST = STX;	
+			setRfState(RFST = STX);
+			//RFST = STX;	
 			rfSend(payload->rawPayload, length);
-			delayMs(1);
-			RFST = SRX;
-			//setRfState(SRX);
+			uart_rx_packet_complete = 0;
+			//delayMs(1);
+			//RFST = SRX;
+			setRfState(RFST = SRX);
 		}break;
 		// TODO: complete all other cases
 	}

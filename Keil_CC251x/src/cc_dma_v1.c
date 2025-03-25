@@ -14,7 +14,7 @@ const dma_cfg dma_init_val = {{0x0000}, {0x0000}, {0x00}, {0x00}, {0x00}, {0x00}
 void dmaIsr(void) __interrupt(DMA_VECTOR){
 	//uint8_t msg[] = "DMA ISR\n";
 	// uint8_t msg1[] = "DMA IF\n";
-	//uart0Send(msg, 8); // For testing 
+	//uart0SendUnstructured(msg, 8); // For testing 
 
 	// Handle for either UART TX (DMAIF3 = 0x08), RFTX (DMAIF2 = 0x04), RFTX (DMAIF1 = 0x02), UART RX (DMAIF0 = 0x01)
 	if((DMAIRQ & DMAIF0)){ // UART RX
@@ -39,6 +39,7 @@ void dmaIsr(void) __interrupt(DMA_VECTOR){
 		// uart0Send(msg1, 7);
 		DMAIRQ &= ~(0x04);
 		RFTXRXIF = 0;
+		rf_tx_packet_complete = 1;
 		dmaAbort(2);
 		//delayMs(1);
 		//RFST = SIDLE;  //causes bad sends 
@@ -48,6 +49,7 @@ void dmaIsr(void) __interrupt(DMA_VECTOR){
 		// uart0Send(msg1, 7);
 		DMAIRQ &= ~(0x08);
 		UTX0IF = 0;
+		uart_tx_packet_complete = 1; 
 		dmaAbort(3);
 
 	}else if ((DMAIRQ & DMAIF4)){ // SPI RX/TX

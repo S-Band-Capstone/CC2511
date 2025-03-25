@@ -16,10 +16,11 @@
 // Variables
 volatile __xdata packet uart_rx_buffer;		// Buffer for receive data 
 volatile __xdata packet uart_tx_buffer;		// Buffer for transmit data 
-uint8_t __xdata uart_rx_index = 0;							// Indexer for receive 
-uint8_t __xdata uart_tx_index = 0;							// Indexer for transmit
+uint8_t __xdata uart_rx_index;							// Indexer for receive 
+uint8_t __xdata uart_tx_index;							// Indexer for transmit
 uint8_t __xdata uart_rx_length = 0; 						// Length of incoming packet
 volatile __bit uart_rx_packet_complete = 0;										// Flag for full packet received 
+volatile __bit uart_tx_packet_complete = 0;										// Flag for full packet sent
 
 
 
@@ -113,8 +114,8 @@ void uart0Send(uint8_t *uartTxBuf, uint8_t uartTxBufLen) {
 
 	//if (uartTxBuf != uart_tx_buffer.rawPayload){
 		//uart_tx_buffer.rawPayload[0] = uartTxBufLen;
-		for (uart_tx_index = 0; uart_tx_index < uartTxBufLen+1; uart_tx_index++) { 
-			uart_tx_buffer.rawPayload[uart_tx_index+1] = uartTxBuf[uart_tx_index]; 
+		for (uart_tx_index = 0; uart_tx_index < uartTxBufLen+1; uart_tx_index++) {  // plus 1 to account for size byte 
+			uart_tx_buffer.rawPayload[uart_tx_index] = uartTxBuf[uart_tx_index]; 
   		}
 	//}
 

@@ -86,8 +86,8 @@ int main(void){
 	
 	uart0SendUnstructured(start_msg,6); // for testing
 
-	RFST = SCAL;
-	delayMs(1);
+	// RFST = SCAL;
+	// delayMs(1);
 	// RFST = STX;
 	// i = 100;
 	// while(i--){
@@ -99,30 +99,43 @@ int main(void){
 
 	// }
 	// uart0Send(end_msg,4); // for testing
-	RFST = SRX;
-	i = 0;
+	// RFST = SRX;
+	// i = 0;
 
 	//dmaAbort(0);
 	while(1){
 		
-		//setRfState(SRX);
-		RFST = SRX;
+		setRfState(RFST = SRX);
+		//RFST = SRX;
 		
 		if(uart_rx_packet_complete){
 		
-			DMAIRQ &= ~DMAIF0;
+			//DMAIRQ &= ~DMAIF0;
 			uart_rx_packet_complete = 0;
 			uartPacketHandler(&uart_rx_buffer); // Handle packet UART
 			//demoUartHandler(&uart_rx_buffer);
 		}
-		if(rf_rx_packet_complete){
+		else if(rf_rx_packet_complete){
 			
-			DMAIRQ &= ~DMAIF1;
+			//DMAIRQ &= ~DMAIF1;
 			rf_rx_packet_complete = 0;	
 			rfPacketHandler(&rf_rx_buffer); // Handle Packet RX
 			//demoRfHandler(&rf_rx_buffer);
 			
 		}
+		else if(rf_tx_packet_complete){
+			
+			//DMAIRQ &= ~DMAIF2;
+			rf_tx_packet_complete = 0;
+			
+		}
+		else if(uart_tx_packet_complete){
+			
+			//DMAIRQ &= ~DMAIF3;
+			uart_tx_packet_complete = 0;
+			
+		}
+	
 
 	}
 	
