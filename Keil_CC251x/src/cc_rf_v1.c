@@ -76,10 +76,10 @@ void rfOverflow(void) __interrupt(RF_VECTOR){
 	//uart0Send(msg, 9);
 	
 	if (RFIF & 0x80){
-		uart0Send(msg1, sizeof(msg1));
+		uart0SendUnstructured(msg1, sizeof(msg1));
 	}
 	else if(RFIF & 0x40){
-		uart0Send(msg2, sizeof(msg2));
+		uart0SendUnstructured(msg2, sizeof(msg2));
 	}
 		
 }
@@ -96,7 +96,7 @@ void rfInit(void){
 	/*  Values taken straight from Smart RF Studio (Modulation: 2-FSK, Data Rate = 2.4kbaude)*/
 	// IOCFG2 = 0x2E; 
 	// IOCFG1 = 0x00;
-	// IOCFG0 = 0x00;  // 0x06; for debugging when low byte set.
+	// IOCFG0 = 0x06;  // 0x06; for debugging when low byte set.
  	// SYNC1 = 0xD3;
 	// SYNC0 = 0x91;
 	// PKTLEN = 0xFF; // 0xFF
@@ -133,45 +133,6 @@ void rfInit(void){
 	//LQI = 0x80; 
 	
 	/*  Values taken straight from Smart RF Studio (Modulation: MSK, Data Rate = 100kbaude)*/ 
-	IOCFG2 = 0x2E; 
-	IOCFG1 = 0x00;
-	IOCFG0 = 0x06;  // 0x06; for debugging when low byte set.
- 	SYNC1 = 0xD3;
-	SYNC0 = 0x91;
-	PKTLEN = 0xFF; // 0xFF
-	PKTCTRL1 = 0x00; // 0x04 = Append_Status; if we include, it messes with RX
-	PKTCTRL0 = 0x05; // 0x05 = CRC enabled with variable length , 0x01 = variable length
-	ADDR = 0x00;
-	CHANNR = 0x00;
-	FSCTRL1 = 0x10;
-	FSCTRL0 = 0x00;
-	FREQ2 = 0x65;
-	FREQ1 = 0x60;
-	FREQ0 = 0x00;	
-	MDMCFG4 = 0xAC; 
-	MDMCFG3 = 0x11; 
-	MDMCFG2 = 0x73;	// 0x73 = 30/32 preambe and sync match, MSK modulation
-	MDMCFG1 = 0x42;	
-	MDMCFG0 = 0xD0;
-	DEVIATN = 0x02;		
-	MCSM2 = 0x07;
- 	MCSM1 = 0x3E; // 0x3E: RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX)
-	MCSM0 = 0x14;
-	FOCCFG = 0x1D; // Saturation point = 01 (+-)BWChan/8, 
-	BSCFG = 0x1C; 
-	AGCCTRL2 = 0xC7; 
-	AGCCTRL1 = 0x40;
-	AGCCTRL0 = 0xB2;
-	FREND1 = 0x56;
-	FREND0 = 0x10;
-	FSCAL3 = 0xA9;
-	FSCAL2 = 0x0A;
-	FSCAL1 = 0x00;	
-	FSCAL0 = 0x11;	
-	PA_TABLE0 =	0xFE;
-	// LQI = 0x80; 
-
-	/*  Values taken straight from Smart RF Studio (Modulation: MSK, Data Rate = 50kbaude)*/
 	// IOCFG2 = 0x2E; 
 	// IOCFG1 = 0x00;
 	// IOCFG0 = 0x06;  // 0x06; for debugging when low byte set.
@@ -187,14 +148,14 @@ void rfInit(void){
 	// FREQ2 = 0x65;
 	// FREQ1 = 0x60;
 	// FREQ0 = 0x00;	
-	// MDMCFG4 = 0xAB; 
-	// MDMCFG3 = 0x11;	
+	// MDMCFG4 = 0xAC; 
+	// MDMCFG3 = 0x11; 
 	// MDMCFG2 = 0x73;	// 0x73 = 30/32 preambe and sync match, MSK modulation
 	// MDMCFG1 = 0x42;	
 	// MDMCFG0 = 0xD0;
-	// DEVIATN = 0x02;	// Phase transition Time = 2 
+	// DEVIATN = 0x02;		
 	// MCSM2 = 0x07;
- 	// MCSM1 = 0x30; // 0x3E: RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX)
+ 	// MCSM1 = 0x3E; // 0x3E: RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX)
 	// MCSM0 = 0x14;
 	// FOCCFG = 0x1D; // Saturation point = 01 (+-)BWChan/8, 
 	// BSCFG = 0x1C; 
@@ -208,6 +169,45 @@ void rfInit(void){
 	// FSCAL1 = 0x00;	
 	// FSCAL0 = 0x11;	
 	// PA_TABLE0 =	0xFE;
+	// LQI = 0x80; 
+
+	/*  Values taken straight from Smart RF Studio (Modulation: MSK, Data Rate = 50kbaude)*/
+	IOCFG2 = 0x2E; 
+	IOCFG1 = 0x00;
+	IOCFG0 = 0x06;  // 0x06; for debugging when low byte set.
+ 	SYNC1 = 0xD3;
+	SYNC0 = 0x91;
+	PKTLEN = 0xFF; // 0xFF
+	PKTCTRL1 = 0x00; // 0x04 = Append_Status; if we include, it messes with RX
+	PKTCTRL0 = 0x05; // 0x05 = CRC enabled with variable length , 0x01 = variable length
+	ADDR = 0x00;
+	CHANNR = 0x00;
+	FSCTRL1 = 0x10;
+	FSCTRL0 = 0x00;
+	FREQ2 = 0x65;
+	FREQ1 = 0x60;
+	FREQ0 = 0x00;	
+	MDMCFG4 = 0xAB; 
+	MDMCFG3 = 0x11;	
+	MDMCFG2 = 0x73;	// 0x73 = 30/32 preambe and sync match, MSK modulation
+	MDMCFG1 = 0x42;	
+	MDMCFG0 = 0xD0;
+	DEVIATN = 0x02;	// Phase transition Time = 2 
+	MCSM2 = 0x07;
+ 	MCSM1 = 0x30; // 0x3E: RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX)
+	MCSM0 = 0x14;
+	FOCCFG = 0x1D; // Saturation point = 01 (+-)BWChan/8, 
+	BSCFG = 0x1C; 
+	AGCCTRL2 = 0xC7; 
+	AGCCTRL1 = 0x40;
+	AGCCTRL0 = 0xB2;
+	FREND1 = 0x56;
+	FREND0 = 0x10;
+	FSCAL3 = 0xA9;
+	FSCAL2 = 0x0A;
+	FSCAL1 = 0x00;	
+	FSCAL0 = 0x11;	
+	PA_TABLE0 =	0xFE;
 	
 	// Interrupt enables 
 	//RFTXRXIE = 1;		// RFD TX and RX
@@ -244,12 +244,12 @@ void rfSend(uint8_t *rfTxBuffer, uint16_t rfTxBufferLen){
 	RFTXRXIF = 0; // set flag to zero
 	setDmaArm(2);
 
-	if(rfTxBuffer != rf_tx_buffer.rawPayload){
+	//if(rfTxBuffer != rf_tx_buffer.rawPayload){
 		rf_tx_buffer.rawPayload[0] = rfTxBufferLen; // should be size of all bytes to send after bytes
 		for (rf_tx_index = 0; rf_tx_index < rfTxBufferLen; rf_tx_index++) { 
 			rf_tx_buffer.rawPayload[rf_tx_index+1] = rfTxBuffer[rf_tx_index]; 
   		}
-	}
+	//}
 
 	delayMs(1);
 	dmaRequest(2); // Send DMA request for RF TX
@@ -258,16 +258,18 @@ void rfSend(uint8_t *rfTxBuffer, uint16_t rfTxBufferLen){
 
 void setRfTxBuffer(uint8_t *rfTxBuffer, uint16_t rfTxBufferLen){
 
-	packet temp_pkt; 
 
-	temp_pkt.fields.length = rfTxBufferLen-1;
-	temp_pkt.fields.sof = SOF;	
-	temp_pkt.fields.eof = EOF;
-
-	//
-	rf_tx_buffer.rawPayload[0] = rfTxBufferLen; // should be size of all bytes to send after bytes
+	
+	rf_tx_buffer.rawPayload[0] = rfTxBufferLen + 2; // Should be the first byte from the buffer + 2 for EOF and SOF
+	if (rfTxBuffer[1] != SOF){
+		rf_tx_buffer.rawPayload[1] = SOF;
+	}
+	if (rfTxBuffer[rfTxBufferLen] != EOF){
+		rf_tx_buffer.rawPayload[rfTxBufferLen+1] = EOF;
+	}
+	
 	for (rf_tx_index = 0; rf_tx_index < rfTxBufferLen; rf_tx_index++) { 
-		rf_tx_buffer.rawPayload[rf_tx_index+1] = rfTxBuffer[rf_tx_index]; 
+		rf_tx_buffer.rawPayload[rf_tx_index+2] = rfTxBuffer[rf_tx_index]; 
   	}
 
 }
@@ -361,18 +363,15 @@ void setRfState(uint8_t mode) {
 		case STX: {
 			
 			// Make sure Append status is on
-			PKTCTRL1 = 0x04; // need append status for CRC and TX
+			PKTCTRL1 = 0x00; // need append status for CRC and TX
 
 			// Disable DMA for RFRX and enable for RFTX
 			dmaAbort(1); 	// Disables DMA channel 1 (RFRX)
 			setDmaArm(2); 	// ARM DMA Channel 0 (UART), DMA Channel 1 (RFTX)
-			//delayMs(1);
 			
 			// Set state
 			RFST = STX;
-			//delayMs(1);
-			//while (!(RFTXRXIF & 0x01));
-			//RFTXRXIF = 0;
+		
 
 			break;
 		}

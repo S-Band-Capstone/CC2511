@@ -110,14 +110,37 @@ void uart0Send(uint8_t *uartTxBuf, uint8_t uartTxBufLen) {
   	U0CSR &= ~0x40; //turn off receiver for RX
 	UTX0IF = 0; 
 	setDmaArm(3);
-	uart_tx_buffer.rawPayload[0] = uartTxBufLen;
-	for (uart_tx_index = 0; uart_tx_index < uartTxBufLen; uart_tx_index++) { 
-		uart_tx_buffer.rawPayload[uart_tx_index+1] = uartTxBuf[uart_tx_index]; 
-  	}
+
+	//if (uartTxBuf != uart_tx_buffer.rawPayload){
+		//uart_tx_buffer.rawPayload[0] = uartTxBufLen;
+		for (uart_tx_index = 0; uart_tx_index < uartTxBufLen+1; uart_tx_index++) { 
+			uart_tx_buffer.rawPayload[uart_tx_index+1] = uartTxBuf[uart_tx_index]; 
+  		}
+	//}
+
 	dmaRequest(3);
 	U0CSR |= 0x40; // turn on receiver for RX
 	uart_tx_index = 0;
 } 
+
+void uart0SendUnstructured(uint8_t *uartTxBuf, uint8_t bufferLen ){
+
+	while(U0CSR & 0x01); // wait for TX to be ready
+  	U0CSR &= ~0x40; //turn off receiver for RX
+	UTX0IF = 0; 
+	setDmaArm(3);
+
+	//if (uartTxBuf != uart_tx_buffer.rawPayload){
+		uart_tx_buffer.rawPayload[0] = bufferLen;
+		for (uart_tx_index = 0; uart_tx_index < bufferLen; uart_tx_index++) { 
+			uart_tx_buffer.rawPayload[uart_tx_index+1] = uartTxBuf[uart_tx_index]; 
+  		}
+	//}
+	dmaRequest(3);
+	U0CSR |= 0x40; // turn on receiver for RX
+	uart_tx_index = 0;
+
+}
 
 void setUartTxBuffer(uint8_t *uartTxBuf, uint8_t uartTxBufLen){
 	uart_tx_buffer.rawPayload[0] = uartTxBufLen;

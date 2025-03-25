@@ -29,6 +29,7 @@ void uartInit(void);
 
 // Functions for peripheral control
 void uart0Send(uint8_t *uartTxBuf, uint8_t uartTxBufLen);
+void uart0SendUnstructured(uint8_t *uartTxBuf, uint8_t bufferLen );
 void uart0Receive(uint8_t *suartRxBuf, uint16_t uartRxBufLen);
 
 // Function Getters 

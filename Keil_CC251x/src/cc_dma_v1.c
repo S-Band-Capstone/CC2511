@@ -44,13 +44,13 @@ void dmaIsr(void) __interrupt(DMA_VECTOR){
 		//RFST = SIDLE;  //causes bad sends 
 		//mode = SIDLE;
 		
-	}else if ((DMAIRQ & DMAIF3)){ // RF TX
+	}else if ((DMAIRQ & DMAIF3)){ // UART TX
 		// uart0Send(msg1, 7);
 		DMAIRQ &= ~(0x08);
 		UTX0IF = 0;
 		dmaAbort(3);
 
-	}else if ((DMAIRQ & DMAIF4)){ // RF TX
+	}else if ((DMAIRQ & DMAIF4)){ // SPI RX/TX
 		// uart0Send(msg1, 7);
 		DMAIRQ &= ~(0x10);
 		UTX1IF = 0;

@@ -76,15 +76,15 @@ int main(void){
 	//rf_tx_buffer.rawPayload[2] = 0x01;
 	//rf_tx_buffer.rawPayload[3] = 0xD9;
 	//rf_tx_buffer.rawPayload[4] = EOF;
-	 rf_tx_buffer.rawPayload[0] = 0x3F;
-	 rf_tx_buffer.rawPayload[1] = SOF;
-	 rf_tx_buffer.rawPayload[2] = 0x01;
-	 for(i =3 ; i < 63; i++){
-	 	rf_tx_buffer.rawPayload[i] = 0xD3;
-	 }
-	 rf_tx_buffer.rawPayload[63] = EOF;
+	//  rf_tx_buffer.rawPayload[0] = 0x3F;
+	//  rf_tx_buffer.rawPayload[1] = SOF;
+	//  rf_tx_buffer.rawPayload[2] = 0x01;
+	//  for(i =3 ; i < 63; i++){
+	//  	rf_tx_buffer.rawPayload[i] = 0xD3;
+	//  }
+	//  rf_tx_buffer.rawPayload[63] = EOF;
 	
-	uart0Send(start_msg,6); // for testing
+	uart0SendUnstructured(start_msg,6); // for testing
 
 	RFST = SCAL;
 	delayMs(1);
@@ -105,24 +105,21 @@ int main(void){
 	//dmaAbort(0);
 	while(1){
 		
-		
+		//setRfState(SRX);
+		RFST = SRX;
 		
 		if(uart_rx_packet_complete){
 		
 			DMAIRQ &= ~DMAIF0;
 			uart_rx_packet_complete = 0;
-			//uartPacketHandler(&uart_rx_buffer); // Handle packet UART
+			uartPacketHandler(&uart_rx_buffer); // Handle packet UART
 			//demoUartHandler(&uart_rx_buffer);
 		}
 		if(rf_rx_packet_complete){
-			i++;
-			DMAIRQ &= ~DMAIF1;
-			rf_rx_packet_complete = 0;
-			uart0Send(&i, 1);
-			//U0DBUF = i;
-			//delayMs(1);
 			
-			//rfPacketHandler(&rf_rx_buffer); // Handle Packet RX
+			DMAIRQ &= ~DMAIF1;
+			rf_rx_packet_complete = 0;	
+			rfPacketHandler(&rf_rx_buffer); // Handle Packet RX
 			//demoRfHandler(&rf_rx_buffer);
 			
 		}

@@ -15,6 +15,7 @@
 /* Defined commands */
 typedef enum{
 	/* Can add more commands to 0x0*, 0x1*, and 0x2* to cover more cases*/
+	MSG = 0x00, 											// Message
 	ACK = 0x01, 											// Acknowledge
 	REQUEST_TELEMETRY = 0x02, 				// Request Telemetry
 	DATA_STORE = 0x10, 								// Store Data 

@@ -27,7 +27,7 @@ void rfPacketHandler(packet *payload){
 	eof = payload->fields.eof;				// Get eof
 	
 	
-	//uart0Send(msg2,8);
+	//uart0SendUnstructured(msg2,8);
 	
 	if(sof != SOF || eof != EOF){
 		return; // return error val? 
@@ -45,8 +45,7 @@ void rfPacketHandler(packet *payload){
 			rfSend(payload->rawPayload, length);
 			//setDmaArm(3);
 
-			break;
-		}
+		}break;
 		case DATA_STORE:{
 			// Send data to xdata to be stored. For later use
 			//uint8_t msg[] = "Data Store!\n";
@@ -56,9 +55,7 @@ void rfPacketHandler(packet *payload){
 			RFD = msg;
 			setDmaArm(3);
 
-
-			break;
-		}
+		}break;
 		case DATA_SEND: {
 			// Retrieve data from memory over SPI and DMA and send via RF. 
 			//uint8_t msg[] = "Data Send!\n";
@@ -69,8 +66,14 @@ void rfPacketHandler(packet *payload){
 			RFD = msg;
 			setDmaArm(3);
 			
-			break;
-		}
+			
+		}break;
+		case MSG: {
+			// Send message to OBC via RF
+			//uint8_t msg[] = "Message Sent!\n";
+			uart0Send(payload->rawPayload, length);// take out SOF, EOF, and CMD
+			
+		}break;
 		
 		// TODO: Complete all other cases
 	}
@@ -93,8 +96,8 @@ void uartPacketHandler(packet *payload){
 	sof = payload->fields.sof; 					// Get sof	
 	eof = payload->fields.eof;					// Get eof
 	
-	if(sof != SOF || eof != EOF){// return if bad structure
-		uart0Send(msg_error, 6);
+	if(sof != SOF || payload->rawPayload[length] != EOF){// return if bad structure
+		uart0SendUnstructured(msg_error, 6);
 		return; 
 	}
 	
@@ -134,6 +137,15 @@ void uartPacketHandler(packet *payload){
 			U0DBUF = msg;
 			uart_rx_packet_complete = 0;
 			setDmaArm(3);
+		}break;
+		case MSG: {
+
+			//setRfState(STX);
+			RFST = STX;	
+			rfSend(payload->rawPayload, length);
+			delayMs(1);
+			RFST = SRX;
+			//setRfState(SRX);
 		}break;
 		// TODO: complete all other cases
 	}

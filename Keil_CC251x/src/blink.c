@@ -68,13 +68,8 @@ volatile void delayMs(uint16_t ms) {
     uint32_t j = 0;
 
 	while(i--){
-        for (j = 0; j < 8; j++) {
-            wait();wait();//wait();wait();//wait();wait();//wait();wait();//wait();wait(); // 10 waits
-            //wait();wait();//wait();wait();//wait();wait();//wait();wait(); //wait();wait();
-            // wait();wait();wait();wait();wait();wait();wait();wait();wait();wait();
-            // wait();wait();wait();wait();wait();wait();wait();wait();wait();wait();
-            // wait();wait();wait();wait();wait();wait();wait();wait();wait();wait();
-            // wait();wait();wait();wait(); // 4 waits
+        for (j = 0; j < 8; j++) { // Produces about a 0.15 second delay when ms = 1
+            wait();wait(); 
         }
 	}
 }
