@@ -123,18 +123,18 @@ int main(void){
 			//demoRfHandler(&rf_rx_buffer);
 			
 		}
-		else if(rf_tx_packet_complete){
+		// else if(rf_tx_packet_complete){
 			
-			//DMAIRQ &= ~DMAIF2;
-			rf_tx_packet_complete = 0;
+		// 	//DMAIRQ &= ~DMAIF2;
+		// 	rf_tx_packet_complete = 0;
 			
-		}
-		else if(uart_tx_packet_complete){
+		// }
+		// else if(uart_tx_packet_complete){
 			
-			//DMAIRQ &= ~DMAIF3;
-			uart_tx_packet_complete = 0;
+		// 	//DMAIRQ &= ~DMAIF3;
+		// 	uart_tx_packet_complete = 0;
 			
-		}
+		// }
 	
 
 	}

@@ -51,6 +51,7 @@ void dmaIsr(void) __interrupt(DMA_VECTOR){
 		UTX0IF = 0;
 		uart_tx_packet_complete = 1; 
 		dmaAbort(3);
+		setDmaArm(0);
 
 	}else if ((DMAIRQ & DMAIF4)){ // SPI RX/TX
 		// uart0Send(msg1, 7);

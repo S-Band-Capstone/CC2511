@@ -73,7 +73,7 @@ void rfOverflow(void) __interrupt(RF_VECTOR){
 	uint8_t msg1[] = "TX Underflow\n";
 	uint8_t msg2[] = "RX Overflow\n";
 	//RFST = SIDLE;
-	setRfState(SIDLE);
+	setRfState(RFST=SIDLE);
 
 	//mode = SIDLE;
 	//uart0Send(msg, 9);
@@ -254,7 +254,7 @@ void rfSend(uint8_t *rfTxBuffer, uint16_t rfTxBufferLen){
   		}
 	//}
 
-	delayMs(1);
+	//delayMs(1);
 	dmaRequest(2); // Send DMA request for RF TX
 	rf_tx_index = 0;
 }

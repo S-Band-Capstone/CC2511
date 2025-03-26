@@ -110,6 +110,7 @@ void uart0Send(uint8_t *uartTxBuf, uint8_t uartTxBufLen) {
 	while(U0CSR & 0x01); // wait for TX to be ready
   	U0CSR &= ~0x40; //turn off receiver for RX
 	UTX0IF = 0; 
+	dmaAbort(0);
 	setDmaArm(3);
 
 	//if (uartTxBuf != uart_tx_buffer.rawPayload){
@@ -129,6 +130,7 @@ void uart0SendUnstructured(uint8_t *uartTxBuf, uint8_t bufferLen ){
 	while(U0CSR & 0x01); // wait for TX to be ready
   	U0CSR &= ~0x40; //turn off receiver for RX
 	UTX0IF = 0; 
+	dmaAbort(0);
 	setDmaArm(3);
 
 	//if (uartTxBuf != uart_tx_buffer.rawPayload){
