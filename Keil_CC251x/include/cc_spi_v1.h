@@ -30,7 +30,7 @@ extern uint8_t __xdata spi_rx_length; 								// Length of incoming packet
 extern volatile __bit spi_rx_packet_complete;							// Flag for full packet received
 
 /* Interupts */
-
+void USART1_RX_ISR(void) __interrupt(URX1_VECTOR);
 /* Initializer */
 void spiInit(void); 
 

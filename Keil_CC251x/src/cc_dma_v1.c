@@ -18,12 +18,14 @@ void dmaIsr(void) __interrupt(DMA_VECTOR){
 
 	// Handle for either UART TX (DMAIF3 = 0x08), RFTX (DMAIF2 = 0x04), RFTX (DMAIF1 = 0x02), UART RX (DMAIF0 = 0x01)
 	if((DMAIRQ & DMAIF0)){ // UART RX
-		
+
 		// UART Packet Complete 
 		//uartPacketHandler(&uart_rx_buffer); 
 		DMAIRQ &= ~(0x01);
 		URX0IF = 0;
-		uart_rx_packet_complete = 1; 
+		uart_rx_packet_complete = 1;
+		//uart0Send(uart_rx_buffer.rawPayload, uart_rx_buffer.fields.length); // for testing
+
 	}
 	else if((DMAIRQ & DMAIF1)){ // RF RX
 	
@@ -32,15 +34,17 @@ void dmaIsr(void) __interrupt(DMA_VECTOR){
 		DMAIRQ &= ~(0x02);
 		RFTXRXIF = 0;
 		rf_rx_packet_complete = 1;
+		//uart0Send(rf_rx_buffer.rawPayload, rf_rx_buffer.fields.length); // for testing
 		//dmaAbort(1);
 		
 	}else if ((DMAIRQ & DMAIF2)){ // RF TX
 		
-		// uart0Send(msg1, 7);
+		uart0Send(rf_tx_buffer.rawPayload, rf_tx_buffer.fields.length); // for testing
 		DMAIRQ &= ~(0x04);
 		RFTXRXIF = 0;
 		rf_tx_packet_complete = 1;
 		dmaAbort(2);
+		setDmaArm(1);
 		//delayMs(1);
 		//RFST = SIDLE;  //causes bad sends 
 		//mode = SIDLE;
@@ -52,6 +56,8 @@ void dmaIsr(void) __interrupt(DMA_VECTOR){
 		uart_tx_packet_complete = 1; 
 		dmaAbort(3);
 		setDmaArm(0);
+		//U0CSR |= 0x40; // turn on receiver for RX
+		
 
 	}else if ((DMAIRQ & DMAIF4)){ // SPI RX/TX
 		// uart0Send(msg1, 7);
@@ -117,7 +123,7 @@ void dmaInit(void){
 	dma_channels[2].dstAddrLo = (uint8_t)((uint16_t)&X_RFD & 0x00FF); // Low byte of destination address XDATA RFD (Byte 3) 
 	dma_channels[2].byte4 = 0x20; // VLen = 001 (transfer n + 1 Bytes), LEN[12:8] = 00000 (Byte 4)
 	dma_channels[2].byte5 = 0x40; // LEN[7:0] = 01000000 => 64 bytes(Byte 5); 
-	dma_channels[2].byte6 = 0x53; // Word = 0 (8-bits), tmod = 10 (repeated single), trig = 10011 (RF TX/RX trigger) (Byte 6)
+	dma_channels[2].byte6 =0x53; // Word = 0 (8-bits), tmod = 10 (repeated single), trig = 10011 (RF TX/RX trigger) (Byte 6)
 	dma_channels[2].byte7 = 0x4A; //SrcInc = 01 (increment by 1 Byte), DstInc = 00 (no increment), IRQMASK = 1 (generates interrupt), M8 = 0 (8bits), prioirty = 10 (Priority access)
 	//setDmaConfig(2, &rf_tx_buffer.rawPayload[0], &X_RFD, 1, 0, 0x13, 2); // RF TX
 
@@ -128,7 +134,7 @@ void dmaInit(void){
 	dma_channels[3].dstAddrLo = (uint8_t)((uint16_t)&X_U0DBUF & 0x00FF); // Low byte of destination address XDATA RFD (Byte 3) 
 	dma_channels[3].byte4 = 0x20; // VLen = 001 (transfer n + 1 Bytes), LEN[12:8] = 00000 (Byte 4)
 	dma_channels[3].byte5 = 0x40; // LEN[7:0] = 01000000 => 64 bytes(Byte 5); 
-	dma_channels[3].byte6 = 0x4F; // Word = 0 (8-bits), tmod = 00 (single), trig = 01111 (UART TX trigger) (Byte 6)
+	dma_channels[3].byte6 = 0x4F; //0x4F Word = 0 (8-bits), tmod = 00 (single), trig = 01111 (UART TX trigger) (Byte 6)
 	dma_channels[3].byte7 = 0x4A; //SrcInc = 01 (increment by 1 Byte), DstInc = 00 (no increment), IRQMASK = 1 (generates interrupt), M8 = 0 (8bits), prioirty = 10 (Priority access)
 	//setDmaConfig(3, &uart_tx_buffer.rawPayload[0], &X_U0DBUF, 1, 0, 0x0F, 0x00); // UART TX	
 

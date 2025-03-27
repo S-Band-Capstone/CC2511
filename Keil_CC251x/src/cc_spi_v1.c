@@ -11,6 +11,27 @@ volatile __xdata packet spi_tx_buffer; 	// Buffer for transmit data
 uint8_t __xdata spi_rx_length; 								// Length of incoming packet
 volatile __bit spi_rx_packet_complete;							// Flag for full packet received
 
+void USART1_RX_ISR(void) __interrupt(URX1_VECTOR) {
+    // Read received byte
+    uint8_t data = U1DBUF;
+    
+    // Store in buffer if there's room
+    if (spi_rx_index < sizeof(spi_rx_buffer.rawPayload)) {
+        spi_rx_buffer.rawPayload[spi_rx_index++] = data;
+    }
+    
+    // Check if this is a complete packet
+    if (spi_rx_index == spi_rx_length) {
+        spi_rx_packet_complete = 1;
+        
+        // Set SSN high to end transmission
+        P1_4 = 1;
+    }
+    
+    // Clear interrupt flag
+    URX1IF = 0;
+}
+
 
 void spiInit(void){
 	
@@ -44,38 +65,50 @@ void spiInit(void){
 
 
 
-void spi1Send(uint8_t* spiOutBuffer, uint16_t spiOutBufLen){
-	// Process through DMA?? 
-	// less processing for CPU 
+void spi1Send(uint8_t* spiOutBuffer, uint16_t spiOutBufLen){ // polling 
+	uint16_t i;
 	
-	// MOSI connect and flags 
-	
-	// sense
-	
-	// UD1BUF send (loop through inside here?) 
- 	
-	// clear flags / set where needed
-	
-	//end 
-	
+	// Set SSN low to begin transmission
+    P1_4 = 0;
+    
+    // Poll-based implementation
+    for(i = 0; i < spiOutBufLen; i++) {
+        U1CSR &= ~0x02;              // Clear RX_BYTE
+        U1DBUF = spiOutBuffer[i];    // Write data to TX buffer
+        
+        // Wait for TX to complete (TX_BYTE set)
+        while(!(U1CSR & 0x01));
+    }
+    
+    // Set SSN high to end transmission
+    P1_4 = 1;
 }
+	
+
 
 
 void spi1Receive(uint8_t* spiInBuffer, uint16_t spiInBufLen){
-	// Process through DMA?? 
-	// less processing for CPU 
-	
-	// MISO connect and flags
-	
-	// sense 
-	
-	// U1DBUF read (loop through inside here?) 
-	
-	// clear flags  / set where needed
-	
-	// end 
-	
+	uint16_t i;
+    
+    // Set SSN low to begin transmission
+    P1_4 = 0;
+    
+    // Poll-based implementation
+    for(i = 0; i < spiInBufLen; i++) {
+        U1CSR &= ~0x02;              // Clear RX_BYTE
+        U1DBUF = 0xFF;               // Write dummy byte to generate clock
+        
+        // Wait for RX to complete (RX_BYTE set)
+        while(!(U1CSR & 0x02));
+        
+        spiInBuffer[i] = U1DBUF;     // Read received data
+    }
+    
+    // Set SSN high to end transmission
+    P1_4 = 1;
 }
+	
+
 
 
 

@@ -67,6 +67,8 @@ int main(void){
 	rfInit();
 	dmaInit();
 	
+
+	
 	
 	
 //		delayMs(1);
@@ -103,38 +105,44 @@ int main(void){
 	// i = 0;
 
 	//dmaAbort(0);
+
+	// P0DIR |= ( 1 << 7 );
+	// P0 |= ( 1 << 7 ) ;     
+	setRfState(RFST = SRX);
+
 	while(1){
 		
-		setRfState(RFST = SRX);
+		
 		//RFST = SRX;
 		
 		if(uart_rx_packet_complete){
 		
 			//DMAIRQ &= ~DMAIF0;
 			uart_rx_packet_complete = 0;
-			uartPacketHandler(&uart_rx_buffer); // Handle packet UART
-			//demoUartHandler(&uart_rx_buffer);
+			//uartPacketHandler(&uart_rx_buffer); // Handle packet UART
+		
 		}
 		else if(rf_rx_packet_complete){
 			
 			//DMAIRQ &= ~DMAIF1;
 			rf_rx_packet_complete = 0;	
 			rfPacketHandler(&rf_rx_buffer); // Handle Packet RX
-			//demoRfHandler(&rf_rx_buffer);
+			
+			//uart0Send(rf_rx_buffer.rawPayload, rf_rx_buffer.fields.length);
 			
 		}
-		// else if(rf_tx_packet_complete){
+		else if(rf_tx_packet_complete){
 			
-		// 	//DMAIRQ &= ~DMAIF2;
-		// 	rf_tx_packet_complete = 0;
+			//DMAIRQ &= ~DMAIF2;
+			rf_tx_packet_complete = 0;
 			
-		// }
-		// else if(uart_tx_packet_complete){
+		}
+		else if(uart_tx_packet_complete){
 			
-		// 	//DMAIRQ &= ~DMAIF3;
-		// 	uart_tx_packet_complete = 0;
+			//DMAIRQ &= ~DMAIF3;
+			uart_tx_packet_complete = 0;
 			
-		// }
+		}
 	
 
 	}

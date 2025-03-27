@@ -112,7 +112,7 @@ void uart0Send(uint8_t *uartTxBuf, uint8_t uartTxBufLen) {
 	UTX0IF = 0; 
 	dmaAbort(0);
 	setDmaArm(3);
-
+	wait();
 	//if (uartTxBuf != uart_tx_buffer.rawPayload){
 		//uart_tx_buffer.rawPayload[0] = uartTxBufLen;
 		for (uart_tx_index = 0; uart_tx_index < uartTxBufLen+1; uart_tx_index++) {  // plus 1 to account for size byte 
@@ -132,6 +132,7 @@ void uart0SendUnstructured(uint8_t *uartTxBuf, uint8_t bufferLen ){
 	UTX0IF = 0; 
 	dmaAbort(0);
 	setDmaArm(3);
+	wait();
 
 	//if (uartTxBuf != uart_tx_buffer.rawPayload){
 		uart_tx_buffer.rawPayload[0] = bufferLen;
