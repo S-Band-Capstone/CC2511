@@ -27,12 +27,12 @@ void rfPacketHandler(packet *payload){
 	eof = payload->rawPayload[length];				// Get eof
 	
 	
-	//uart0SendUnstructured(msg2,8);
+	//uart0SendUnstructured(rf_rx_buffer.rawPayload,6);
 	
-	if(sof != SOF || eof != EOF){// return if bad structure
-		uart0SendUnstructured(msg_error, sizeof(msg_error));
-		return; 
-	}
+	// if(sof != SOF || eof != EOF){// return if bad structure
+	// 	uart0SendUnstructured(msg_error, sizeof(msg_error));
+	// 	return; 
+	// }
 	
 	switch (rf_cmd){// switch to process payload based on command
 		
@@ -72,7 +72,7 @@ void rfPacketHandler(packet *payload){
 		case MSG: {
 			// Send message to OBC via RF
 			//uint8_t msg[] = "Message Sent!\n";
-			uart0Send(payload->rawPayload, length);// take out SOF, EOF, and CMD
+			uart0Send(rf_rx_buffer.rawPayload, length);// take out SOF, EOF, and CMD
 			rf_rx_packet_complete = 0;
 			
 		}break;
