@@ -149,7 +149,7 @@ void uartPacketHandler(packet *payload){
 			uart_rx_packet_complete = 0;
 			//delayMs(1);
 			//RFST = SRX;
-			wait();
+			
 			setRfState(RFST = SRX);
 		}break;
 		// TODO: complete all other cases
