@@ -29,10 +29,10 @@ void rfPacketHandler(packet *payload){
 	
 	//uart0SendUnstructured(rf_rx_buffer.rawPayload,6);
 	
-	// if(sof != SOF || eof != EOF){// return if bad structure
-	// 	uart0SendUnstructured(msg_error, sizeof(msg_error));
-	// 	return; 
-	// }
+	if(sof != SOF || eof != EOF){// return if bad structure
+		uart0SendUnstructured(msg_error, sizeof(msg_error));
+		return; 
+	}
 	
 	switch (rf_cmd){// switch to process payload based on command
 		
