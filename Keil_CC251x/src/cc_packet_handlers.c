@@ -142,10 +142,10 @@ void uartPacketHandler(packet *payload){
 		}break;
 		case MSG: {
 
-			setRfState(RFST = STX);
-			wait();
-			//RFST = STX;	
-			rfSend(payload->rawPayload, length);
+			setRfState(RFST = SFSTXON);
+
+		
+			
 			uart_rx_packet_complete = 0;
 			//delayMs(1);
 			//RFST = SRX;

@@ -39,7 +39,7 @@ void dmaIsr(void) __interrupt(DMA_VECTOR){
 		
 	}else if ((DMAIRQ & DMAIF2)){ // RF TX
 		
-		uart0Send(rf_tx_buffer.rawPayload, rf_tx_buffer.fields.length); // for testing
+		//uart0Send(rf_tx_buffer.rawPayload, rf_tx_buffer.fields.length); // for testing
 		DMAIRQ &= ~(0x04);
 		RFTXRXIF = 0;
 		rf_tx_packet_complete = 1;
@@ -92,17 +92,17 @@ void dmaInit(void){
 	/* Have data transfers and stores happen over DMA to allow CPU to cycle seperately. Use X_U0DBUF */
 	dma_channels[0].srcAddrHi = (uint8_t)((uint16_t)&X_U0DBUF >> 8); // High byte of source address, XDATA U0DBUF (Byte 0)
 	dma_channels[0].srcAddrLo = (uint8_t)((uint16_t)&X_U0DBUF & 0x00FF); // Low byte of source address XDATA U0DBUF (Byte 1) 
-	dma_channels[0].dstAddrHi = (uint8_t)((uint16_t)&uart_rx_buffer.rawPayload[0] >> 8); // High byte of destination address, XDATA U0DBUF (Byte 2) 
-	dma_channels[0].dstAddrLo = (uint8_t)((uint16_t)&uart_rx_buffer.rawPayload[0] & 0x00FF); // Low byte of destination address XDATA U0DBUF (Byte 3) 
+	dma_channels[0].dstAddrHi = (uint8_t)((uint16_t)&uart_rx_buffer.rawPayload >> 8); // High byte of destination address, XDATA U0DBUF (Byte 2) 
+	dma_channels[0].dstAddrLo = (uint8_t)((uint16_t)&uart_rx_buffer.rawPayload & 0x00FF); // Low byte of destination address XDATA U0DBUF (Byte 3) 
 	dma_channels[0].byte4 = 0x20; // VLen = 001 (transfer n + 1 Bytes), LEN[12:8] = 00000 (Byte 4)
 	dma_channels[0].byte5 = 0x40; // LEN[7:0] = 00111111 => 63 bytes(Byte 5); 
 	dma_channels[0].byte6 = 0x4E; // Word = 0 (8-bits), tmod = 10 (repeated single), trig = 01110 (RX complete trigger) (Byte 6)
 	dma_channels[0].byte7 = 0x1A; //SrcInc = 00 (no increment), DstInc = 01 (increment by 1 byte), IRQMASK = 1 (generates interrupt), M8 = 0 (8bits), prioirty = 10 (Priority access)
-	//setDmaConfig(0, &X_U0DBUF, &uart_rx_buffer.rawPayload[0], 0, 1, 0x0E, 2); // UART RX
+	
 
 	// Setup DMA for SPI 
 	/* Passing and storing from SPI over DMA, shouldn't require CPU  to process data */
-	//setDmaConfig(4, &spi_tx_buffer.rawPayload[0], &X_U1DBUF, 1, 0, 0x11, 0); // SPI trigger 17 = UTX1IF 
+
 	
 	// Setup DMA for RF Receive Channel 1
 	/* Have stored to set memory address so that if CPU interrupts DMA is passing seperately */ 
@@ -114,18 +114,18 @@ void dmaInit(void){
 	dma_channels[1].byte5 = 0x40; // LEN[7:0] = 01000000 => 64 bytes(Byte 5); 
 	dma_channels[1].byte6 = 0x53; // Word = 0 (8-bits), tmod = 10 (repeated single), trig = 10011 (RF TX/RX trigger) (Byte 6)
 	dma_channels[1].byte7 = 0x1A; //SrcInc = 00 (no increment), DstInc = 01 (increment by 1 byte), IRQMASK = 1 (generates interrupt), M8 = 0 (8bits), prioirty = 10 (Priority access)
-	//setDmaConfig(1, &X_RFD, &rf_rx_buffer.rawPayload[0], 0, 1, 0x13, 2); // RF RX
+	
 
 	// Setup DMA for RF Transmit Channel 2
-	dma_channels[2].srcAddrHi = (uint8_t)((uint16_t)&rf_tx_buffer.rawPayload[0] >> 8); // High byte of source address, XDATA RFTX (Byte 0)
-	dma_channels[2].srcAddrLo = (uint8_t)((uint16_t)&rf_tx_buffer.rawPayload[0] & 0x00FF); // Low byte of source address XDATA RFTX (Byte 1) 
+	dma_channels[2].srcAddrHi = (uint8_t)((uint16_t)&rf_tx_buffer.rawPayload >> 8); // High byte of source address, XDATA RFTX (Byte 0)
+	dma_channels[2].srcAddrLo = (uint8_t)((uint16_t)&rf_tx_buffer.rawPayload & 0x00FF); // Low byte of source address XDATA RFTX (Byte 1) 
 	dma_channels[2].dstAddrHi = (uint8_t)((uint16_t)&X_RFD >> 8); // High byte of destination address, XDATA RFD (Byte 2) 
 	dma_channels[2].dstAddrLo = (uint8_t)((uint16_t)&X_RFD & 0x00FF); // Low byte of destination address XDATA RFD (Byte 3) 
 	dma_channels[2].byte4 = 0x20; // VLen = 001 (transfer n + 1 Bytes), LEN[12:8] = 00000 (Byte 4)
 	dma_channels[2].byte5 = 0x40; // LEN[7:0] = 01000000 => 64 bytes(Byte 5); 
-	dma_channels[2].byte6 =0x53; // Word = 0 (8-bits), tmod = 10 (repeated single), trig = 10011 (RF TX/RX trigger) (Byte 6)
+	dma_channels[2].byte6 = 0x53; // Word = 0 (8-bits), tmod = 10 (repeated single), trig = 10011 (RF TX/RX trigger) (Byte 6)
 	dma_channels[2].byte7 = 0x4A; //SrcInc = 01 (increment by 1 Byte), DstInc = 00 (no increment), IRQMASK = 1 (generates interrupt), M8 = 0 (8bits), prioirty = 10 (Priority access)
-	//setDmaConfig(2, &rf_tx_buffer.rawPayload[0], &X_RFD, 1, 0, 0x13, 2); // RF TX
+	
 
 	// Setup DMA for UART Transmit Channel 3
 	dma_channels[3].srcAddrHi = (uint8_t)((uint16_t)&uart_tx_buffer.rawPayload[0] >> 8); // High byte of source address, XDATA RFTX (Byte 0)
@@ -136,7 +136,7 @@ void dmaInit(void){
 	dma_channels[3].byte5 = 0x40; // LEN[7:0] = 01000000 => 64 bytes(Byte 5); 
 	dma_channels[3].byte6 = 0x4F; //0x4F Word = 0 (8-bits), tmod = 00 (single), trig = 01111 (UART TX trigger) (Byte 6)
 	dma_channels[3].byte7 = 0x4A; //SrcInc = 01 (increment by 1 Byte), DstInc = 00 (no increment), IRQMASK = 1 (generates interrupt), M8 = 0 (8bits), prioirty = 10 (Priority access)
-	//setDmaConfig(3, &uart_tx_buffer.rawPayload[0], &X_U0DBUF, 1, 0, 0x0F, 0x00); // UART TX	
+
 
 	// ARM DMA Channel
 	/* Takes 9 system clocks for DMA config to be set */

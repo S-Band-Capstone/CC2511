@@ -67,7 +67,7 @@ int main(void){
 	rfInit();
 	dmaInit();
 	
-
+	bufferClear(rf_tx_buffer.rawPayload, max_len); // Clear buffer before use
 	
 	
 	
@@ -87,6 +87,8 @@ int main(void){
 	//  rf_tx_buffer.rawPayload[63] = EOF;
 	
 	uart0SendUnstructured(start_msg,6); // for testing
+
+	
 
 	// RFST = SCAL;
 	// delayMs(1);
@@ -110,16 +112,23 @@ int main(void){
 	// P0 |= ( 1 << 7 ) ;     
 	setRfState(RFST = SRX);
 
+	setRfState(RFST = SCAL);
+
 	while(1){
 		
 		
-		//RFST = SRX;
+		
 		
 		if(uart_rx_packet_complete){
-		
+			bufferClear(rf_tx_buffer.rawPayload, max_len); // Clear buffer before use
+			rfSend(uart_rx_buffer.rawPayload, uart_rx_buffer.fields.length); // Send message to RF
 			//DMAIRQ &= ~DMAIF0;
 			uart_rx_packet_complete = 0;
-			//uartPacketHandler(&uart_rx_buffer); // Handle packet UART
+			uartPacketHandler(&uart_rx_buffer); // Handle packet UART
+			
+			//uart0Send(rf_tx_buffer.rawPayload, rf_tx_buffer.fields.length);
+			
+
 		
 		}
 		else if(rf_rx_packet_complete){
