@@ -19,44 +19,38 @@ void dmaIsr(void) __interrupt(DMA_VECTOR){
 	// Handle for either UART TX (DMAIF3 = 0x08), RFTX (DMAIF2 = 0x04), RFTX (DMAIF1 = 0x02), UART RX (DMAIF0 = 0x01)
 	if((DMAIRQ & DMAIF0)){ // UART RX
 
-		// UART Packet Complete 
-		//uartPacketHandler(&uart_rx_buffer); 
+		// UART RX Packet Complete 
 		DMAIRQ &= ~(0x01);
 		URX0IF = 0;
 		uart_rx_packet_complete = 1;
-		//uart0Send(uart_rx_buffer.rawPayload, uart_rx_buffer.fields.length); // for testing
+	
 
 	}
 	else if((DMAIRQ & DMAIF1)){ // RF RX
 	
-		// RF Packet Complete
-		//rfPacketHandler(&rf_rx_buffer);
+		// RFRX Packet Complete
 		DMAIRQ &= ~(0x02);
 		RFTXRXIF = 0;
 		rf_rx_packet_complete = 1;
-		//uart0Send(rf_rx_buffer.rawPayload, rf_rx_buffer.fields.length); // for testing
-		//dmaAbort(1);
+		
 		
 	}else if ((DMAIRQ & DMAIF2)){ // RF TX
 		
-		//uart0Send(rf_tx_buffer.rawPayload, rf_tx_buffer.fields.length); // for testing
+		// RFTX Packet Complete
 		DMAIRQ &= ~(0x04);
 		RFTXRXIF = 0;
 		rf_tx_packet_complete = 1;
-		dmaAbort(2);
-		setDmaArm(1);
-		//delayMs(1);
-		//RFST = SIDLE;  //causes bad sends 
-		//mode = SIDLE;
+
 		
 	}else if ((DMAIRQ & DMAIF3)){ // UART TX
-		// uart0Send(msg1, 7);
+	
+		// UART TX Packet Complete
 		DMAIRQ &= ~(0x08);
 		UTX0IF = 0;
 		uart_tx_packet_complete = 1; 
 		dmaAbort(3);
 		setDmaArm(0);
-		//U0CSR |= 0x40; // turn on receiver for RX
+		
 		
 
 	}else if ((DMAIRQ & DMAIF4)){ // SPI RX/TX

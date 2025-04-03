@@ -112,7 +112,7 @@ int main(void){
 	// P0 |= ( 1 << 7 ) ;     
 	setRfState(RFST = SRX);
 
-	setRfState(RFST = SCAL);
+	//setRfState(RFST = SCAL);
 
 	while(1){
 		
@@ -120,24 +120,20 @@ int main(void){
 		
 		
 		if(uart_rx_packet_complete){
-			bufferClear(rf_tx_buffer.rawPayload, max_len); // Clear buffer before use
-			rfSend(uart_rx_buffer.rawPayload, uart_rx_buffer.fields.length); // Send message to RF
-			//DMAIRQ &= ~DMAIF0;
-			uart_rx_packet_complete = 0;
+	
 			uartPacketHandler(&uart_rx_buffer); // Handle packet UART
-			setRfState(RFST = SRX); // Set state to TX
-			//uart0Send(rf_tx_buffer.rawPayload, rf_tx_buffer.fields.length);
+			uart_rx_packet_complete = 0;
+
 			
 
 		
 		}
 		else if(rf_rx_packet_complete){
 			
-			//DMAIRQ &= ~DMAIF1;
-			rf_rx_packet_complete = 0;	
+			
 			rfPacketHandler(&rf_rx_buffer); // Handle Packet RX
-			setRfState(RFST = SRX); // Set state to RX
-			//uart0Send(rf_rx_buffer.rawPayload, rf_rx_buffer.fields.length);
+			rf_rx_packet_complete = 0;	
+			
 			
 		}
 		else if(rf_tx_packet_complete){

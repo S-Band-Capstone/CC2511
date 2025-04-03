@@ -119,7 +119,7 @@ void rfInit(void){
 	MDMCFG0 = 0x11; //0xD0
 	DEVIATN = 0x45;	
 	MCSM2 = 0x07;
- 	MCSM1 = 0x30; // 0x3E; RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX); C
+ 	MCSM1 = 0x3C; // 0x3E; RXOFF_MODE = 11 (Stay in RX), TXOFF_MODE == 10 (Stay in TX); C
 	MCSM0 = 0x14;
 	FOCCFG = 0x16;
 	BSCFG = 0x6c;
@@ -241,7 +241,7 @@ void rfSend(uint8_t *rfTxBuffer, uint16_t rfTxBufferLen){
 	RFTXRXIF = 0; // set flag to zero
 	dmaAbort(1); 
 	setDmaArm(2);
-	RFD = 0x00;
+	//RFD = 0x00;
 	//if(rfTxBuffer != rf_tx_buffer.rawPayload){
 	//rf_tx_buffer.rawPayload[0] = rfTxBufferLen; // should be size of all bytes to send after bytes
 	for (rf_tx_index = 0; rf_tx_index < rfTxBufferLen+1; rf_tx_index++) { 
@@ -251,9 +251,8 @@ void rfSend(uint8_t *rfTxBuffer, uint16_t rfTxBufferLen){
 	//setDmaArm(2);
 	setRfState(RFST = STX); // Set state to TX
 	//delayMs(1);
-	rf_tx_index = 0;
 	dmaRequest(2); // Send DMA request for RF TX
-	
+	rf_tx_index = 0;
 }
 
 void setRfTxBuffer(uint8_t *rfTxBuffer, uint16_t rfTxBufferLen){
@@ -338,7 +337,7 @@ void setRfState(uint8_t mode) {
 	RFTXRXIF = 0;
 	switch (mode) { // Transition States
 		case SFSTXON: {
-			PKTCTRL1 = 0x00;
+			//PKTCTRL1 = 0x00;
 			// Set state 
 			//RFST = SFSTXON;
 			break;
@@ -347,12 +346,12 @@ void setRfState(uint8_t mode) {
 		case SRX: { 
 			
 			// Make sure Append status is off
-			PKTCTRL1 = 0x00;
+			//PKTCTRL1 = 0x00;
 			
 			// Disable DMA for RFTX and enable for RFRX
 			dmaAbort(2);	// Disables DMA channel 2 (RFTX)
 			setDmaArm(1);	// ARM DMA channel 0 (UART), DMA channel 1 (RFRX)
-			wait();
+			//wait();
 			//// Set state
 			//RFST = SRX;
 			//delayMs(1);

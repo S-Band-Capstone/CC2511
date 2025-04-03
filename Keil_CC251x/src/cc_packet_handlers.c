@@ -72,7 +72,7 @@ void rfPacketHandler(packet *payload){
 		case MSG: {
 			// Send message to OBC via RF
 			//uint8_t msg[] = "Message Sent!\n";
-			uart0Send(rf_rx_buffer.rawPayload, length);// take out SOF, EOF, and CMD
+			uart0Send(payload->rawPayload, length);// take out SOF, EOF, and CMD
 			rf_rx_packet_complete = 0;
 			
 		}break;
@@ -143,13 +143,8 @@ void uartPacketHandler(packet *payload){
 		case MSG: {
 
 			setRfState(RFST = SFSTXON);
-
-		
-			
+			rfSend(payload->rawPayload, length);
 			uart_rx_packet_complete = 0;
-			//delayMs(1);
-			//RFST = SRX;
-			
 			setRfState(RFST = SRX);
 		}break;
 		// TODO: complete all other cases
