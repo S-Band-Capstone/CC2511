@@ -10,11 +10,14 @@
 #define CC_DMA_V1_H
 
 // Headers 
-#include <Common_Shared/blink.h>
+#include <blink.h>
 
 // Defines 
 #define DMAIF0		0x01
 #define DMAIF1 		0x02 
+#define DMAIF2		0x04
+#define DMAIF3		0x08
+#define DMAIF4		0x10
 
 // DMA channel configuration structure
 typedef struct{
@@ -30,22 +33,24 @@ typedef struct{
 } dma_cfg; 
 
 // DMA channel configurations  
-extern xdata dma_cfg dma_channels[5];  
+extern __xdata dma_cfg dma_channels[5];  
 extern const dma_cfg dma_init_val;
 
 // Interrupts 
-//void dmaIsr(void);
+void dmaIsr(void) __interrupt(DMA_VECTOR);
 
 // Initializer
 void dmaInit(void); 
 
 // Functions
-void dmaAbort(void); 
+volatile void dmaAbort(uint8_t channel);
+void dmaRequest(uint8_t channel);
 	
 // Getters 
 
 // Setters 
-void setDmaChannel(void);
+volatile void setDmaArm(uint8_t channel);
+void setDmaDisarmrm(uint8_t channel);
 
 
 #endif

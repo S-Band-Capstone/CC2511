@@ -3,7 +3,7 @@
 #define PACKET_HANDLERS_H
 
 // Headers
-#include <Common_Shared/blink.h>
+#include <blink.h>
 
 // Defined variables
 #define SOF 0x7E	// Start of frame
@@ -35,19 +35,6 @@ typedef enum{
 
 /* Packet structures uart and RF */
 // NOTE: Probably can just merge them all as one packet for typedef.
-typedef union{
-	/* Packet strucutre for uart_packet */
-	
-	uint8_t rawPayload[64];			
-	struct{
-		uint8_t length; 
-		uint8_t sof;
-		uint8_t command;
-		uint8_t payload[60];
-		uint8_t eof; 
-	}fields;
-	
-}uart_packet;
 
 
 typedef union {
@@ -62,15 +49,14 @@ typedef union {
 		uint8_t eof; 
 	}fields;
 	
-}rf_packet;
-
+}packet;
 
 
 /* Interrupts */
 
 /* Functions for packet handlers */
-void rfPacketHandler(rf_packet *payload);			// RF packet handler
-void uartPacketHandler(uart_packet *payload);	// UART packet handler
+void rfPacketHandler(packet *payload);			// RF packet handler
+void uartPacketHandler(packet *payload);	// UART packet handler
 
 /* Function Getters */
 uint8_t* getrfCommand(void);
@@ -78,8 +64,6 @@ uint8_t* getUartCommand(void);
 
 /* Function Setters */
 
-/* CRC Checks  */
-uint32_t rfCrc32(uint16_t* packet );
 
 
 //todo crcCheckUart, crcCheckRf 

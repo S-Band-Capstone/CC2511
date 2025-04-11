@@ -1,5 +1,5 @@
 // Headers
-#include <Common_Shared/blink.h>
+#include <../include/blink.h>
 
  void wait(void ){
 /* Generic wait/nop function. */
@@ -26,7 +26,7 @@ void blink(void){
 
 }
 
-void delayMs(uint16_t ms) {
+volatile void delayMs(uint16_t ms) {
 	
 	/*
 		Delay function in ms
@@ -40,10 +40,46 @@ void delayMs(uint16_t ms) {
 	*/
 	
 	uint32_t i = 4000 * ms; // assumuing a 1 machine cycle ~6 clock cycle
+    uint32_t j = 0;
+
 	while(i--){
-	
+        for (j = 0; j < 13; j++) {
+            wait();wait();wait();wait();wait();wait();wait();wait();wait();wait(); // 10 waits
+            wait();wait();wait();wait();wait();wait();wait();wait();wait();wait();
+            wait();wait();wait();wait();wait();wait();wait();wait();wait();wait();
+            wait();wait();wait();wait();wait();wait();wait();wait();wait();wait();
+            wait();wait();wait();wait();wait();wait();wait();wait();wait();wait();
+            wait();wait();wait();wait(); // 4 waits
+        }
 	}
 }
+
+// Timer Register Function
+void timerDelayMs(uint16_t ms){
+	// Still needs to be worked on. 
+	// Configure Timer 1
+	T1CTL = 0x00;          // Stop timer
+	T1CNTL = 0x00;         // Clear counter
+
+	// Set prescaler to 128 (24MHz/128 = 187.5kHz)
+	// Each tick = 5.33μs
+	T1CTL = 0x0C;          // Prescaler 128
+
+	// Calculate ticks needed for ms delay
+	// 187.5 ticks per ms
+	uint16_t ticks = ms * 187;
+
+	// Start timer
+	T1CTL |= 0x02;         // Start timer in modulo mode
+
+	// Wait until timer reaches desired count
+	while(T1CNTL < ticks); 
+
+	// Stop timer
+	T1CTL = 0x00;
+
+}
+
 
 // Buffer Clearing 
 void bufferClear(uint16_t* buffer, uint16_t bufferLen){

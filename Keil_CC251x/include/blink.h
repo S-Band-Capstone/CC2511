@@ -9,7 +9,7 @@
 #define BLINK_H
 
 // Headers 
-#include <cc2510.h>
+#include <cc2510fx.h>
 /* 
 	If I am correct, Keil compiles int as 2 bytes. 
 	This means that uint16 = int type, uint32 = long int,
@@ -27,10 +27,14 @@ typedef unsigned char uint8_t;
 typedef unsigned int uint16_t; 
 typedef unsigned long int uint32_t; 
 
+// Vairables 
+extern volatile __xdata uint8_t temp_buffer[64]; // Temp buffer for testing
+
 // Generalized blink and wait functions. 
 void wait(void);
 void blink(void);
 void delayMs(uint16_t ms); // Make Reentrant for interrupt
+void timerDelayMs(uint16_t ms); // Timer Register Function
 
 // Buffer Clear 
 void bufferClear(uint16_t* buffer, uint16_t bufferLen); 

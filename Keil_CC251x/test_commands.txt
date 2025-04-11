@@ -115,6 +115,8 @@ A2 B3
 C1 F0 
 7F
 
+NOTE:   If using packet in SmartRF Studio, remove the first byte (length) as it will
+        be applied by the software. (Also packet must be single line)
 
 ** Command: Data Store **
 
